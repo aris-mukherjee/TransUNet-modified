@@ -12,22 +12,64 @@ from tensorboardX import SummaryWriter
 from torch.nn.modules.loss import CrossEntropyLoss
 from torch.utils.data import DataLoader
 from tqdm import tqdm
+from dataset_NCI import NCI_dataset
 from utils import DiceLoss
 from torchvision import transforms
+import utils_data 
+import config.system_paths as sys_config
+import config.params as exp_config
+import utils
 
-def trainer_synapse(args, model, snapshot_path):
-    from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
-    logging.basicConfig(filename=snapshot_path + "/log.txt", level=logging.INFO,
-                        format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
-    logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
-    logging.info(str(args))
+
+
+def trainer_runmc(args, model, snapshot_path):
+    #from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
+
+    if args.da_ratio == 0.0:
+        expname_i2l = 'tr' + args.dataset + '_cv' + str(args.tr_cv_fold_num) + '_no_da_r' + str(args.tr_run_number) + '/i2i2l/'
+    else:
+        expname_i2l = 'tr' + args.dataset + '_cv' + str(args.tr_cv_fold_num) + '_r' + str(args.tr_run_number) + '/i2i2l/'
+    logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
+    log_dir = os.path.join(sys_config.project_root, 'log_dir/' + expname_i2l)
+    tensorboard_dir = os.path.join(sys_config.tensorboard_root, expname_i2l)
+    logging.info('Logging directory: %s' %log_dir)
+    logging.info('Tensorboard directory: %s' %tensorboard_dir)
+
     base_lr = args.base_lr
     num_classes = args.num_classes
     batch_size = args.batch_size * args.n_gpu
     # max_iterations = args.max_iterations
-    db_train = Synapse_dataset(base_dir=args.root_path, list_dir=args.list_dir, split="train",
-                               transform=transforms.Compose(
-                                   [RandomGenerator(output_size=[args.img_size, args.img_size])]))
+
+     # ============================
+    # log experiment details
+    # ============================
+    logging.info('============================================================')
+    logging.info('EXPERIMENT NAME: %s' % expname_i2l)
+
+    # ============================
+    # Load data
+    # ============================   
+    logging.info('============================================================')
+    logging.info('Loading data...')
+    loaded_tr_data = utils_data.load_training_data(args.dataset,
+                                                   args.img_size,
+                                                   args.target_resolution,
+                                                   args.tr_cv_fold_num)
+    imtr = loaded_tr_data[0]
+    gttr = loaded_tr_data[1]
+    imvl = loaded_tr_data[9]
+    gtvl = loaded_tr_data[10]
+              
+    logging.info('Training Images: %s' %str(imtr.shape)) # expected: [num_slices, img_size_x, img_size_y]
+    logging.info('Training Labels: %s' %str(gttr.shape)) # expected: [num_slices, img_size_x, img_size_y]
+    logging.info('Validation Images: %s' %str(imvl.shape))
+    logging.info('Validation Labels: %s' %str(gtvl.shape))
+    logging.info('============================================================')
+
+    #imtr, gttr = iterate_minibatches(args, imtr, gttr, args.batch_size, 'train')
+
+    db_train = NCI_dataset(args, imtr, gttr, args.batch_size, 'train')
+    
     print("The length of train set is: {}".format(len(db_train)))
 
     def worker_init_fn(worker_id):
@@ -49,9 +91,10 @@ def trainer_synapse(args, model, snapshot_path):
     best_performance = 0.0
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
+        breakpoint()
         for i_batch, sampled_batch in enumerate(trainloader):
             image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
-            image_batch, label_batch = image_batch.cuda(), label_batch.cuda()
+            image_batch, label_batch = image_batch.cuda(), label_batch.cuda() 
             outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             loss_dice = dice_loss(outputs, label_batch, softmax=True)
@@ -94,3 +137,6 @@ def trainer_synapse(args, model, snapshot_path):
 
     writer.close()
     return "Training Finished!"
+
+
+

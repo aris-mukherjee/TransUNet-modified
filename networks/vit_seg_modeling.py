@@ -383,7 +383,7 @@ class VisionTransformer(nn.Module):
         self.config = config
 
     def forward(self, x):
-        if x.size()[1] == 1:
+        if x.size()[1] == 1: 
             x = x.repeat(1,3,1,1)
         x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
         x = self.decoder(x, features)

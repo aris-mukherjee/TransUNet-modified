@@ -1,0 +1,4 @@
+Namespace(volume_path='../data/Synapse/test_vol_h5', dataset='Synapse', num_classes=9, list_dir='./lists/lists_Synapse', max_iterations=30000, max_epochs=150, batch_size=24, img_size=224, is_savenii=False, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.01, seed=1234, vit_patches_size=16, Dataset=<class 'datasets.dataset_synapse.Synapse_dataset'>, z_spacing=1, is_pretrain=True, exp='TU_Synapse224')
+TU_pretrain_R50-ViT-B_16_skip3_epo150_bs24_224
+12 test iterations per epoch
+0it [00:00, ?it/s]slurmstepd: error: *** JOB 482596 ON biwirender08 CANCELLED AT 2021-11-09T14:25:26 ***

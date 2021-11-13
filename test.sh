@@ -7,4 +7,4 @@
 source /itet-stor/arismu/net_scratch/conda/bin/activate pytorch_env
 conda activate pytorch_env
 
-python test.py --dataset Synapse --vit_name R50-ViT-B_16
+python -u test.py --dataset Synapse --vit_name R50-ViT-B_16
