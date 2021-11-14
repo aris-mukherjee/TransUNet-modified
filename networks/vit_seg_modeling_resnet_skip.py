@@ -141,6 +141,7 @@ class ResNetV2(nn.Module):
 
     def forward(self, x):
         features = []
+        print(x.size())
         b, c, in_size, _ = x.size()
         x = self.root(x)
         features.append(x)

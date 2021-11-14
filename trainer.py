@@ -68,15 +68,14 @@ def trainer_runmc(args, model, snapshot_path):
 
     #imtr, gttr = iterate_minibatches(args, imtr, gttr, args.batch_size, 'train')
 
-    db_train = NCI_dataset(args, imtr, gttr, args.batch_size, 'train')
-    
-    print("The length of train set is: {}".format(len(db_train)))
+    #db_train = NCI_dataset(args, imtr, gttr, args.batch_size, 'train')
+    #print("The length of train set is: {}".format(len(db_train)))
 
     def worker_init_fn(worker_id):
         random.seed(args.seed + worker_id)
 
-    trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=True,
-                             worker_init_fn=worker_init_fn)
+    #trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=False, #change to True with gpu
+     #                        worker_init_fn=worker_init_fn)
     if args.n_gpu > 1:
         model = nn.DataParallel(model)
     model.train()
@@ -86,15 +85,17 @@ def trainer_runmc(args, model, snapshot_path):
     writer = SummaryWriter(snapshot_path + '/log')
     iter_num = 0
     max_epoch = args.max_epochs
-    max_iterations = args.max_epochs * len(trainloader)  # max_epoch = max_iterations // len(trainloader) + 1
-    logging.info("{} iterations per epoch. {} max iterations ".format(len(trainloader), max_iterations))
+    max_iterations = args.max_epochs * imtr.shape[0]  # max_epoch = max_iterations // len(trainloader) + 1
+    logging.info("{} iterations per epoch. {} max iterations ".format(imtr.shape[0] , max_iterations))
     best_performance = 0.0
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
-        breakpoint()
-        for i_batch, sampled_batch in enumerate(trainloader):
-            image_batch, label_batch = sampled_batch['image'], sampled_batch['label']
-            image_batch, label_batch = image_batch.cuda(), label_batch.cuda() 
+        for sampled_batch in iterate_minibatches(args, imtr, gttr, batch_size = exp_config.batch_size, train_or_eval = 'train'):
+            image_batch, label_batch = sampled_batch[0], sampled_batch[1]
+            image_batch = torch.from_numpy(image_batch)
+            label_batch = torch.from_numpy(label_batch)
+            image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
+            image_batch = image_batch.permute(0, 3, 2, 1)
             outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             loss_dice = dice_loss(outputs, label_batch, softmax=True)
@@ -133,10 +134,64 @@ def trainer_runmc(args, model, snapshot_path):
             torch.save(model.state_dict(), save_mode_path)
             logging.info("save model to {}".format(save_mode_path))
             iterator.close()
-            break
+            
 
     writer.close()
     return "Training Finished!"
 
 
+def iterate_minibatches(args, 
+                        images,
+                        labels,
+                        batch_size,
+                        train_or_eval = 'train'):
 
+    # ===========================
+    # generate indices to randomly select subjects in each minibatch
+    # ===========================
+    n_images = images.shape[0]
+    random_indices = np.random.permutation(n_images)
+
+    # ===========================
+    for b_i in range(n_images // batch_size):
+
+        if b_i + batch_size > n_images:
+            continue
+        
+        batch_indices = np.sort(random_indices[b_i*batch_size:(b_i+1)*batch_size])
+        
+        x = images[batch_indices, ...]
+        y = labels[batch_indices, ...]
+
+        # ===========================    
+        # data augmentation (contrast changes + random elastic deformations)
+        # ===========================      
+        if args.da_ratio > 0.0:
+
+            # ===========================    
+            # doing data aug both during training as well as during evaluation on the validation set (used for model selection)
+            # ===========================             
+            # 90 degree rotation for cardiac images as the orientation is fixed for all other anatomies.
+            do_rot90 = args.dataset in ['HVHD', 'CSF', 'UHE']
+            x, y = utils.do_data_augmentation(images = x,
+                                              labels = y,
+                                              data_aug_ratio = args.da_ratio,
+                                              sigma = exp_config.sigma,
+                                              alpha = exp_config.alpha,
+                                              trans_min = exp_config.trans_min,
+                                              trans_max = exp_config.trans_max,
+                                              rot_min = exp_config.rot_min,
+                                              rot_max = exp_config.rot_max,
+                                              scale_min = exp_config.scale_min,
+                                              scale_max = exp_config.scale_max,
+                                              gamma_min = exp_config.gamma_min,
+                                              gamma_max = exp_config.gamma_max,
+                                              brightness_min = exp_config.brightness_min,
+                                              brightness_max = exp_config.brightness_max,
+                                              noise_min = exp_config.noise_min,
+                                              noise_max = exp_config.noise_max,
+                                              rot90 = do_rot90)
+
+        x = np.expand_dims(x, axis=-1)
+        
+        yield x, y

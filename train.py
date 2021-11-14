@@ -104,6 +104,5 @@ if __name__ == "__main__":
     net.load_from(weights=np.load(config_vit.pretrained_path))
 
     trainer = {'RUNMC': trainer_runmc,}
-    breakpoint()
     trainer[dataset_name](args, net, snapshot_path)
 
