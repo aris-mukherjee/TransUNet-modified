@@ -412,7 +412,7 @@ def load_without_size_preprocessing(input_folder,
     # =======================
     # =======================
     if sub_dataset == 'RUNMC':
-        image_folder = input_folder + 'Images/Prostate-3T/'
+        image_folder = input_folder + 'Prostate-3T/'
         folder_base = 'Prostate3T'
     elif sub_dataset == 'BMC':
         image_folder = input_folder + 'Images/PROSTATE-DIAGNOSIS/'
@@ -424,6 +424,7 @@ def load_without_size_preprocessing(input_folder,
     folder = folder_list[train_test][idx]
     patname = folder_base + '-' + str(folder.split('-')[-2]) + '-' + str(folder.split('-')[-1])
     nifti_img_path = preprocessing_folder + 'Individual_NIFTI/' + patname
+    
 
     # ============
     # read the image and normalize the image to be between 0 and 1
