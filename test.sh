@@ -7,4 +7,4 @@
 source /itet-stor/arismu/net_scratch/conda/bin/activate pytorch_env
 conda activate pytorch_env
 
-python test.py --dataset RUNMC --vit_name R50-ViT-B_16
+python test.py --test_dataset RUNMC --vit_name R50-ViT-B_16

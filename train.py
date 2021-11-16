@@ -42,7 +42,6 @@ parser.add_argument('--vit_patches_size', type=int,
 parser.add_argument('--target_resolution', type=float, default=0.625, help='target resolution')                    
 
 
-#parser.add_argument('--train_dataset', default = "RUNMC") # RUNMC (prostate) | CSF (cardiac) | UMC (brain white matter hyperintensities) | HCPT1 (brain subcortical tissues) | site2 (Spine)
 parser.add_argument('--tr_run_number', type = int, default = 3) # 1 / 
 parser.add_argument('--tr_cv_fold_num', type = int, default = 1) # 1 / 2
 parser.add_argument('--da_ratio', type = float, default = 0.25) # 0.0 / 0.25
@@ -66,7 +65,6 @@ if __name__ == "__main__":
     dataset_config = {
         'RUNMC': {
             'root_path': '/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/',
-            #'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
             'target_resolution': 0.625
         },
@@ -78,7 +76,6 @@ if __name__ == "__main__":
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.root_path = dataset_config[dataset_name]['root_path']
     args.target_resolution = dataset_config[dataset_name]['target_resolution']
-    #args.list_dir = dataset_config[dataset_name]['list_dir']
     args.is_pretrain = True
     args.exp = 'TU_' + dataset_name + str(args.img_size)
     snapshot_path = "../model/{}/{}".format(args.exp, 'TU')

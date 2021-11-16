@@ -23,7 +23,6 @@ import utils
 
 
 def trainer_runmc(args, model, snapshot_path):
-    #from datasets.dataset_synapse import Synapse_dataset, RandomGenerator
 
     if args.da_ratio == 0.0:
         expname_i2l = 'tr' + args.dataset + '_cv' + str(args.tr_cv_fold_num) + '_no_da_r' + str(args.tr_run_number) + '/i2i2l/'
@@ -38,7 +37,6 @@ def trainer_runmc(args, model, snapshot_path):
     base_lr = args.base_lr
     num_classes = args.num_classes
     batch_size = args.batch_size * args.n_gpu
-    # max_iterations = args.max_iterations
 
      # ============================
     # log experiment details
@@ -66,16 +64,10 @@ def trainer_runmc(args, model, snapshot_path):
     logging.info('Validation Labels: %s' %str(gtvl.shape))
     logging.info('============================================================')
 
-    #imtr, gttr = iterate_minibatches(args, imtr, gttr, args.batch_size, 'train')
-
-    #db_train = NCI_dataset(args, imtr, gttr, args.batch_size, 'train')
-    #print("The length of train set is: {}".format(len(db_train)))
 
     def worker_init_fn(worker_id):
         random.seed(args.seed + worker_id)
 
-    #trainloader = DataLoader(db_train, batch_size=batch_size, shuffle=True, num_workers=8, pin_memory=False, #change to True with gpu
-     #                        worker_init_fn=worker_init_fn)
     if args.n_gpu > 1:
         model = nn.DataParallel(model)
     model.train()

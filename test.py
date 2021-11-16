@@ -23,9 +23,6 @@ parser.add_argument('--test_dataset', type=str,
                     default='RUNMC', help='experiment_name')
 parser.add_argument('--num_classes', type=int,
                     default=3, help='output channel of network')
-#parser.add_argument('--list_dir', type=str,
-#                    default='./lists/lists_Synapse', help='list dir')
-
 parser.add_argument('--max_iterations', type=int,default=30001, help='maximum epoch number to train')
 parser.add_argument('--max_epochs', type=int, default=150, help='maximum epoch number to train')
 parser.add_argument('--batch_size', type=int, default=16,
@@ -79,8 +76,8 @@ def inference(args, model, test_save_path=None):
 
     for sub_num in range(num_test_subjects):
 
-        subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end
-        subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end
+        subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end of the loop
+        subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
         image = imts[subject_id_start_slice:subject_id_end_slice,:,:] 
         label = gtts[subject_id_start_slice:subject_id_end_slice,:,:] 
         
@@ -124,7 +121,6 @@ if __name__ == "__main__":
     dataset_config = {
         'RUNMC': {
             'volume_path': '/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/',
-            #'list_dir': './lists/lists_Synapse',
             'num_classes': 3,
             'z_spacing': 1,
         },
