@@ -52,14 +52,15 @@ def count_slices(image_folder,
     for folder in os.listdir(image_folder):
         
         if folder.startswith(folder_base + '-01'):
-            patient_id = int(folder.split('-')[-1])        
-            for _, _, fileList in os.walk(os.path.join(image_folder, folder)):
-                for filename in fileList:
-                    if filename.lower().endswith('.dcm'):  # check whether the file's DICOM
-                        train_test = test_train_val_split(patient_id,
-                                                          sub_dataset,
-                                                          cv_fold_number)
-                        num_slices[train_test] += 1
+            patient_id = int(folder.split('-')[-1])
+            if patient_id <=30:  #added because only 30 labeled patients
+                for _, _, fileList in os.walk(os.path.join(image_folder, folder)):
+                    for filename in fileList:
+                        if filename.lower().endswith('.dcm'):  # check whether the file's DICOM
+                            train_test = test_train_val_split(patient_id,
+                                                            sub_dataset,
+                                                            cv_fold_number)
+                            num_slices[train_test] += 1
 
         # IGNORE -02 and -03 for now
         # elif folder.startswith(folder_base + '-02') or folder.startswith(folder_base + '-03'):

@@ -60,7 +60,7 @@ def inference(args, model, test_save_path=None):
                                                     args.image_depth_ts)
 
 
-    imts = loaded_test_data[0]
+    imts = loaded_test_data[0]   #shape (194, 256, 256)
     gtts = loaded_test_data[1]
     orig_data_res_x = loaded_test_data[2]
     orig_data_res_y = loaded_test_data[3]
@@ -72,19 +72,18 @@ def inference(args, model, test_save_path=None):
     num_test_subjects = loaded_test_data[9]
     ids = loaded_test_data[10]
 
-    images = []
-    labels = []
+    
 
     model.eval()
     metric_list = 0.0
 
     for sub_num in range(num_test_subjects):
 
-        subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])
-        subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])
+        subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end
+        subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end
         image = imts[subject_id_start_slice:subject_id_end_slice,:,:] 
         label = gtts[subject_id_start_slice:subject_id_end_slice,:,:] 
-        print(label[10])
+        
 
         # ==================================================================
         # setup logging
@@ -100,13 +99,13 @@ def inference(args, model, test_save_path=None):
 
         metric_list += np.array(metric_i)
         logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_i, axis=0)[0], np.mean(metric_i, axis=0)[1]))
-        metric_list = metric_list / imts.shape[0]
-        for i in range(1, args.num_classes):
-            logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i-1][0], metric_list[i-1][1]))
-        performance = np.mean(metric_list, axis=0)[0]
-        mean_hd95 = np.mean(metric_list, axis=0)[1]
-        logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
-        return "Testing Finished!"
+    metric_list = metric_list / num_test_subjects   #get mean metrics for every class
+    for i in range(0, args.num_classes):
+        logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i][0], metric_list[i][1]))
+    performance = np.mean(metric_list, axis=0)[0]
+    mean_hd95 = np.mean(metric_list, axis=0)[1]
+    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
+    return "Testing Finished!"
 
 
 if __name__ == "__main__":
@@ -160,11 +159,11 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
 
     snapshot = os.path.join(snapshot_path, 'best_model.pth')
     if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'epoch_'+str(args.max_epochs-1))
-    #net.load_state_dict(torch.load(snapshot))
+    net.load_state_dict(torch.load(snapshot))
     snapshot_name = snapshot_path.split('/')[-1]
 
     log_folder = './test_log/test_log_' + args.exp

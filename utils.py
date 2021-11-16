@@ -56,6 +56,8 @@ class DiceLoss(nn.Module):
 def calculate_metric_percase(pred, gt):
     pred[pred > 0] = 1
     gt[gt > 0] = 1
+    print(f"Predsum: {pred.sum()}")
+    print(f"GtSum: {gt.sum()}")
     if pred.sum() > 0 and gt.sum()>0:
         dice = metric.binary.dc(pred, gt)
         hd95 = metric.binary.hd95(pred, gt)
@@ -95,7 +97,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
             prediction = out.cpu().detach().numpy()
             
     metric_list = []
-    for i in range(1, classes):
+    for i in range(0, classes):
         metric_list.append(calculate_metric_percase(prediction == i, label == i))
 
     if test_save_path is not None:
