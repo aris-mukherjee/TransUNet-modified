@@ -72,6 +72,11 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
     # image, label = image.numpy(), label.numpy() #.cpu().detach()
     if len(image.shape) == 3:
         prediction = np.zeros_like(label)
+
+        # ============================
+        # Perform the prediction slice by slice
+        # ============================ 
+
         for ind in range(image.shape[0]):
             slice = image[ind, :, :]
             x, y = slice.shape[0], slice.shape[1]
@@ -95,11 +100,19 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
         with torch.no_grad():
             out = torch.argmax(torch.softmax(net(input), dim=1), dim=1).squeeze(0)
             prediction = out.cpu().detach().numpy()
-            
+
+
+    # ============================
+    # Calculate Dice & Hausdorff
+    # ============================         
     metric_list = []
     for i in range(0, classes):
         metric_list.append(calculate_metric_percase(prediction == i, label == i))
 
+    # ============================
+    # Save images, predictions and ground truths
+    # ============================
+    
     if test_save_path is not None:
         img_itk = sitk.GetImageFromArray(image.astype(np.float32))
         prd_itk = sitk.GetImageFromArray(prediction.astype(np.float32))
@@ -506,6 +519,11 @@ def do_data_augmentation(images,
         
     images_ = np.copy(images)
     labels_ = np.copy(labels)
+
+    
+    #import utils
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_NOTaugmented' + '_img_n4.nii.gz', data = images, affine = np.eye(4))
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_NOTaugmented' + '_lbl.nii.gz', data = labels, affine = np.eye(4))
     
     for i in range(images.shape[0]):
 
@@ -622,7 +640,12 @@ def do_data_augmentation(images,
             # noise augmentation
             n = np.random.normal(noise_min, noise_max, size = images_[i,:,:].shape)
             images_[i,:,:] = images_[i,:,:] + n
-            
+
+    
+    #import utils
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_augmented' + '_img_n4.nii.gz', data = images_, affine = np.eye(4))
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_augmented' + '_lbl.nii.gz', data = labels_, affine = np.eye(4))
+
     return images_, labels_
 
 # ==================================================================

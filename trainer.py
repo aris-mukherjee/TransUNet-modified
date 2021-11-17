@@ -45,7 +45,7 @@ def trainer_runmc(args, model, snapshot_path):
     logging.info('EXPERIMENT NAME: %s' % expname_i2l)
 
     # ============================
-    # Load data
+    # Load training data
     # ============================   
     logging.info('============================================================')
     logging.info('Loading data...')
@@ -68,6 +68,10 @@ def trainer_runmc(args, model, snapshot_path):
     def worker_init_fn(worker_id):
         random.seed(args.seed + worker_id)
 
+    # ============================
+    # Loss, optimizer, etc.
+    # ============================  
+
     if args.n_gpu > 1:
         model = nn.DataParallel(model)
     model.train()
@@ -80,6 +84,11 @@ def trainer_runmc(args, model, snapshot_path):
     max_iterations = args.max_epochs * imtr.shape[0]  # max_epoch = max_iterations // len(trainloader) + 1
     logging.info("{} iterations per epoch. {} max iterations ".format(imtr.shape[0] , max_iterations))
     best_performance = 0.0
+
+    # ============================
+    # Training loop: loop over batches and perform data augmentation on the fly with a certain probability
+    # ============================  
+
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
         for sampled_batch in iterate_minibatches(args, imtr, gttr, batch_size = exp_config.batch_size, train_or_eval = 'train'):
@@ -99,6 +108,10 @@ def trainer_runmc(args, model, snapshot_path):
             for param_group in optimizer.param_groups:
                 param_group['lr'] = lr_
 
+    # ============================
+    # Write to Tensorboard
+    # ============================  
+
             iter_num = iter_num + 1
             writer.add_scalar('info/lr', lr_, iter_num)
             writer.add_scalar('info/total_loss', loss, iter_num)
@@ -114,6 +127,10 @@ def trainer_runmc(args, model, snapshot_path):
                 writer.add_image('train/Prediction', outputs[1, ...] * 50, iter_num)
                 labs = label_batch[1, ...].unsqueeze(0) * 50
                 writer.add_image('train/GroundTruth', labs, iter_num)
+
+    # ============================
+    # Save the trained model parameters
+    # ============================  
 
         save_interval = 50  # int(max_epoch/6)
         if epoch_num > int(max_epoch / 2) and (epoch_num + 1) % save_interval == 0:

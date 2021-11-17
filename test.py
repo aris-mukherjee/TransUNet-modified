@@ -49,6 +49,10 @@ args = parser.parse_args()
 
 
 def inference(args, model, test_save_path=None):
+
+    # ============================
+    # Load test data
+    # ============================ 
     
     loaded_test_data = utils_data.load_testing_data(args.test_dataset,  #needs to be adapted for different test set
                                                     args.test_cv_fold_num,
@@ -74,7 +78,13 @@ def inference(args, model, test_save_path=None):
     model.eval()
     metric_list = 0.0
 
+    
     for sub_num in range(num_test_subjects):
+
+
+        # ============================
+        # Group slices belonging to the same patients
+        # ============================ 
 
         subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end of the loop
         subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
@@ -90,6 +100,9 @@ def inference(args, model, test_save_path=None):
         logging.info('============================================================')
         logging.info('Subject ' + str(sub_num) + ' out of ' + str(num_test_subjects) + ': ' + subject_name)
 
+        # ============================
+        # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
+        # ============================ 
 
         metric_i = test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
@@ -97,6 +110,11 @@ def inference(args, model, test_save_path=None):
         metric_list += np.array(metric_i)
         logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_i, axis=0)[0], np.mean(metric_i, axis=0)[1]))
     metric_list = metric_list / num_test_subjects   #get mean metrics for every class
+
+        # ============================
+        # Log the mean performance achieved for each class
+        # ============================ 
+
     for i in range(0, args.num_classes):
         logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i][0], metric_list[i][1]))
     performance = np.mean(metric_list, axis=0)[0]
@@ -129,11 +147,13 @@ if __name__ == "__main__":
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.volume_path = dataset_config[dataset_name]['volume_path']
     args.Dataset = dataset_name
-    #args.list_dir = dataset_config[dataset_name]['list_dir']
     args.z_spacing = dataset_config[dataset_name]['z_spacing']
     args.is_pretrain = True
 
-    # name the same snapshot defined in train script!
+    # ============================
+    # Same snapshot path as defined in the train script to access the trained model
+    # ============================  
+
     args.exp = 'TU_' + dataset_name + str(args.img_size)
     snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
@@ -159,15 +179,28 @@ if __name__ == "__main__":
 
     snapshot = os.path.join(snapshot_path, 'best_model.pth')
     if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'epoch_'+str(args.max_epochs-1))
-    net.load_state_dict(torch.load(snapshot))
-    snapshot_name = snapshot_path.split('/')[-1]
 
+    # ============================
+    # Load the trained parameters into the model
+    # ============================  
+
+    net.load_state_dict(torch.load(snapshot))
+
+    # ============================
+    # Logging
+    # ============================ 
+
+    snapshot_name = snapshot_path.split('/')[-1]
     log_folder = './test_log/test_log_' + args.exp
     os.makedirs(log_folder, exist_ok=True)
     logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
     logging.info(str(args))
     logging.info(snapshot_name)
+
+    # ============================
+    # Save the predictions as nii files
+    # ============================ 
 
     if args.is_savenii:
         args.test_save_dir = '../predictions'

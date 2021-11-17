@@ -78,6 +78,11 @@ if __name__ == "__main__":
     args.target_resolution = dataset_config[dataset_name]['target_resolution']
     args.is_pretrain = True
     args.exp = 'TU_' + dataset_name + str(args.img_size)
+
+    # ===========================    
+    # define snapshot path where model will be stored
+    # ===========================             
+
     snapshot_path = "../model/{}/{}".format(args.exp, 'TU')
     snapshot_path = snapshot_path + '_pretrain' if args.is_pretrain else snapshot_path
     snapshot_path += '_' + args.vit_name
@@ -97,8 +102,16 @@ if __name__ == "__main__":
     config_vit.n_skip = args.n_skip
     if args.vit_name.find('R50') != -1:
         config_vit.patches.grid = (int(args.img_size / args.vit_patches_size), int(args.img_size / args.vit_patches_size))
+
+    # ===========================    
+    # create an instance of the model 
+    # ===========================      
     net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net.load_from(weights=np.load(config_vit.pretrained_path))
+
+    # ===========================    
+    # start training 
+    # ===========================  
 
     trainer = {'RUNMC': trainer_runmc,}
     trainer[dataset_name](args, net, snapshot_path)
