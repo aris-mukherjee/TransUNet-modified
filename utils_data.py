@@ -29,6 +29,8 @@ def load_training_data(train_dataset,
         logging.info('Reading NCI - ' + train_dataset + ' images...')    
         logging.info('Data root directory: ' + sys_config.orig_data_root_nci)
 
+        
+
         data_pros = data_nci.load_and_maybe_process_data(input_folder = sys_config.orig_data_root_nci,
                                                          preprocessing_folder = sys_config.preproc_folder_nci,
                                                          size = image_size,
@@ -39,7 +41,7 @@ def load_training_data(train_dataset,
         
         imtr = data_pros['images_train']
         gttr = data_pros['labels_train']
-        
+
         orig_data_res_x = data_pros['px_train'][:]
         orig_data_res_y = data_pros['py_train'][:]
         orig_data_res_z = data_pros['pz_train'][:]

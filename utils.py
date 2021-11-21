@@ -525,15 +525,15 @@ def do_data_augmentation(images,
     #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_NOTaugmented' + '_img_n4.nii.gz', data = images, affine = np.eye(4))
     #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_NOTaugmented' + '_lbl.nii.gz', data = labels, affine = np.eye(4))
     
-    for i in range(images.shape[0]):
+    for i in range(images.shape[2]):
 
         # ========
         # elastic deformation
         # ========
         if np.random.rand() < data_aug_ratio:
             
-            images_[i,:,:], labels_[i,:,:] = elastic_transform_image_and_label(images_[i,:,:],
-                                                                               labels_[i,:,:],
+            images_[:,:,i], labels_[:,:,i] = elastic_transform_image_and_label(images_[:,:,i],
+                                                                               labels_[:,:,i],
                                                                                sigma = sigma,
                                                                                alpha = alpha) 
 
@@ -545,11 +545,11 @@ def do_data_augmentation(images,
             random_shift_x = np.random.uniform(trans_min, trans_max)
             random_shift_y = np.random.uniform(trans_min, trans_max)
             
-            images_[i,:,:] = scipy.ndimage.interpolation.shift(images_[i,:,:],
+            images_[:,:,i] = scipy.ndimage.interpolation.shift(images_[:,:,i],
                                                                shift = (random_shift_x, random_shift_y),
                                                                order = 1)
             
-            labels_[i,:,:] = scipy.ndimage.interpolation.shift(labels_[i,:,:],
+            labels_[:,:,i] = scipy.ndimage.interpolation.shift(labels_[:,:,i],
                                                                shift = (random_shift_x, random_shift_y),
                                                                order = 0)
             
@@ -560,13 +560,13 @@ def do_data_augmentation(images,
             
             random_angle = np.random.uniform(rot_min, rot_max)
             
-            images_[i,:,:] = scipy.ndimage.interpolation.rotate(images_[i,:,:],
+            images_[:,:,i] = scipy.ndimage.interpolation.rotate(images_[:,:,i],
                                                                 reshape = False,
                                                                 angle = random_angle,
                                                                 axes = (1, 0),
                                                                 order = 1)
             
-            labels_[i,:,:] = scipy.ndimage.interpolation.rotate(labels_[i,:,:],
+            labels_[:,:,i]= scipy.ndimage.interpolation.rotate(labels_[:,:,i],
                                                                 reshape = False,
                                                                 angle = random_angle,
                                                                 axes = (1, 0),
@@ -577,11 +577,11 @@ def do_data_augmentation(images,
         # ========
         if np.random.rand() < data_aug_ratio:
             
-            n_x, n_y = images_.shape[1], images_.shape[2]
+            n_x, n_y = images_.shape[0], images_.shape[1]
             
             scale_val = np.round(np.random.uniform(scale_min, scale_max), 2)
             
-            images_i_tmp = transform.rescale(images_[i,:,:], 
+            images_i_tmp = transform.rescale(images_[:,:,i], 
                                              scale_val,
                                              order = 1,
                                              preserve_range = True,
@@ -592,15 +592,15 @@ def do_data_augmentation(images,
             # anti_aliasing was set to false by default in the earlier version of skimage that we were using in the TTA DAE code...
             # now using a higher version of skimage (0.17.2), as reverting to 0.14.0 causes incompability with some other module on Euler...
             # not doing anti_aliasing=False while downsampling in evaluation led to substantial errors...
-            labels_i_tmp = transform.rescale(labels_[i,:,:],
+            labels_i_tmp = transform.rescale(labels_[:,:,i],
                                              scale_val,
                                              order = 0,
                                              preserve_range = True,
                                              anti_aliasing = False,
                                              mode = 'constant')
             
-            images_[i,:,:] = crop_or_pad_slice_to_size(images_i_tmp, n_x, n_y)
-            labels_[i,:,:] = crop_or_pad_slice_to_size(labels_i_tmp, n_x, n_y)
+            images_[:,:,i] = crop_or_pad_slice_to_size(images_i_tmp, n_x, n_y)
+            labels_[:,:,i] = crop_or_pad_slice_to_size(labels_i_tmp, n_x, n_y)
 
         # ========
         # rotate 90 / 180 / 270
@@ -609,8 +609,8 @@ def do_data_augmentation(images,
         if rot90 == True:
             if np.random.rand() < data_aug_ratio:
                 num_rotations = np.random.randint(1,4) # 1/2/3
-                images_[i,:,:] = np.rot90(images_[i,:,:], k=num_rotations)
-                labels_[i,:,:] = np.rot90(labels_[i,:,:], k=num_rotations)
+                images_[:,:,i] = np.rot90(images_[:,:,i], k=num_rotations)
+                labels_[:,:,i] = np.rot90(labels_[:,:,i], k=num_rotations)
             
         # ========
         # contrast
@@ -619,7 +619,7 @@ def do_data_augmentation(images,
             
             # gamma contrast augmentation
             c = np.round(np.random.uniform(gamma_min, gamma_max), 2)
-            images_[i,:,:] = images_[i,:,:]**c
+            images_[:,:,i] = images_[:,:,i]**c
             # not normalizing after the augmentation transformation,
             # as it leads to quite strong reduction of the intensity range when done after high values of gamma augmentation
 
@@ -630,7 +630,7 @@ def do_data_augmentation(images,
             
             # brightness augmentation
             c = np.round(np.random.uniform(brightness_min, brightness_max), 2)
-            images_[i,:,:] = images_[i,:,:] + c
+            images_[:,:,i] = images_[:,:,i] + c
             
         # ========
         # noise
@@ -638,8 +638,8 @@ def do_data_augmentation(images,
         if np.random.rand() < data_aug_ratio:
             
             # noise augmentation
-            n = np.random.normal(noise_min, noise_max, size = images_[i,:,:].shape)
-            images_[i,:,:] = images_[i,:,:] + n
+            n = np.random.normal(noise_min, noise_max, size = images_[:,:,i].shape)
+            images_[:,:,i] = images_[:,:,i] + n
 
     
     #import utils

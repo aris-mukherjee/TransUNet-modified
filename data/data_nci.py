@@ -147,8 +147,8 @@ def prepare_data(input_folder,
     for tt, num_points in zip(['test', 'train', 'validation'], [n_test, n_train, n_val]):
 
         if num_points > 0:
-            data['images_%s' % tt] = hdf5_file.create_dataset("images_%s" % tt, [num_points] + list((size,size)), dtype=np.float32)
-            data['labels_%s' % tt] = hdf5_file.create_dataset("labels_%s" % tt, [num_points] + list((size,size)), dtype=np.uint8)
+            data['images_%s' % tt] = hdf5_file.create_dataset("images_%s" % tt, list((size,size)) + [num_points], dtype=np.float32)
+            data['labels_%s' % tt] = hdf5_file.create_dataset("labels_%s" % tt, list((size,size)) + [num_points], dtype=np.uint8)
 
     lbl_list = {'test': [], 'train': [], 'validation': []}
     img_list = {'test': [], 'train': [], 'validation': []}
@@ -236,6 +236,8 @@ def prepare_data(input_folder,
                 subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
                 img = utils.load_nii(img_path = output_img)[0]
 
+                
+
             # ================================    
             # normalize the image
             # ================================    
@@ -290,6 +292,7 @@ def prepare_data(input_folder,
                                                    preserve_range=True,
                                                    multichannel=False,
                                                    mode = 'constant')
+
 
                 slice_lbl = np.squeeze(lbl[:, :, zz])
                 lbl_rescaled = transform.rescale(slice_lbl,
@@ -354,8 +357,12 @@ def _write_range_to_hdf5(hdf5_data,
     img_arr = np.asarray(img_list[train_test], dtype=np.float32)
     lbl_arr = np.asarray(lbl_list[train_test], dtype=np.uint8)
 
-    hdf5_data['images_%s' % train_test][counter_from:counter_to, ...] = img_arr
-    hdf5_data['labels_%s' % train_test][counter_from:counter_to, ...] = lbl_arr
+    img_arr = np.swapaxes(img_arr, 0, 2)
+    lbl_arr = np.swapaxes(lbl_arr, 0, 2)
+
+
+    hdf5_data['images_%s' % train_test][..., counter_from:counter_to] = img_arr
+    hdf5_data['labels_%s' % train_test][..., counter_from:counter_to] = lbl_arr
 
 # ===============================================================
 # Helper function to reset the tmp lists and free the memory

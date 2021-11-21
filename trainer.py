@@ -57,7 +57,7 @@ def trainer_runmc(args, model, snapshot_path):
     gttr = loaded_tr_data[1]
     imvl = loaded_tr_data[9]
     gtvl = loaded_tr_data[10]
-              
+
     logging.info('Training Images: %s' %str(imtr.shape)) # expected: [num_slices, img_size_x, img_size_y]
     logging.info('Training Labels: %s' %str(gttr.shape)) # expected: [num_slices, img_size_x, img_size_y]
     logging.info('Validation Images: %s' %str(imvl.shape))
@@ -81,8 +81,8 @@ def trainer_runmc(args, model, snapshot_path):
     writer = SummaryWriter(snapshot_path + '/log')
     iter_num = 0
     max_epoch = args.max_epochs
-    max_iterations = args.max_epochs * imtr.shape[0]  # max_epoch = max_iterations // len(trainloader) + 1
-    logging.info("{} iterations per epoch. {} max iterations ".format(imtr.shape[0] , max_iterations))
+    max_iterations = args.max_epochs * (args.batch_size+1) # max_epoch = max_iterations // len(trainloader) + 1
+    logging.info("{} iterations per epoch. {} max iterations ".format(args.batch_size+1 , max_iterations))
     best_performance = 0.0
 
     # ============================
@@ -92,11 +92,13 @@ def trainer_runmc(args, model, snapshot_path):
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
         for sampled_batch in iterate_minibatches(args, imtr, gttr, batch_size = exp_config.batch_size, train_or_eval = 'train'):
+            model.train()
             image_batch, label_batch = sampled_batch[0], sampled_batch[1]
             image_batch = torch.from_numpy(image_batch)
             label_batch = torch.from_numpy(label_batch)
             image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
-            image_batch = image_batch.permute(0, 3, 2, 1)
+            image_batch = image_batch.permute(2, 3, 0, 1)
+            label_batch = label_batch.permute(2, 0, 1)
             outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             loss_dice = dice_loss(outputs, label_batch, softmax=True)
@@ -119,7 +121,7 @@ def trainer_runmc(args, model, snapshot_path):
 
             logging.info('iteration %d : loss : %f, loss_ce: %f' % (iter_num, loss.item(), loss_ce.item()))
 
-            if iter_num % 20 == 0:
+            if iter_num % 17 == 0:
                 image = image_batch[1, 0:1, :, :]
                 image = (image - image.min()) / (image.max() - image.min())
                 writer.add_image('train/Image', image, iter_num)
@@ -127,6 +129,31 @@ def trainer_runmc(args, model, snapshot_path):
                 writer.add_image('train/Prediction', outputs[1, ...] * 50, iter_num)
                 labs = label_batch[1, ...].unsqueeze(0) * 50
                 writer.add_image('train/GroundTruth', labs, iter_num)
+
+
+            # ===========================
+            # Compute the loss on the entire training set
+            # ===========================
+            if (iter_num+1) % 85 == 0:   #every 5 epochs (17 iterations per epoch)
+                logging.info('Training Data Eval:')
+                train_loss = do_train_eval(imtr, gttr, batch_size, model, ce_loss, dice_loss)                   
+                
+                logging.info('  Average segmentation loss on training set: %.4f' % (train_loss))
+
+                writer.add_scalar('info/total_loss_training_set', train_loss, iter_num)
+                
+
+            # ===========================
+            # Evaluate the model periodically on a validation set 
+            # ===========================
+            if (iter_num+1) % 85 == 0:
+                logging.info('Validation Data Eval:')
+                val_loss = do_validation_eval(imvl, gtvl, batch_size, model, ce_loss, dice_loss)                    
+                
+                logging.info('  Average segmentation loss on validation set: %.4f' % (val_loss))
+
+                writer.add_scalar('info/total_loss_validation_set', val_loss, iter_num)
+
 
     # ============================
     # Save the trained model parameters
@@ -158,7 +185,7 @@ def iterate_minibatches(args,
     # ===========================
     # generate indices to randomly select subjects in each minibatch
     # ===========================
-    n_images = images.shape[0]
+    n_images = images.shape[2]
     random_indices = np.random.permutation(n_images)
 
     # ===========================
@@ -166,11 +193,12 @@ def iterate_minibatches(args,
 
         if b_i + batch_size > n_images:
             continue
+
         
         batch_indices = np.sort(random_indices[b_i*batch_size:(b_i+1)*batch_size])
         
-        x = images[batch_indices, ...]
-        y = labels[batch_indices, ...]
+        x = images[..., batch_indices]
+        y = labels[..., batch_indices]
 
         # ===========================    
         # data augmentation (contrast changes + random elastic deformations)
@@ -204,3 +232,99 @@ def iterate_minibatches(args,
         x = np.expand_dims(x, axis=-1)
         
         yield x, y
+
+
+def do_train_eval(images, labels, batch_size, model, ce_loss, dice_loss):
+
+
+    n_images = images.shape[2]
+    random_indices = np.random.permutation(n_images)
+
+    loss_ii = 0
+    num_batches = 0
+
+    model.eval()
+
+    with torch.no_grad():
+        # ===========================
+        for b_i in range(n_images // batch_size):
+
+            if b_i + batch_size > n_images:
+                continue
+            
+            batch_indices = np.sort(random_indices[b_i*batch_size:(b_i+1)*batch_size])
+            
+            x = images[..., batch_indices]
+            y = labels[..., batch_indices]
+
+            x = np.expand_dims(x, axis=-1)
+
+            x = torch.from_numpy(x)
+            y = torch.from_numpy(y)
+            
+            x, y = x.cuda(), y.cuda()   
+
+            x = x.permute(2, 3, 0, 1)
+            y = y.permute(2, 0, 1)
+            
+            
+            outputs = model(x)
+            train_loss_ce = ce_loss(outputs, y[:].long())
+            train_loss_dice = dice_loss(outputs, y, softmax=True)
+            train_loss = 0.5 * train_loss_ce + 0.5 * train_loss_dice
+
+            loss_ii += train_loss
+            num_batches += 1
+
+        
+        avg_loss = loss_ii / num_batches
+
+        return avg_loss      
+
+
+def do_validation_eval(images, labels, batch_size, model, ce_loss, dice_loss):
+
+
+    n_images = images.shape[2]
+    random_indices = np.random.permutation(n_images)
+
+    loss_ii = 0
+    num_batches = 0
+
+    model.eval()
+
+    with torch.no_grad():
+        # ===========================
+        for b_i in range(n_images // batch_size):
+
+            if b_i + batch_size > n_images:
+                continue
+            
+            batch_indices = np.sort(random_indices[b_i*batch_size:(b_i+1)*batch_size])
+            
+            x = images[..., batch_indices]
+            y = labels[..., batch_indices]
+
+            x = np.expand_dims(x, axis=-1)
+
+            x = torch.from_numpy(x)
+            y = torch.from_numpy(y)
+            
+            x, y = x.cuda(), y.cuda()   
+
+            x = x.permute(2, 3, 0, 1)
+            y = y.permute(2, 0, 1)
+
+            outputs = model(x)
+            val_loss_ce = ce_loss(outputs, y[:].long())
+            val_loss_dice = dice_loss(outputs, y, softmax=True)
+            val_loss = 0.5 * val_loss_ce + 0.5 * val_loss_dice
+
+
+            loss_ii += val_loss
+            num_batches += 1
+
+        
+        avg_loss = loss_ii / num_batches
+
+        return avg_loss        
