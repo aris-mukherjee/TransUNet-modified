@@ -1,0 +1,485 @@
+2021-11-22 11:27:45,303 Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', dataset='RUNMC', num_classes=3, max_iterations=2381, max_epochs=140, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='RUNMC', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', dataset='RUNMC', num_classes=3, max_iterations=2381, max_epochs=140, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='RUNMC', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+2021-11-22 11:27:45,304 TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+2021-11-22 11:27:45,360 Reading NCI - RUNMC images...
+Reading NCI - RUNMC images...
+2021-11-22 11:27:45,360 Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+2021-11-22 11:27:45,364 Already preprocessed this configuration. Loading now!
+Already preprocessed this configuration. Loading now!
+2021-11-22 11:27:46,369 ============================================================
+============================================================
+2021-11-22 11:27:46,370 Subject 1 out of 15
+Subject 1 out of 15
+2021-11-22 11:27:50,554 case 0 mean_dice 0.940758 mean_hd95 0.804738
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1519749
+GtSum: 1522670
+Predsum: 16757
+GtSum: 15007
+Predsum: 36358
+GtSum: 35187
+case 0 mean_dice 0.940758 mean_hd95 0.804738
+2021-11-22 11:27:50,573 ============================================================
+============================================================
+2021-11-22 11:27:50,573 Subject 2 out of 15
+Subject 2 out of 15
+2021-11-22 11:27:53,163 case 1 mean_dice 0.940831 mean_hd95 0.804738
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1259934
+GtSum: 1262229
+Predsum: 16475
+GtSum: 14437
+Predsum: 34311
+GtSum: 34054
+case 1 mean_dice 0.940831 mean_hd95 0.804738
+2021-11-22 11:27:53,180 ============================================================
+============================================================
+2021-11-22 11:27:53,180 Subject 3 out of 15
+Subject 3 out of 15
+2021-11-22 11:27:55,806 case 2 mean_dice 0.928813 mean_hd95 0.942809
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1266914
+GtSum: 1269957
+Predsum: 10414
+GtSum: 8713
+Predsum: 33392
+GtSum: 32050
+case 2 mean_dice 0.928813 mean_hd95 0.942809
+2021-11-22 11:27:55,823 ============================================================
+============================================================
+2021-11-22 11:27:55,823 Subject 4 out of 15
+Subject 4 out of 15
+2021-11-22 11:27:57,708 case 3 mean_dice 0.922816 mean_hd95 0.942809
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 951954
+GtSum: 953401
+Predsum: 6385
+GtSum: 5371
+Predsum: 24701
+GtSum: 24268
+case 3 mean_dice 0.922816 mean_hd95 0.942809
+2021-11-22 11:27:57,725 ============================================================
+============================================================
+2021-11-22 11:27:57,725 Subject 5 out of 15
+Subject 5 out of 15
+2021-11-22 11:28:00,334 case 4 mean_dice 0.939688 mean_hd95 0.942809
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1274112
+GtSum: 1277059
+Predsum: 19342
+GtSum: 16651
+Predsum: 17266
+GtSum: 17010
+case 4 mean_dice 0.939688 mean_hd95 0.942809
+2021-11-22 11:28:00,351 ============================================================
+============================================================
+2021-11-22 11:28:00,351 Subject 6 out of 15
+Subject 6 out of 15
+2021-11-22 11:28:02,918 case 5 mean_dice 0.927015 mean_hd95 0.942809
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1273516
+GtSum: 1275809
+Predsum: 16188
+GtSum: 13565
+Predsum: 21016
+GtSum: 21346
+case 5 mean_dice 0.927015 mean_hd95 0.942809
+2021-11-22 11:28:02,935 ============================================================
+============================================================
+2021-11-22 11:28:02,936 Subject 7 out of 15
+Subject 7 out of 15
+2021-11-22 11:28:04,844 case 6 mean_dice 0.926913 mean_hd95 3.821363
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 908352
+GtSum: 911704
+Predsum: 12372
+GtSum: 12450
+Predsum: 62316
+GtSum: 58886
+case 6 mean_dice 0.926913 mean_hd95 3.821363
+2021-11-22 11:28:04,862 ============================================================
+============================================================
+2021-11-22 11:28:04,862 Subject 8 out of 15
+Subject 8 out of 15
+2021-11-22 11:28:07,437 case 7 mean_dice 0.943126 mean_hd95 0.804738
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1250951
+GtSum: 1253304
+Predsum: 14139
+GtSum: 13051
+Predsum: 45630
+GtSum: 44365
+case 7 mean_dice 0.943126 mean_hd95 0.804738
+2021-11-22 11:28:07,454 ============================================================
+============================================================
+2021-11-22 11:28:07,454 Subject 9 out of 15
+Subject 9 out of 15
+2021-11-22 11:28:10,055 case 8 mean_dice 0.934893 mean_hd95 0.942809
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1255499
+GtSum: 1258698
+Predsum: 15722
+GtSum: 13757
+Predsum: 39499
+GtSum: 38265
+case 8 mean_dice 0.934893 mean_hd95 0.942809
+2021-11-22 11:28:10,076 ============================================================
+============================================================
+2021-11-22 11:28:10,076 Subject 10 out of 15
+Subject 10 out of 15
+2021-11-22 11:28:12,649 case 9 mean_dice 0.908414 mean_hd95 1.000000
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1276946
+GtSum: 1278929
+Predsum: 4815
+GtSum: 3718
+Predsum: 28959
+GtSum: 28073
+case 9 mean_dice 0.908414 mean_hd95 1.000000
+2021-11-22 11:28:12,665 ============================================================
+============================================================
+2021-11-22 11:28:12,666 Subject 11 out of 15
+Subject 11 out of 15
+2021-11-22 11:28:14,817 case 10 mean_dice 0.912952 mean_hd95 0.942809
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1025561
+GtSum: 1029926
+Predsum: 3525
+GtSum: 3568
+Predsum: 85026
+GtSum: 80618
+case 10 mean_dice 0.912952 mean_hd95 0.942809
+2021-11-22 11:28:14,834 ============================================================
+============================================================
+2021-11-22 11:28:14,835 Subject 12 out of 15
+Subject 12 out of 15
+2021-11-22 11:28:17,401 case 11 mean_dice 0.920351 mean_hd95 0.666667
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1297447
+GtSum: 1298791
+Predsum: 5490
+GtSum: 4635
+Predsum: 7783
+GtSum: 7294
+case 11 mean_dice 0.920351 mean_hd95 0.666667
+2021-11-22 11:28:17,418 ============================================================
+============================================================
+2021-11-22 11:28:17,418 Subject 13 out of 15
+Subject 13 out of 15
+2021-11-22 11:28:19,986 case 12 mean_dice 0.912440 mean_hd95 1.078689
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1288455
+GtSum: 1289689
+Predsum: 10715
+GtSum: 9047
+Predsum: 11550
+GtSum: 11984
+case 12 mean_dice 0.912440 mean_hd95 1.078689
+2021-11-22 11:28:20,002 ============================================================
+============================================================
+2021-11-22 11:28:20,002 Subject 14 out of 15
+Subject 14 out of 15
+2021-11-22 11:28:21,904 case 13 mean_dice 0.903370 mean_hd95 1.216761
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 949586
+GtSum: 951880
+Predsum: 4789
+GtSum: 3442
+Predsum: 28665
+GtSum: 27718
+case 13 mean_dice 0.903370 mean_hd95 1.216761
+2021-11-22 11:28:21,921 ============================================================
+============================================================
+2021-11-22 11:28:21,921 Subject 15 out of 15
+Subject 15 out of 15
+2021-11-22 11:28:24,497 case 14 mean_dice 0.939109 mean_hd95 0.666667
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1276148
+GtSum: 1278693
+Predsum: 12590
+GtSum: 10614
+Predsum: 21982
+GtSum: 21413
+case 14 mean_dice 0.939109 mean_hd95 0.666667
+2021-11-22 11:28:24,497 Mean class 0 mean_dice 0.998156 mean_hd95 0.000000
+Mean class 0 mean_dice 0.998156 mean_hd95 0.000000
+2021-11-22 11:28:24,497 Mean class 1 mean_dice 0.850385 mean_hd95 1.973310
+Mean class 1 mean_dice 0.850385 mean_hd95 1.973310
+2021-11-22 11:28:24,497 Mean class 2 mean_dice 0.931758 mean_hd95 1.330933
+Mean class 2 mean_dice 0.931758 mean_hd95 1.330933
+2021-11-22 11:28:24,497 Testing performance in best val model: mean_dice : 0.926766 mean_hd95 : 1.101414
+Testing performance in best val model: mean_dice : 0.926766 mean_hd95 : 1.101414
+test.py successfully executed

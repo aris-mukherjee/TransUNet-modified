@@ -19,11 +19,11 @@ import utils_data
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
                     default='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', help='root dir for validation volume data')  # for acdc volume_path=root_dir
-parser.add_argument('--test_dataset', type=str,
+parser.add_argument('--dataset', type=str,
                     default='RUNMC', help='experiment_name')
 parser.add_argument('--num_classes', type=int,
                     default=3, help='output channel of network')
-parser.add_argument('--max_iterations', type=int,default=2381, help='maximum epoch number to train')
+parser.add_argument('--max_iterations', type=int,default=2831, help='maximum epoch number to train')
 parser.add_argument('--max_epochs', type=int, default=140, help='maximum epoch number to train')
 parser.add_argument('--batch_size', type=int, default=16,
                     help='batch_size per gpu')
@@ -54,11 +54,10 @@ def inference(args, model, test_save_path=None):
     # Load test data
     # ============================ 
     
-    loaded_test_data = utils_data.load_testing_data(args.test_dataset,  #needs to be adapted for different test set
-                                                    args.test_cv_fold_num,
+    loaded_test_data = utils_data.load_training_data(args.dataset,  #needs to be adapted for different test set
                                                     args.img_size,
                                                     args.target_resolution,
-                                                    args.image_depth_ts)
+                                                    args.test_cv_fold_num)
 
 
     imts = loaded_test_data[0]   #shape (194, 256, 256)
@@ -69,8 +68,7 @@ def inference(args, model, test_save_path=None):
     orig_data_siz_x = loaded_test_data[5]
     orig_data_siz_y = loaded_test_data[6]
     orig_data_siz_z = loaded_test_data[7]
-    name_test_subjects = loaded_test_data[8]
-    num_test_subjects = loaded_test_data[9]
+    num_test_subjects = orig_data_siz_z.shape[0]
     ids = loaded_test_data[10]
 
     
@@ -100,9 +98,8 @@ def inference(args, model, test_save_path=None):
         # setup logging
         # ==================================================================
         logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
-        subject_name = str(name_test_subjects[sub_num])[2:-1]
         logging.info('============================================================')
-        logging.info('Subject ' + str(sub_num+1) + ' out of ' + str(num_test_subjects) + ': ' + subject_name)
+        logging.info('Subject ' + str(sub_num+1) + ' out of ' + str(num_test_subjects))
 
         # ============================
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
@@ -147,7 +144,7 @@ if __name__ == "__main__":
             'z_spacing': 1,
         },
     }
-    dataset_name = args.test_dataset
+    dataset_name = args.dataset
     args.num_classes = dataset_config[dataset_name]['num_classes']
     args.volume_path = dataset_config[dataset_name]['volume_path']
     args.Dataset = dataset_name
@@ -164,7 +161,7 @@ if __name__ == "__main__":
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
     snapshot_path = snapshot_path + '_vitpatch' + str(args.vit_patches_size) if args.vit_patches_size!=16 else snapshot_path
-    snapshot_path = snapshot_path+'_'+str(args.max_iterations)[0:2]+'k' if args.max_iterations != 2381 else snapshot_path
+    snapshot_path = snapshot_path+'_'+str(args.max_iterations)[0:2]+'k' if args.max_iterations != 2831 else snapshot_path
     snapshot_path = snapshot_path + '_epo' +str(args.max_epochs) if args.max_epochs != 140 else snapshot_path
     if dataset_name == 'ACDC':  # using max_epoch instead of iteration to control training duration
         snapshot_path = snapshot_path + '_' + str(args.max_iterations)[0:2] + 'k' if args.max_iterations != 30000 else snapshot_path
@@ -207,7 +204,7 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions'
+        args.test_save_dir = '../predictions_on_training_set'
         test_save_path = os.path.join(args.test_save_dir, args.exp + '_' + str(args.max_epochs) +'epochs', snapshot_name)
         os.makedirs(test_save_path, exist_ok=True)
     else:
