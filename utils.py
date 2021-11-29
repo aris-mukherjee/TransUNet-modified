@@ -106,8 +106,12 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
     # Calculate Dice & Hausdorff
     # ============================         
     metric_list = []
+    
+
     for i in range(0, classes):
-        metric_list.append(calculate_metric_percase(prediction == i, label == i))
+            metric_list.append(calculate_metric_percase(prediction > 0, label > 0))
+        
+         
 
     # ============================
     # Save images, predictions and ground truths

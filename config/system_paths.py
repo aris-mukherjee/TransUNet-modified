@@ -31,7 +31,7 @@ preproc_folder_scgm = os.path.join(data_root,'SCGM/')
 # ==================================================================
 orig_data_root_acdc = ''
 orig_data_root_nci = '/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/'
-orig_data_root_promise = '/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/Prostate_PROMISE12/'
+orig_data_root_promise = '/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/Prostate_PROMISE12/TrainingData/'
 orig_data_root_pirad_erc = '/itet-stor/arismu/bmicdatasets-originals/Originals/USZ/Prostate/'
 orig_data_root_abide = '/itet-stor/arismu/bmicdatasets-originals/Originals/ABIDE/'
 orig_data_root_hcp = '/itet-stor/arismu/bmicdatasets-originals/Originals/HCP/'
