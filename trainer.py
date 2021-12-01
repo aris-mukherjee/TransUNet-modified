@@ -77,13 +77,14 @@ def trainer_runmc(args, model, snapshot_path):
     model.train()
     ce_loss = CrossEntropyLoss()
     dice_loss = DiceLoss(num_classes)
-    optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
-    writer = SummaryWriter(snapshot_path + '/no_data_aug_log_400epochs') 
+    #optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
+    optimizer = optim.Adam(model.parameters(), lr=base_lr)
+    writer = SummaryWriter(snapshot_path + '/ADAM_UNET_log_no_da_400epochs') 
     iter_num = 0
     max_epoch = args.max_epochs
     max_iterations = args.max_epochs * (args.batch_size+1) # max_epoch = max_iterations // len(trainloader) + 1
     logging.info("{} iterations per epoch. {} max iterations ".format(args.batch_size+1 , max_iterations))
-    best_val_loss = 1
+    best_val_loss = 1.0
 
     # ============================
     # Training loop: loop over batches and perform data augmentation on the fly with a certain probability
@@ -155,7 +156,7 @@ def trainer_runmc(args, model, snapshot_path):
                 writer.add_scalar('info/total_loss_validation_set', val_loss, iter_num)
 
                 if val_loss < best_val_loss:
-                    save_mode_path = os.path.join(snapshot_path, 'best_val_loss_no_da' + '.pth')
+                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss_no_da' + '.pth')
                     torch.save(model.state_dict(), save_mode_path)
                     logging.info(f"Found new lowest validation loss at iteration {iter_num}! Save model to {save_mode_path}")
                     best_val_loss = val_loss

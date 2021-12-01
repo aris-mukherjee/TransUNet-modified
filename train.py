@@ -5,7 +5,9 @@ import random
 import numpy as np
 import torch
 import torch.backends.cudnn as cudnn
+from networks.unet_class import UNET
 from networks.vit_seg_modeling import VisionTransformer as ViT_seg
+from networks.unet_seg_modeling import UNET_no_Trans as UNet_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 from trainer import trainer_runmc
 
@@ -106,8 +108,12 @@ if __name__ == "__main__":
     # ===========================    
     # create an instance of the model 
     # ===========================      
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net.load_from(weights=np.load(config_vit.pretrained_path))
+    
+    #net = UNet_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
+    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
+    #net.load_from(weights=np.load(config_vit.pretrained_path))
+
+    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
     # ===========================    
     # start training 

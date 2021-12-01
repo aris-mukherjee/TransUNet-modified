@@ -15,6 +15,8 @@ from networks.vit_seg_modeling import VisionTransformer as ViT_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 import config.system_paths as sys_config
 import utils_data
+from networks.unet_class import UNET
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -179,9 +181,10 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
-    snapshot = os.path.join(snapshot_path, 'best_val_loss_no_da.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss_no_da.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -207,8 +210,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions'
-        test_save_path = os.path.join(args.test_save_dir, 'TU_HK256' + 'no_da_' + str(args.max_epochs) +'epochs', snapshot_name)
+        args.test_save_dir = '../UNET_predictions'
+        test_save_path = os.path.join(args.test_save_dir, 'HK_UNET_ADAM_no_DA')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None
