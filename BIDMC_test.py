@@ -91,11 +91,18 @@ def inference(args, model, test_save_path=None):
         subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
         image = imts[:,:, subject_id_start_slice:subject_id_end_slice] 
         label = gtts[:,:, subject_id_start_slice:subject_id_end_slice] 
-        image = np.swapaxes(image, 0, 2)
+
+        image = torch.from_numpy(image)
+        label = torch.from_numpy(label)
+        image, label = image.cuda(), label.cuda()      
+        image = image.permute(2, 0, 1)
+        label = label.permute(2, 0, 1)
+
+        """ image = np.swapaxes(image, 0, 2)
         image = np.swapaxes(image, 1, 2)
         label = np.swapaxes(label, 0, 2)
         label = np.swapaxes(label, 1, 2)
-
+ """
 
         # ==================================================================
         # setup logging
@@ -183,7 +190,7 @@ if __name__ == "__main__":
     #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss_no_da.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', 'best_val_loss_no_da.pth')
     #f not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -197,7 +204,7 @@ if __name__ == "__main__":
     # ============================ 
 
     snapshot_name = snapshot_path.split('/')[-1]
-    log_folder = './test_log/test_log_' + 'TU_BIDMC256_no_DA'
+    log_folder = './test_log/test_log_' + 'TU_BIDMC256_no_da'
     os.makedirs(log_folder, exist_ok=True)
     logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -209,8 +216,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../UNET_predictions'
-        test_save_path = os.path.join(args.test_save_dir, 'BIDMC_UNET_ADAM_no_DA')
+        args.test_save_dir = '../SGD_UNET_predictions'
+        test_save_path = os.path.join(args.test_save_dir, 'BIDMC_UNET_no_DA')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

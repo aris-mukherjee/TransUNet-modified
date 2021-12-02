@@ -7,7 +7,6 @@ import torch
 import torch.backends.cudnn as cudnn
 from networks.unet_class import UNET
 from networks.vit_seg_modeling import VisionTransformer as ViT_seg
-from networks.unet_seg_modeling import UNET_no_Trans as UNet_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 from trainer import trainer_runmc
 

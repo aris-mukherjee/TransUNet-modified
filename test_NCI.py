@@ -16,6 +16,7 @@ from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 import config.system_paths as sys_config
 import utils_data
 from networks.unet_class import UNET
+import utils
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -91,10 +92,21 @@ def inference(args, model, test_save_path=None):
         subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
         image = imts[:,:, subject_id_start_slice:subject_id_end_slice] 
         label = gtts[:,:, subject_id_start_slice:subject_id_end_slice] 
-        image = np.swapaxes(image, 0, 2)
+
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'BEFORE_NCI_test.nii.gz', data = image, affine = np.eye(4))
+
+        image = torch.from_numpy(image)
+        label = torch.from_numpy(label)
+        image, label = image.cuda(), label.cuda()      
+        image = image.permute(2, 0, 1)
+        label = label.permute(2, 0, 1)
+
+        """ image = np.swapaxes(image, 0, 2)
         image = np.swapaxes(image, 1, 2)
         label = np.swapaxes(label, 0, 2)
-        label = np.swapaxes(label, 1, 2)
+        label = np.swapaxes(label, 1, 2) """
+
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '_NCI_test.nii.gz', data = image, affine = np.eye(4))
 
 
         # ==================================================================
@@ -120,12 +132,17 @@ def inference(args, model, test_save_path=None):
         # Log the mean performance achieved for each class
         # ============================ 
 
+    
+
     for i in range(0, args.num_classes):
         logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i][0], metric_list[i][1]))
     performance = np.mean(metric_list, axis=0)[0]
     mean_hd95 = np.mean(metric_list, axis=0)[1]
     logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
     return "Testing Finished!"
+
+    
+    
 
 
 if __name__ == "__main__":

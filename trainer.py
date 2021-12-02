@@ -95,11 +95,19 @@ def trainer_runmc(args, model, snapshot_path):
         for sampled_batch in iterate_minibatches(args, imtr, gttr, batch_size = exp_config.batch_size, train_or_eval = 'train'):
             model.train()
             image_batch, label_batch = sampled_batch[0], sampled_batch[1]
+            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'BEFORE_NCI_TRAIN.nii.gz', data = image_batch, affine = np.eye(4))
             image_batch = torch.from_numpy(image_batch)
-            label_batch = torch.from_numpy(label_batch)
+            #label_batch = torch.from_numpy(label_batch)
             image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
             image_batch = image_batch.permute(2, 3, 0, 1)
             label_batch = label_batch.permute(2, 0, 1)
+            
+            #image_batch = image_batch[0, :, :, :].squeeze(0)
+            #image_batch = image_batch.numpy() 
+
+            #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'AFTER_NCI_TRAIN.nii.gz', data = image_batch, affine = np.eye(4))
+
+            
             outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             loss_dice = dice_loss(outputs, label_batch, softmax=True)

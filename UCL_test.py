@@ -16,6 +16,7 @@ from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 import config.system_paths as sys_config
 import utils_data
 from networks.unet_class import UNET
+import utils
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -91,11 +92,21 @@ def inference(args, model, test_save_path=None):
         subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
         image = imts[:,:, subject_id_start_slice:subject_id_end_slice] 
         label = gtts[:,:, subject_id_start_slice:subject_id_end_slice] 
-        image = np.swapaxes(image, 0, 2)
+
+
+        image = torch.from_numpy(image)
+        label = torch.from_numpy(label)
+        #image, label = image.cuda(), label.cuda()      
+        image = image.permute(2, 0, 1)
+        label = label.permute(2, 0, 1)
+
+        """ image = np.swapaxes(image, 0, 2)
         image = np.swapaxes(image, 1, 2)
         label = np.swapaxes(label, 0, 2)
-        label = np.swapaxes(label, 1, 2)
+        label = np.swapaxes(label, 1, 2) """
 
+    
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '_UCL_test.nii.gz', data = image, affine = np.eye(4))
 
         # ==================================================================
         # setup logging
@@ -181,16 +192,16 @@ if __name__ == "__main__":
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
     #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
+    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512])#.cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', 'best_val_loss_no_da.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
     # Load the trained parameters into the model
     # ============================  
 
-    net.load_state_dict(torch.load(snapshot))
+    #net.load_state_dict(torch.load(snapshot))
 
     # ============================
     # Logging
@@ -209,8 +220,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../UNET_predictions'
-        test_save_path = os.path.join(args.test_save_dir, 'UCL_UNET_ADAM')
+        args.test_save_dir = '../SGD_UNET_predictions'
+        test_save_path = os.path.join(args.test_save_dir, 'UCL_UNET_no_da')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

@@ -13,6 +13,11 @@ from scipy.ndimage import morphology
 import scipy.ndimage.interpolation
 from skimage import transform
 import logging
+import utils
+from tensorboardX import SummaryWriter
+
+writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/' + 'SGD_UNet') 
+i = 0
 
 class DiceLoss(nn.Module):
     def __init__(self, n_classes):
@@ -68,8 +73,9 @@ def calculate_metric_percase(pred, gt):
         return 0, 0
 
 
+
 def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_save_path=None, case=None, z_spacing=1):
-    # image, label = image.numpy(), label.numpy() #.cpu().detach()
+    image, label = image.cpu().detach().numpy(), label.cpu().detach().numpy()
     if len(image.shape) == 3:
         prediction = np.zeros_like(label)
 
@@ -82,9 +88,12 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
             x, y = slice.shape[0], slice.shape[1]
             if x != patch_size[0] or y != patch_size[1]:
                 slice = zoom(slice, (patch_size[0] / x, patch_size[1] / y), order=3)  # previous using 0
+            
+            #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'INPUT_test.nii.gz', data = slice, affine = np.eye(4))
             input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float().cuda()
             net.eval()
             with torch.no_grad():
+
                 outputs = net(input)
                 out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
                 out = out.cpu().detach().numpy()
@@ -100,8 +109,10 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
         with torch.no_grad():
             out = torch.argmax(torch.softmax(net(input), dim=1), dim=1).squeeze(0)
             prediction = out.cpu().detach().numpy()
+    
+    
 
-
+    
     # ============================
     # Calculate Dice & Hausdorff
     # ============================         
@@ -109,7 +120,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
     
 
     for i in range(0, classes):
-            metric_list.append(calculate_metric_percase(prediction > 0, label > 0))
+        metric_list.append(calculate_metric_percase(prediction > 0, label > 0))
         
          
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH  --output=log_UCL/%j.out
+#SBATCH  --output=log_SGD_UNet/%j.out
 #SBATCH  --gres=gpu:1
 #SBATCH  --mem=50G
 #SBATCH  --constraint=geforce_gtx_titan_x
