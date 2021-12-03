@@ -96,17 +96,13 @@ def inference(args, model, test_save_path=None):
 
         image = torch.from_numpy(image)
         label = torch.from_numpy(label)
-        #image, label = image.cuda(), label.cuda()      
+        image, label = image.cuda(), label.cuda()      
         image = image.permute(2, 0, 1)
         label = label.permute(2, 0, 1)
 
-        """ image = np.swapaxes(image, 0, 2)
-        image = np.swapaxes(image, 1, 2)
-        label = np.swapaxes(label, 0, 2)
-        label = np.swapaxes(label, 1, 2) """
+        image = torch.rot90(image, 1, [1, 2])
+        label = torch.rot90(label, 1, [1, 2])
 
-    
-        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '_UCL_test.nii.gz', data = image, affine = np.eye(4))
 
         # ==================================================================
         # setup logging
@@ -192,23 +188,23 @@ if __name__ == "__main__":
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
     #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512])#.cuda()
+    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', 'best_val_loss_no_da.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC', 'best_val_loss.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
     # Load the trained parameters into the model
     # ============================  
 
-    #net.load_state_dict(torch.load(snapshot))
+    net.load_state_dict(torch.load(snapshot))
 
     # ============================
     # Logging
     # ============================ 
 
     snapshot_name = snapshot_path.split('/')[-1]
-    log_folder = './test_log/test_log_' + 'TU_UCL256_UNET'
+    log_folder = './test_log/test_log_' + 'TU_UCL256'
     os.makedirs(log_folder, exist_ok=True)
     logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -220,8 +216,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../SGD_UNET_predictions'
-        test_save_path = os.path.join(args.test_save_dir, 'UCL_UNET_no_da')
+        args.test_save_dir = '../NEW_UNET_predictions'
+        test_save_path = os.path.join(args.test_save_dir, 'UCL_UNET_test')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

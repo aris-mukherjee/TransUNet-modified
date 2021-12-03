@@ -79,7 +79,7 @@ def trainer_runmc(args, model, snapshot_path):
     dice_loss = DiceLoss(num_classes)
     #optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     optimizer = optim.Adam(model.parameters(), lr=base_lr)
-    writer = SummaryWriter(snapshot_path + '/ADAM_UNET_log_no_da_400epochs') 
+    writer = SummaryWriter(snapshot_path + '/1channel_UNET_log_400epochs') 
     iter_num = 0
     max_epoch = args.max_epochs
     max_iterations = args.max_epochs * (args.batch_size+1) # max_epoch = max_iterations // len(trainloader) + 1
@@ -95,19 +95,11 @@ def trainer_runmc(args, model, snapshot_path):
         for sampled_batch in iterate_minibatches(args, imtr, gttr, batch_size = exp_config.batch_size, train_or_eval = 'train'):
             model.train()
             image_batch, label_batch = sampled_batch[0], sampled_batch[1]
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'BEFORE_NCI_TRAIN.nii.gz', data = image_batch, affine = np.eye(4))
             image_batch = torch.from_numpy(image_batch)
-            #label_batch = torch.from_numpy(label_batch)
-            image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
+            label_batch = torch.from_numpy(label_batch)
+            #image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
             image_batch = image_batch.permute(2, 3, 0, 1)
             label_batch = label_batch.permute(2, 0, 1)
-            
-            #image_batch = image_batch[0, :, :, :].squeeze(0)
-            #image_batch = image_batch.numpy() 
-
-            #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'AFTER_NCI_TRAIN.nii.gz', data = image_batch, affine = np.eye(4))
-
-            
             outputs = model(image_batch)
             loss_ce = ce_loss(outputs, label_batch[:].long())
             loss_dice = dice_loss(outputs, label_batch, softmax=True)
@@ -164,7 +156,7 @@ def trainer_runmc(args, model, snapshot_path):
                 writer.add_scalar('info/total_loss_validation_set', val_loss, iter_num)
 
                 if val_loss < best_val_loss:
-                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss_no_da' + '.pth')
+                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', '1channel_best_val_loss' + '.pth')
                     torch.save(model.state_dict(), save_mode_path)
                     logging.info(f"Found new lowest validation loss at iteration {iter_num}! Save model to {save_mode_path}")
                     best_val_loss = val_loss
@@ -174,17 +166,16 @@ def trainer_runmc(args, model, snapshot_path):
     # Save the trained model parameters
     # ============================  
 
-        """ save_interval = 50  # int(max_epoch/6)
-        if epoch_num > int(max_epoch / 2) and (epoch_num + 1) % save_interval == 0:
-            save_mode_path = os.path.join(snapshot_path, 'no_data_aug_' + 'epoch_' + str(epoch_num) + '.pth')
+        save_interval = 50  # int(max_epoch/6)
+        if epoch_num > int(max_epoch / 4) and (epoch_num + 1) % save_interval == 0:
+            save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', '1channel' + 'epoch_' + str(epoch_num) + '.pth')
             torch.save(model.state_dict(), save_mode_path)
             logging.info("save model to {}".format(save_mode_path))
-
         if epoch_num >= max_epoch - 1:
-            save_mode_path = os.path.join(snapshot_path, 'no_data_aug_' + 'epoch_' + str(epoch_num) + '.pth')
+            save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', '1channel' + 'epoch_' + str(epoch_num) + '.pth')
             torch.save(model.state_dict(), save_mode_path)
             logging.info("save model to {}".format(save_mode_path))
-            iterator.close() """
+            iterator.close() 
             
 
     writer.close()
@@ -277,7 +268,7 @@ def do_train_eval(images, labels, batch_size, model, ce_loss, dice_loss):
             x = torch.from_numpy(x)
             y = torch.from_numpy(y)
             
-            x, y = x.cuda(), y.cuda()   
+            #x, y = x.cuda(), y.cuda()   
 
             x = x.permute(2, 3, 0, 1)
             y = y.permute(2, 0, 1)
@@ -325,7 +316,7 @@ def do_validation_eval(images, labels, batch_size, model, ce_loss, dice_loss):
             x = torch.from_numpy(x)
             y = torch.from_numpy(y)
             
-            x, y = x.cuda(), y.cuda()   
+            #x, y = x.cuda(), y.cuda()   
 
             x = x.permute(2, 3, 0, 1)
             y = y.permute(2, 0, 1)
@@ -342,4 +333,4 @@ def do_validation_eval(images, labels, batch_size, model, ce_loss, dice_loss):
         
         avg_loss = loss_ii / num_batches
 
-        return avg_loss        
+        return avg_loss 

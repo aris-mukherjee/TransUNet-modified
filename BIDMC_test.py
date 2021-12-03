@@ -16,6 +16,7 @@ from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 import config.system_paths as sys_config
 import utils_data
 from networks.unet_class import UNET
+import utils
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -98,11 +99,8 @@ def inference(args, model, test_save_path=None):
         image = image.permute(2, 0, 1)
         label = label.permute(2, 0, 1)
 
-        """ image = np.swapaxes(image, 0, 2)
-        image = np.swapaxes(image, 1, 2)
-        label = np.swapaxes(label, 0, 2)
-        label = np.swapaxes(label, 1, 2)
- """
+        image = torch.rot90(image, 1, [1, 2])
+        label = torch.rot90(label, 1, [1, 2])
 
         # ==================================================================
         # setup logging
@@ -190,7 +188,7 @@ if __name__ == "__main__":
     #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/', 'best_val_loss_no_da.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss_no_da.pth')
     #f not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -216,8 +214,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../SGD_UNET_predictions'
-        test_save_path = os.path.join(args.test_save_dir, 'BIDMC_UNET_no_DA')
+        args.test_save_dir = '../NEW_UNET_predictions'
+        test_save_path = os.path.join(args.test_save_dir, 'ADAM_BIDMC_UNET_test_no_da')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

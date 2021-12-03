@@ -16,7 +16,7 @@ import logging
 import utils
 from tensorboardX import SummaryWriter
 
-writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/' + 'SGD_UNet') 
+writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/' + 'Test_Images_Output') 
 i = 0
 
 class DiceLoss(nn.Module):
@@ -102,6 +102,7 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
                 else:
                     pred = out
                 prediction[ind] = pred
+
     else:
         input = torch.from_numpy(image).unsqueeze(
             0).unsqueeze(0).float().cuda()
@@ -110,9 +111,8 @@ def test_single_volume(image, label, net, classes, patch_size=[256, 256], test_s
             out = torch.argmax(torch.softmax(net(input), dim=1), dim=1).squeeze(0)
             prediction = out.cpu().detach().numpy()
     
-    
 
-    
+
     # ============================
     # Calculate Dice & Hausdorff
     # ============================         
