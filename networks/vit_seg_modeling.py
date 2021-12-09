@@ -18,6 +18,7 @@ from torch.nn.modules.utils import _pair
 from scipy import ndimage
 from . import vit_seg_configs as configs
 from .vit_seg_modeling_resnet_skip import ResNetV2
+from .unet_for_TU import UNET_encoder
 
 
 logger = logging.getLogger(__name__)
@@ -140,7 +141,8 @@ class Embeddings(nn.Module):
             self.hybrid = False
 
         if self.hybrid:
-            self.hybrid_model = ResNetV2(block_units=config.resnet.num_layers, width_factor=config.resnet.width_factor)
+            #self.hybrid_model = ResNetV2(block_units=config.resnet.num_layers, width_factor=config.resnet.width_factor)
+            self.hybrid_model = UNET_encoder()
             in_channels = self.hybrid_model.width * 16
         self.patch_embeddings = Conv2d(in_channels=in_channels,
                                        out_channels=config.hidden_size,
@@ -336,13 +338,15 @@ class DecoderCup(nn.Module):
             use_batchnorm=True,
         )
         decoder_channels = config.decoder_channels
+        #decoder_channels = (512, 256, 128, 64)
         in_channels = [head_channels] + list(decoder_channels[:-1])
         out_channels = decoder_channels
 
         if self.config.n_skip != 0:
-            skip_channels = self.config.skip_channels
-            for i in range(4-self.config.n_skip):  # re-select the skip channels according to n_skip
-                skip_channels[3-i]=0
+            #skip_channels = self.config.skip_channels
+            skip_channels = [512, 256, 128, 64]
+            #for i in range(4-self.config.n_skip):  # re-select the skip channels according to n_skip
+            #    skip_channels[3-i]=0
 
         else:
             skip_channels=[0,0,0,0]
@@ -360,7 +364,8 @@ class DecoderCup(nn.Module):
         x = self.conv_more(x)
         for i, decoder_block in enumerate(self.blocks):
             if features is not None:
-                skip = features[i] if (i < self.config.n_skip) else None
+                #skip = features[i] if (i < self.config.n_skip) else None
+                skip = features[i] if (i < 4) else None
             else:
                 skip = None
             x = decoder_block(x, skip=skip)

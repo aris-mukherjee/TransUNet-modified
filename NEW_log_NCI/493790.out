@@ -1,0 +1,26 @@
+2021-12-09 15:25:11,386 Logging directory: /scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/log_dir/trRUNMC_cv1_r3/i2i2l/
+2021-12-09 15:25:11,387 Tensorboard directory: /scratch_net/biwidl217_second/arismu/Tensorboard/trRUNMC_cv1_r3/i2i2l/
+2021-12-09 15:25:11,387 ============================================================
+2021-12-09 15:25:11,387 EXPERIMENT NAME: trRUNMC_cv1_r3/i2i2l/
+2021-12-09 15:25:11,387 ============================================================
+2021-12-09 15:25:11,387 Loading data...
+2021-12-09 15:25:11,387 Reading NCI - RUNMC images...
+2021-12-09 15:25:11,387 Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+2021-12-09 15:25:11,389 Already preprocessed this configuration. Loading now!
+2021-12-09 15:25:11,405 Training Images: (256, 256, 286)
+2021-12-09 15:25:11,405 Training Labels: (256, 256, 286)
+2021-12-09 15:25:11,405 Validation Images: (256, 256, 98)
+2021-12-09 15:25:11,405 Validation Labels: (256, 256, 98)
+2021-12-09 15:25:11,405 ============================================================
+2021-12-09 15:25:11,430 17 iterations per epoch. 6800 max iterations 
+  0%|                                         | 0/400 [00:00<?, ?it/s]  0%|                                         | 0/400 [00:02<?, ?it/s]
+Traceback (most recent call last):
+  File "/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/train.py", line 128, in <module>
+    trainer[dataset_name](args, net, snapshot_path)
+  File "/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/trainer.py", line 107, in trainer_runmc
+    loss.backward()
+  File "/scratch_net/biwidl217_second/arismu/conda_envs/pytorch_env/lib/python3.9/site-packages/torch/_tensor.py", line 255, in backward
+    torch.autograd.backward(self, gradient, retain_graph, create_graph, inputs=inputs)
+  File "/scratch_net/biwidl217_second/arismu/conda_envs/pytorch_env/lib/python3.9/site-packages/torch/autograd/__init__.py", line 147, in backward
+    Variable._execution_engine.run_backward(
+RuntimeError: CUDA out of memory. Tried to allocate 64.00 MiB (GPU 0; 11.93 GiB total capacity; 11.18 GiB already allocated; 53.50 MiB free; 11.23 GiB reserved in total by PyTorch)

@@ -20,9 +20,9 @@ parser.add_argument('--dataset', type=str,
 parser.add_argument('--num_classes', type=int,
                     default=3, help='output channel of network')
 parser.add_argument('--max_iterations', type=int,
-                    default=2550, help='maximum epoch number to train')
+                    default=6800, help='maximum epoch number to train')
 parser.add_argument('--max_epochs', type=int,
-                    default=150, help='maximum epoch number to train')
+                    default=400, help='maximum epoch number to train')
 parser.add_argument('--batch_size', type=int,
                     default=16, help='batch_size per gpu')
 parser.add_argument('--n_gpu', type=int, default=1, help='total gpu')
@@ -89,8 +89,8 @@ if __name__ == "__main__":
     snapshot_path += '_' + args.vit_name
     snapshot_path = snapshot_path + '_skip' + str(args.n_skip)
     snapshot_path = snapshot_path + '_vitpatch' + str(args.vit_patches_size) if args.vit_patches_size!=16 else snapshot_path
-    snapshot_path = snapshot_path+'_'+str(args.max_iterations)[0:2]+'k' if args.max_iterations != 2550 else snapshot_path
-    snapshot_path = snapshot_path + '_epo' +str(args.max_epochs) if args.max_epochs != 150 else snapshot_path
+    snapshot_path = snapshot_path+'_'+str(args.max_iterations)[0:2]+'k' if args.max_iterations != 6800 else snapshot_path
+    snapshot_path = snapshot_path + '_epo' +str(args.max_epochs) if args.max_epochs != 400 else snapshot_path
     snapshot_path = snapshot_path+'_bs'+str(args.batch_size)
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 1e-3 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
@@ -109,10 +109,10 @@ if __name__ == "__main__":
     # ===========================      
     
     #net = UNet_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
-    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     #net.load_from(weights=np.load(config_vit.pretrained_path))
 
-    net = UNET(in_channels = 1, out_channels = 3, features = [64, 128, 256, 512])#.cuda()
+    #net = UNET(in_channels = 1, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
     # ===========================    
     # start training 
