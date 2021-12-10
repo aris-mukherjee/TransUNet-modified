@@ -96,7 +96,7 @@ def trainer_runmc(args, model, snapshot_path):
             image_batch, label_batch = sampled_batch[0], sampled_batch[1]
             image_batch = torch.from_numpy(image_batch)
             label_batch = torch.from_numpy(label_batch)
-            image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
+            #image_batch, label_batch = image_batch.cuda(), label_batch.cuda()      
             image_batch = image_batch.permute(2, 3, 0, 1)
             label_batch = label_batch.permute(2, 0, 1)
             outputs = model(image_batch)
@@ -267,7 +267,7 @@ def do_train_eval(images, labels, batch_size, model, ce_loss, dice_loss):
             x = torch.from_numpy(x)
             y = torch.from_numpy(y)
             
-            x, y = x.cuda(), y.cuda()   
+            #x, y = x.cuda(), y.cuda()   
 
             x = x.permute(2, 3, 0, 1)
             y = y.permute(2, 0, 1)
@@ -315,7 +315,7 @@ def do_validation_eval(images, labels, batch_size, model, ce_loss, dice_loss):
             x = torch.from_numpy(x)
             y = torch.from_numpy(y)
             
-            x, y = x.cuda(), y.cuda()   
+            #x, y = x.cuda(), y.cuda()   
 
             x = x.permute(2, 3, 0, 1)
             y = y.permute(2, 0, 1)

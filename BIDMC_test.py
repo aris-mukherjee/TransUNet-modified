@@ -185,10 +185,10 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    #net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/UNET_RUNMC/ADAM', 'ADAM_best_val_loss_no_da.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/NEW_TU', 'NEW_TU_ADAM_best_val_loss_seed1234_no_da.pth')
     #f not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -214,8 +214,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../NEW_UNET_predictions'
-        test_save_path = os.path.join(args.test_save_dir, 'ADAM_BIDMC_UNET_test_no_da')
+        args.test_save_dir = '../NEW_TU_pred'
+        test_save_path = os.path.join(args.test_save_dir, 'BIDMC_NEW_TU_ADAM_seed1234_no_da')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None
