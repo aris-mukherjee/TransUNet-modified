@@ -19,14 +19,12 @@ class DoubleConv(nn.Module):
             nn.ReLU(inplace=True),
             nn.MaxPool2d(kernel_size=2, stride=2)
         )
-    def forward(self, x):
-        if x.size()[1]== 1: 
-            x = x.repeat(1,3,1,1)    
+    def forward(self, x): 
         return self.conv(x)
 
-class DoubleConv_no_pool(nn.Module):
+class SingleConv_no_pool(nn.Module):
     def __init__(self, in_channels, out_channels):
-        super(DoubleConv_no_pool, self).__init__()
+        super(SingleConv_no_pool, self).__init__()
         self.conv = nn.Sequential(
             nn.Conv2d(in_channels, out_channels, 3, 1, 1, bias=False),
             nn.BatchNorm2d(out_channels),
@@ -40,6 +38,19 @@ class DoubleConv_no_pool(nn.Module):
             x = x.repeat(1,3,1,1)    
         return self.conv(x)
 
+class SingleConv_with_pool(nn.Module):
+    def __init__(self, in_channels, out_channels):
+        super(SingleConv_with_pool, self).__init__()
+        self.conv = nn.Sequential(
+            nn.Conv2d(in_channels, out_channels, 3, 1, 1, bias=False),
+            nn.BatchNorm2d(out_channels),
+            nn.ReLU(inplace=True),
+            nn.MaxPool2d(kernel_size=2, stride=2)
+        )
+    def forward(self, x):  
+        return self.conv(x)
+
+
 class UNET_encoder(nn.Module):
 
     def __init__(self):
@@ -48,12 +59,12 @@ class UNET_encoder(nn.Module):
         self.width = width
 
         self.root = nn.Sequential(OrderedDict([
-            ('unit1', DoubleConv_no_pool(3, width))
+            ('unit1', SingleConv_no_pool(3, width))
         ]))
 
         self.body = nn.Sequential(OrderedDict([
             ('block1', nn.Sequential(OrderedDict(
-                [('unit2', DoubleConv(width, width*2))] 
+                [('unit2', SingleConv_with_pool(width, width*2))] 
                 ))),
             ('block2', nn.Sequential(OrderedDict(
                 [('unit3', DoubleConv(width*2, width*4))] 
