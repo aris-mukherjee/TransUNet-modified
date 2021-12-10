@@ -338,15 +338,13 @@ class DecoderCup(nn.Module):
             use_batchnorm=True,
         )
         decoder_channels = config.decoder_channels
-        #decoder_channels = (512, 256, 128, 64)
         in_channels = [head_channels] + list(decoder_channels[:-1])
         out_channels = decoder_channels
 
         if self.config.n_skip != 0:
-            #skip_channels = self.config.skip_channels
-            skip_channels = [512, 256, 128, 64]
+            skip_channels = [256, 128, 64, 32] #self.config.skip_channels
             #for i in range(4-self.config.n_skip):  # re-select the skip channels according to n_skip
-            #    skip_channels[3-i]=0
+            #   skip_channels[3-i]=0
 
         else:
             skip_channels=[0,0,0,0]
@@ -454,5 +452,3 @@ CONFIGS = {
     'R50-ViT-L_16': configs.get_r50_l16_config(),
     'testing': configs.get_testing(),
 }
-
-

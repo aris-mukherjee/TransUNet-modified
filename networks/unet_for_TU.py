@@ -41,11 +41,10 @@ class DoubleConv_no_pool(nn.Module):
         return self.conv(x)
 
 class UNET_encoder(nn.Module):
-    """Implementation of Pre-activation (v2) ResNet mode."""
 
     def __init__(self):
         super().__init__()
-        width = 64
+        width = 32
         self.width = width
 
         self.root = nn.Sequential(OrderedDict([

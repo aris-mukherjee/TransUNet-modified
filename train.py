@@ -45,7 +45,7 @@ parser.add_argument('--target_resolution', type=float, default=0.625, help='targ
 
 parser.add_argument('--tr_run_number', type = int, default = 3) # 1 / 
 parser.add_argument('--tr_cv_fold_num', type = int, default = 1) # 1 / 2
-parser.add_argument('--da_ratio', type = float, default = 0.25) # 0.0 / 0.25
+parser.add_argument('--da_ratio', type = float, default = 0.0) # 0.0 / 0.25
 
 args = parser.parse_args()
 
