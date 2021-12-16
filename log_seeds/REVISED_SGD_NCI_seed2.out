@@ -1,0 +1,339 @@
+/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/utils.py:924: SyntaxWarning: "is" with a literal. Did you mean "=="?
+  if mask_type is 'squares_jigsaw':
+/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/utils.py:931: SyntaxWarning: "is" with a literal. Did you mean "=="?
+  elif mask_type is 'squares_zeros':
+2021-12-14 17:04:07,262 Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', test_dataset='RUNMC', num_classes=3, max_iterations=6800, max_epochs=400, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='RUNMC', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', test_dataset='RUNMC', num_classes=3, max_iterations=6800, max_epochs=400, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='RUNMC', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+2021-12-14 17:04:07,262 TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+2021-12-14 17:04:07,289 Reading RUNMC images...
+Reading RUNMC images...
+2021-12-14 17:04:07,289 Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+2021-12-14 17:04:07,291 Already preprocessed this configuration. Loading now!
+Already preprocessed this configuration. Loading now!
+2021-12-14 17:04:08,825 ============================================================
+============================================================
+2021-12-14 17:04:08,825 Subject 1 out of 10: Prostate3T-01-0030
+Subject 1 out of 10: Prostate3T-01-0030
+2021-12-14 17:04:11,508 case 0 mean_dice 0.911895 mean_hd95 1.000000
+Max: 0.9999809265136719
+Max: 0.999957799911499
+Max: 0.999977707862854
+Max: 0.999974250793457
+Max: 0.999995231628418
+Max: 0.9999834299087524
+Max: 0.9999762773513794
+Max: 0.9999711513519287
+Max: 0.9999823570251465
+Max: 0.999964714050293
+Max: 0.999993085861206
+Max: 1.0
+Max: 0.9999984502792358
+Max: 0.9999827146530151
+Max: 0.9999854564666748
+Max: 0.9999903440475464
+Max: 0.9999834299087524
+Max: 0.9999885559082031
+Max: 0.99996018409729
+Max: 0.9999749660491943
+Predsum: 25784
+GtSum: 27516
+Predsum: 25784
+GtSum: 27516
+Predsum: 25784
+GtSum: 27516
+case 0 mean_dice 0.911895 mean_hd95 1.000000
+2021-12-14 17:04:11,524 ============================================================
+============================================================
+2021-12-14 17:04:11,524 Subject 2 out of 10: Prostate3T-01-0024
+Subject 2 out of 10: Prostate3T-01-0024
+2021-12-14 17:04:13,934 case 1 mean_dice 0.930654 mean_hd95 3.000000
+Max: 0.9999876022338867
+Max: 0.9999839067459106
+Max: 0.9999814033508301
+Max: 0.999988317489624
+Max: 0.9999831914901733
+Max: 0.9999897480010986
+Max: 0.9999744892120361
+Max: 0.9999926090240479
+Max: 0.9999992847442627
+Max: 0.9999991655349731
+Max: 0.9999990463256836
+Max: 0.9999912977218628
+Max: 0.9999860525131226
+Max: 0.9999721050262451
+Max: 0.9999774694442749
+Max: 0.9999790191650391
+Max: 0.9999805688858032
+Max: 0.9999743700027466
+Max: 0.9999812841415405
+Max: 0.999987006187439
+Predsum: 80621
+GtSum: 75667
+Predsum: 80621
+GtSum: 75667
+Predsum: 80621
+GtSum: 75667
+case 1 mean_dice 0.930654 mean_hd95 3.000000
+2021-12-14 17:04:13,948 ============================================================
+============================================================
+2021-12-14 17:04:13,949 Subject 3 out of 10: Prostate3T-01-0022
+Subject 3 out of 10: Prostate3T-01-0022
+2021-12-14 17:04:16,285 case 2 mean_dice 0.906850 mean_hd95 2.449490
+Max: 0.9999873638153076
+Max: 0.9999972581863403
+Max: 0.999998927116394
+Max: 0.999991774559021
+Max: 0.99998939037323
+Max: 0.9999747276306152
+Max: 0.9999722242355347
+Max: 0.9999896287918091
+Max: 0.9999998807907104
+Max: 0.9999998807907104
+Max: 0.9999978542327881
+Max: 0.9999905824661255
+Max: 0.9999833106994629
+Max: 0.9999961853027344
+Max: 0.9999943971633911
+Max: 0.999962329864502
+Max: 0.9999792575836182
+Max: 0.9999622106552124
+Max: 0.9999772310256958
+Max: 0.999969482421875
+Predsum: 41595
+GtSum: 36140
+Predsum: 41595
+GtSum: 36140
+Predsum: 41595
+GtSum: 36140
+case 2 mean_dice 0.906850 mean_hd95 2.449490
+2021-12-14 17:04:16,300 ============================================================
+============================================================
+2021-12-14 17:04:16,300 Subject 4 out of 10: Prostate3T-01-0029
+Subject 4 out of 10: Prostate3T-01-0029
+2021-12-14 17:04:18,687 case 3 mean_dice 0.860090 mean_hd95 3.000000
+Max: 0.9999805688858032
+Max: 0.9999904632568359
+Max: 0.9999961853027344
+Max: 0.9999932050704956
+Max: 0.9999802112579346
+Max: 0.9999881982803345
+Max: 0.9999839067459106
+Max: 0.9999903440475464
+Max: 0.9999995231628418
+Max: 0.9999994039535522
+Max: 0.9999992847442627
+Max: 0.9999984502792358
+Max: 0.9999938011169434
+Max: 0.9999881982803345
+Max: 0.9999935626983643
+Max: 0.9999852180480957
+Max: 0.9999579191207886
+Max: 0.9999839067459106
+Max: 0.9999858140945435
+Max: 0.9999524354934692
+Predsum: 58319
+GtSum: 46770
+Predsum: 58319
+GtSum: 46770
+Predsum: 58319
+GtSum: 46770
+case 3 mean_dice 0.860090 mean_hd95 3.000000
+2021-12-14 17:04:18,702 ============================================================
+============================================================
+2021-12-14 17:04:18,702 Subject 5 out of 10: Prostate3T-01-0025
+Subject 5 out of 10: Prostate3T-01-0025
+2021-12-14 17:04:20,896 case 4 mean_dice 0.909632 mean_hd95 2.000000
+Max: 0.9999772310256958
+Max: 0.9999685287475586
+Max: 0.9999865293502808
+Max: 0.9999829530715942
+Max: 0.9999836683273315
+Max: 0.9999858140945435
+Max: 0.9999858140945435
+Max: 0.9999963045120239
+Max: 0.999995231628418
+Max: 0.9999957084655762
+Max: 0.9999995231628418
+Max: 0.9999949932098389
+Max: 0.9999853372573853
+Max: 0.9999791383743286
+Max: 0.999984860420227
+Max: 0.999970555305481
+Max: 0.9999556541442871
+Max: 0.9999877214431763
+Max: 0.9999699592590332
+Predsum: 52660
+GtSum: 46712
+Predsum: 52660
+GtSum: 46712
+Predsum: 52660
+GtSum: 46712
+case 4 mean_dice 0.909632 mean_hd95 2.000000
+2021-12-14 17:04:20,912 ============================================================
+============================================================
+2021-12-14 17:04:20,912 Subject 6 out of 10: Prostate3T-01-0026
+Subject 6 out of 10: Prostate3T-01-0026
+2021-12-14 17:04:23,577 Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
+Max: 0.9999959468841553
+Max: 0.9999709129333496
+Max: 0.9999829530715942
+Max: 0.9999889135360718
+Max: 0.9999934434890747
+Max: 0.9999915361404419
+Max: 0.9999910593032837
+Max: 0.9999958276748657
+Max: 0.9999877214431763
+Max: 0.9999810457229614
+Max: 0.9999871253967285
+Clipping input data to the valid range for imshow with RGB data ([0..1] for floats or [0..255] for integers).
+2021-12-14 17:04:25,965 case 5 mean_dice 0.900212 mean_hd95 5.000000
+Max: 0.9999953508377075
+Max: 0.9999958276748657
+Max: 0.9999969005584717
+Max: 0.9999884366989136
+Max: 0.9999901056289673
+Max: 0.9999909400939941
+Max: 0.9999971389770508
+Max: 0.9999876022338867
+Max: 0.9999648332595825
+Predsum: 76443
+GtSum: 66670
+Predsum: 76443
+GtSum: 66670
+Predsum: 76443
+GtSum: 66670
+case 5 mean_dice 0.900212 mean_hd95 5.000000
+2021-12-14 17:04:25,980 ============================================================
+============================================================
+2021-12-14 17:04:25,980 Subject 7 out of 10: Prostate3T-01-0023
+Subject 7 out of 10: Prostate3T-01-0023
+2021-12-14 17:04:28,392 case 6 mean_dice 0.913769 mean_hd95 2.000000
+Max: 0.999967098236084
+Max: 0.9999741315841675
+Max: 0.9999841451644897
+Max: 0.9999829530715942
+Max: 0.999984860420227
+Max: 0.9999576807022095
+Max: 0.9999738931655884
+Max: 0.9999717473983765
+Max: 0.9999905824661255
+Max: 0.9999643564224243
+Max: 0.9999990463256836
+Max: 0.9999986886978149
+Max: 0.9999985694885254
+Max: 0.9999953508377075
+Max: 0.9999861717224121
+Max: 0.9999878406524658
+Max: 0.9999736547470093
+Max: 0.9999860525131226
+Max: 0.9999730587005615
+Max: 0.9999648332595825
+Predsum: 58080
+GtSum: 52066
+Predsum: 58080
+GtSum: 52066
+Predsum: 58080
+GtSum: 52066
+case 6 mean_dice 0.913769 mean_hd95 2.000000
+2021-12-14 17:04:28,407 ============================================================
+============================================================
+2021-12-14 17:04:28,407 Subject 8 out of 10: Prostate3T-01-0028
+Subject 8 out of 10: Prostate3T-01-0028
+2021-12-14 17:04:30,234 case 7 mean_dice 0.905269 mean_hd95 2.236068
+Max: 0.9999686479568481
+Max: 0.9999759197235107
+Max: 0.9999812841415405
+Max: 0.9999750852584839
+Max: 0.9999638795852661
+Max: 0.9999762773513794
+Max: 0.999984622001648
+Max: 0.9999891519546509
+Max: 0.9999547004699707
+Max: 0.9999854564666748
+Max: 0.999984860420227
+Max: 0.9999867677688599
+Max: 0.9999812841415405
+Max: 0.9999877214431763
+Max: 0.9999946355819702
+Predsum: 70826
+GtSum: 62520
+Predsum: 70826
+GtSum: 62520
+Predsum: 70826
+GtSum: 62520
+case 7 mean_dice 0.905269 mean_hd95 2.236068
+2021-12-14 17:04:30,249 ============================================================
+============================================================
+2021-12-14 17:04:30,249 Subject 9 out of 10: Prostate3T-01-0021
+Subject 9 out of 10: Prostate3T-01-0021
+2021-12-14 17:04:32,610 case 8 mean_dice 0.932089 mean_hd95 2.000000
+Max: 0.9999836683273315
+Max: 0.9999908208847046
+Max: 0.9999790191650391
+Max: 0.999983549118042
+Max: 0.9999758005142212
+Max: 0.9999802112579346
+Max: 0.9999843835830688
+Max: 0.9999927282333374
+Max: 0.999993085861206
+Max: 0.9999997615814209
+Max: 0.9999915361404419
+Max: 0.9999865293502808
+Max: 0.9999697208404541
+Max: 0.9999678134918213
+Max: 0.9999748468399048
+Max: 0.9999872446060181
+Max: 0.9999948740005493
+Max: 0.999992847442627
+Max: 0.9999929666519165
+Max: 0.9999847412109375
+Predsum: 71880
+GtSum: 66978
+Predsum: 71880
+GtSum: 66978
+Predsum: 71880
+GtSum: 66978
+case 8 mean_dice 0.932089 mean_hd95 2.000000
+2021-12-14 17:04:32,625 ============================================================
+============================================================
+2021-12-14 17:04:32,626 Subject 10 out of 10: Prostate3T-01-0027
+Subject 10 out of 10: Prostate3T-01-0027
+2021-12-14 17:04:34,979 case 9 mean_dice 0.917898 mean_hd95 2.000000
+Max: 0.9999865293502808
+Max: 0.9999904632568359
+Max: 0.9999898672103882
+Max: 0.999981164932251
+Max: 0.9999897480010986
+Max: 0.9999884366989136
+Max: 0.9999915361404419
+Max: 0.9999853372573853
+Max: 0.9999922513961792
+Max: 0.9999990463256836
+Max: 0.9999992847442627
+Max: 0.9999815225601196
+Max: 0.9999831914901733
+Max: 0.999993085861206
+Max: 0.9999831914901733
+Max: 0.9999876022338867
+Max: 0.9999912977218628
+Max: 0.9999814033508301
+Max: 0.9999772310256958
+Max: 0.999982476234436
+Predsum: 56268
+GtSum: 53596
+Predsum: 56268
+GtSum: 53596
+Predsum: 56268
+GtSum: 53596
+case 9 mean_dice 0.917898 mean_hd95 2.000000
+2021-12-14 17:04:34,979 Mean class 0 mean_dice 0.908836 mean_hd95 2.468556
+Mean class 0 mean_dice 0.908836 mean_hd95 2.468556
+2021-12-14 17:04:34,979 Mean class 1 mean_dice 0.908836 mean_hd95 2.468556
+Mean class 1 mean_dice 0.908836 mean_hd95 2.468556
+2021-12-14 17:04:34,979 Mean class 2 mean_dice 0.908836 mean_hd95 2.468556
+Mean class 2 mean_dice 0.908836 mean_hd95 2.468556
+2021-12-14 17:04:34,979 Testing performance in best val model: mean_dice : 0.908836 mean_hd95 : 2.468556
+Testing performance in best val model: mean_dice : 0.908836 mean_hd95 : 2.468556
+test.py successfully executed

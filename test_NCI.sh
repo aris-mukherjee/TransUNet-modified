@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH  --output=NEW_log_NCI/%j.out
+#SBATCH  --output=log_seeds/%j.out
 #SBATCH  --gres=gpu:1
 #SBATCH  --mem=50G
 #SBATCH  --constraint=geforce_gtx_titan_x

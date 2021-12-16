@@ -116,7 +116,7 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i = test_single_volume(image, label, model, classes=args.num_classes, patch_size=[args.img_size, args.img_size],
+        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'HK', optim = 'ADAM', model_type = 'REVISED_TU', seed= '1234', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
         metric_list += np.array(metric_i)
@@ -190,7 +190,7 @@ if __name__ == "__main__":
     net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     #net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/NEW_TU', 'NEW_TU_ADAM_best_val_loss_seed1234_no_da.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/TU_3seeds', 'REVISED_ADAM_best_val_loss_seed1234.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     # ============================ 
 
     snapshot_name = snapshot_path.split('/')[-1]
-    log_folder = './test_log/test_log_' + 'TU_HK256_no_da'
+    log_folder = './test_log/test_log_' + 'TU_HK256'
     os.makedirs(log_folder, exist_ok=True)
     logging.basicConfig(filename=log_folder + '/'+snapshot_name+".txt", level=logging.INFO, format='[%(asctime)s.%(msecs)03d] %(message)s', datefmt='%H:%M:%S')
     logging.getLogger().addHandler(logging.StreamHandler(sys.stdout))
@@ -216,8 +216,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../NEW_TU_pred'
-        test_save_path = os.path.join(args.test_save_dir, 'HK_NEW_TU_ADAM_seed1234_no_da')
+        args.test_save_dir = '../seed_predictions/TU/'
+        test_save_path = os.path.join(args.test_save_dir, 'ADAM_HK_TU_test_seed1234')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None
