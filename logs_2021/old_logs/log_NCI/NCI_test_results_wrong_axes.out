@@ -1,0 +1,333 @@
+2021-11-16 15:42:56,035 Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', test_dataset='RUNMC', num_classes=3, max_iterations=30001, max_epochs=150, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='RUNMC', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', test_dataset='RUNMC', num_classes=3, max_iterations=30001, max_epochs=150, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='RUNMC', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+2021-11-16 15:42:56,036 TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+2021-11-16 15:42:56,039 Reading RUNMC images...
+Reading RUNMC images...
+2021-11-16 15:42:56,039 Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+2021-11-16 15:42:56,042 Already preprocessed this configuration. Loading now!
+Already preprocessed this configuration. Loading now!
+2021-11-16 15:42:56,350 ============================================================
+============================================================
+2021-11-16 15:42:56,350 Subject 0 out of 10: Prostate3T-01-0030
+Subject 0 out of 10: Prostate3T-01-0030
+2021-11-16 15:42:59,552 case 0 mean_dice 0.684011 mean_hd95 5.919947
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1288435
+GtSum: 1283204
+Predsum: 9577
+GtSum: 15406
+Predsum: 12708
+GtSum: 12110
+case 0 mean_dice 0.684011 mean_hd95 5.919947
+2021-11-16 15:42:59,583 ============================================================
+============================================================
+2021-11-16 15:42:59,583 Subject 1 out of 10: Prostate3T-01-0024
+Subject 1 out of 10: Prostate3T-01-0024
+2021-11-16 15:43:02,162 case 1 mean_dice 0.617388 mean_hd95 12.375143
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1226291
+GtSum: 1235053
+Predsum: 11028
+GtSum: 3706
+Predsum: 73401
+GtSum: 71961
+case 1 mean_dice 0.617388 mean_hd95 12.375143
+2021-11-16 15:43:02,167 ============================================================
+============================================================
+2021-11-16 15:43:02,167 Subject 2 out of 10: Prostate3T-01-0022
+Subject 2 out of 10: Prostate3T-01-0022
+2021-11-16 15:43:04,746 case 2 mean_dice 0.772735 mean_hd95 4.721471
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1265918
+GtSum: 1274580
+Predsum: 16561
+GtSum: 12200
+Predsum: 28241
+GtSum: 23940
+case 2 mean_dice 0.772735 mean_hd95 4.721471
+2021-11-16 15:43:04,788 ============================================================
+============================================================
+2021-11-16 15:43:04,788 Subject 3 out of 10: Prostate3T-01-0029
+Subject 3 out of 10: Prostate3T-01-0029
+2021-11-16 15:43:07,348 case 3 mean_dice 0.738067 mean_hd95 5.455533
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1250493
+GtSum: 1263950
+Predsum: 15368
+GtSum: 11009
+Predsum: 44859
+GtSum: 35761
+case 3 mean_dice 0.738067 mean_hd95 5.455533
+2021-11-16 15:43:07,350 ============================================================
+============================================================
+2021-11-16 15:43:07,350 Subject 4 out of 10: Prostate3T-01-0025
+Subject 4 out of 10: Prostate3T-01-0025
+2021-11-16 15:43:09,682 case 4 mean_dice 0.655686 mean_hd95 6.477994
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1184124
+GtSum: 1198472
+Predsum: 17714
+GtSum: 6443
+Predsum: 43346
+GtSum: 40269
+case 4 mean_dice 0.655686 mean_hd95 6.477994
+2021-11-16 15:43:09,689 ============================================================
+============================================================
+2021-11-16 15:43:09,689 Subject 5 out of 10: Prostate3T-01-0026
+Subject 5 out of 10: Prostate3T-01-0026
+2021-11-16 15:43:12,217 case 5 mean_dice 0.668042 mean_hd95 7.152137
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1226761
+GtSum: 1244050
+Predsum: 11594
+GtSum: 9368
+Predsum: 72365
+GtSum: 57302
+case 5 mean_dice 0.668042 mean_hd95 7.152137
+2021-11-16 15:43:12,219 ============================================================
+============================================================
+2021-11-16 15:43:12,219 Subject 6 out of 10: Prostate3T-01-0023
+Subject 6 out of 10: Prostate3T-01-0023
+2021-11-16 15:43:14,760 case 6 mean_dice 0.709443 mean_hd95 4.801041
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1250284
+GtSum: 1258654
+Predsum: 16267
+GtSum: 9905
+Predsum: 44169
+GtSum: 42161
+case 6 mean_dice 0.709443 mean_hd95 4.801041
+2021-11-16 15:43:14,762 ============================================================
+============================================================
+2021-11-16 15:43:14,762 Subject 7 out of 10: Prostate3T-01-0028
+Subject 7 out of 10: Prostate3T-01-0028
+2021-11-16 15:43:16,569 case 7 mean_dice 0.708633 mean_hd95 5.328629
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 931464
+GtSum: 920512
+Predsum: 5134
+GtSum: 14724
+Predsum: 46442
+GtSum: 47804
+case 7 mean_dice 0.708633 mean_hd95 5.328629
+2021-11-16 15:43:16,572 ============================================================
+============================================================
+2021-11-16 15:43:16,572 Subject 8 out of 10: Prostate3T-01-0021
+Subject 8 out of 10: Prostate3T-01-0021
+2021-11-16 15:43:19,112 case 8 mean_dice 0.713824 mean_hd95 3.699673
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1248239
+GtSum: 1243742
+Predsum: 15754
+GtSum: 10315
+Predsum: 46727
+GtSum: 56663
+case 8 mean_dice 0.713824 mean_hd95 3.699673
+2021-11-16 15:43:19,116 ============================================================
+============================================================
+2021-11-16 15:43:19,116 Subject 9 out of 10: Prostate3T-01-0027
+Subject 9 out of 10: Prostate3T-01-0027
+2021-11-16 15:43:21,629 case 9 mean_dice 0.732308 mean_hd95 5.194071
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+torch.Size([1, 3, 256, 256])
+Predsum: 1252325
+GtSum: 1257124
+Predsum: 18889
+GtSum: 18231
+Predsum: 39506
+GtSum: 35365
+case 9 mean_dice 0.732308 mean_hd95 5.194071
+2021-11-16 15:43:21,630 Mean class 0 mean_dice 0.989010 mean_hd95 1.223607
+Mean class 0 mean_dice 0.989010 mean_hd95 1.223607
+2021-11-16 15:43:21,630 Mean class 1 mean_dice 0.385026 mean_hd95 10.262593
+Mean class 1 mean_dice 0.385026 mean_hd95 10.262593
+2021-11-16 15:43:21,630 Mean class 2 mean_dice 0.726005 mean_hd95 6.851492
+Mean class 2 mean_dice 0.726005 mean_hd95 6.851492
+2021-11-16 15:43:21,630 Testing performance in best val model: mean_dice : 0.700014 mean_hd95 : 6.112564
+Testing performance in best val model: mean_dice : 0.700014 mean_hd95 : 6.112564
+test.py successfully executed

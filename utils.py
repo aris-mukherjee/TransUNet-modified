@@ -99,22 +99,29 @@ def test_single_volume(image, label, net, classes, dataset, optim, model_type, s
 
                 outputs = net(input)
                 out_soft = torch.softmax(outputs, dim=1)
-                #print(out_soft)
-                #print(f"Max: {torch.max(out_soft)}")
+                
                 out_hard = (out_soft>0.5).float()
                 out_hard_argmax = torch.argmax(out_hard, dim=1).squeeze(0) 
                 out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
                 #color_map = torch.tensor([[255, 0, 0], [0, 255, 0], [0, 0, 255]])
                 rgb = np.zeros((256, 256, 3))
                 #io.imshow(color.label2rgb(out, slice))
-                if (dataset == 'NCI' and case == 5 and ind == 10) or (dataset == 'UCL' and case == 3 and ind == 13) or (dataset == 'HK' and case == 8 and ind == 15) or (dataset == 'BIDMC' and case == 5 and ind == 25):
-                    for i in range(256):
+                if (dataset == 'NCI' and case == 5 and ind == 10) or (dataset == 'UCL' and case == 3 and ind == 14) or (dataset == 'HK' and case == 2 and ind == 13) or (dataset == 'BIDMC' and case == 5 and ind == 26):
+                    
+                    for i in range(3):
+                        out_soft_squeezed = out_soft.squeeze(0)
+                        out_soft_squeezed = out_soft_squeezed[i, :, :]
+                        out_soft_squeezed = out_soft_squeezed.cpu().detach().numpy()
+                        plt.imshow(out_soft_squeezed, cmap = 'gray', vmin = 0, vmax = 1)
+                        plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_channel%s_seed%s.png' % (dataset, model_type, optim, case, ind, i, seed))
+
+                    """ for i in range(256):
                         for j in range(256):
                             if out_hard_argmax[i][j] != 0:
                                 rgb[i, j, out_hard_argmax[i][j]] = 255 #black if background, green if 1, blue if 2
                             #print(rgb)
                     plt.imshow(rgb)
-                    plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/%s_%s_%s_hard_pred_case%s_slice%s_seed%s.png' % (dataset, model_type, optim, case, ind, seed))
+                    plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_seed%s.png' % (dataset, model_type, optim, case, ind, seed)) """
                 out = out.cpu().detach().numpy()
                 if x != patch_size[0] or y != patch_size[1]:
                     pred = zoom(out, (x / patch_size[0], y / patch_size[1]), order=0)

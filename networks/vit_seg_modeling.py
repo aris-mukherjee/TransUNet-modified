@@ -181,10 +181,10 @@ class Block(nn.Module):
         x, weights = self.attn(x)
         x = x + h
 
-        h = x
-        x = self.ffn_norm(x)
-        x = self.ffn(x)
-        x = x + h
+        #h = x
+        #x = self.ffn_norm(x)
+        #x = self.ffn(x)
+        #x = x + h
         return x, weights
 
     def load_from(self, weights, n_block):

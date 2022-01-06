@@ -5,7 +5,7 @@ import matplotlib.image as mpimg
 
 def create_subplots():
 
-    img = mpimg.imread('/scratch_net/biwidl217_second/arismu/Data_MT/img_BIDMC_case5_slice25.png')
+    img = mpimg.imread('/scratch_net/biwidl217_second/arismu/Data_MT/img_NCI_SGD_case5_slice10.png')
     pred_soft = mpimg.imread('/scratch_net/biwidl217_second/arismu/Data_MT/pred_soft_BIDMC_REVISED_ADAM_case5_slice25.png')
     pred_hard = mpimg.imread('/scratch_net/biwidl217_second/arismu/Data_MT/BIDMC_REVISED_TU_ADAM_hard_pred_case5_slice25_seed100.png')
     gt = mpimg.imread('/scratch_net/biwidl217_second/arismu/Data_MT/gt_BIDMC_case5_slice25.png')
