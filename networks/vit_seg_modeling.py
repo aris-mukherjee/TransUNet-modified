@@ -83,14 +83,14 @@ class Attention(nn.Module):
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
         attention_probs = self.softmax(attention_scores)
         weights = attention_probs if self.vis else None
-        attention_probs = self.attn_dropout(attention_probs)
+        #attention_probs = self.attn_dropout(attention_probs)
 
         context_layer = torch.matmul(attention_probs, value_layer)
         context_layer = context_layer.permute(0, 2, 1, 3).contiguous()
         new_context_layer_shape = context_layer.size()[:-2] + (self.all_head_size,)
         context_layer = context_layer.view(*new_context_layer_shape)
         attention_output = self.out(context_layer)
-        attention_output = self.proj_dropout(attention_output)
+        #attention_output = self.proj_dropout(attention_output)
         return attention_output, weights
 
 
@@ -113,9 +113,9 @@ class Mlp(nn.Module):
     def forward(self, x):
         x = self.fc1(x)
         x = self.act_fn(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
         x = self.fc2(x)
-        x = self.dropout(x)
+        #x = self.dropout(x)
         return x
 
 
@@ -162,7 +162,7 @@ class Embeddings(nn.Module):
         x = x.transpose(-1, -2)  # (B, n_patches, hidden)
 
         embeddings = x + self.position_embeddings
-        embeddings = self.dropout(embeddings)
+        #embeddings = self.dropout(embeddings)
         return embeddings, features
 
 
@@ -181,10 +181,10 @@ class Block(nn.Module):
         x, weights = self.attn(x)
         x = x + h
 
-        #h = x
-        #x = self.ffn_norm(x)
-        #x = self.ffn(x)
-        #x = x + h
+        h = x
+        x = self.ffn_norm(x)
+        x = self.ffn(x)
+        x = x + h
         return x, weights
 
     def load_from(self, weights, n_block):
