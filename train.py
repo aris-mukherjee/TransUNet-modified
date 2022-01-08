@@ -33,7 +33,7 @@ parser.add_argument('--base_lr', type=float,  default=1e-3,
 parser.add_argument('--img_size', type=int,
                     default=256, help='input patch size of network input')
 parser.add_argument('--seed', type=int,
-                    default=2, help='random seed')
+                    default=1234, help='random seed')
 parser.add_argument('--n_skip', type=int,
                     default=3, help='using number of skip-connect, default is num')
 parser.add_argument('--vit_name', type=str,
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path+'_bs'+str(args.batch_size)
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 1e-3 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
-    snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=2 else snapshot_path
+    snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=1234 else snapshot_path
 
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
