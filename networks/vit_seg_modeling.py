@@ -51,7 +51,8 @@ class Attention(nn.Module):
     def __init__(self, config, vis):
         super(Attention, self).__init__()
         self.vis = vis
-        self.num_attention_heads = config.transformer["num_heads"]
+        #self.num_attention_heads = config.transformer["num_heads"]
+        self.num_attention_heads = 8
         self.attention_head_size = int(config.hidden_size / self.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
@@ -73,12 +74,11 @@ class Attention(nn.Module):
     def forward(self, hidden_states):
         mixed_query_layer = self.query(hidden_states)
         mixed_key_layer = self.key(hidden_states)
-        #mixed_value_layer = self.value(hidden_states)
+        mixed_value_layer = self.value(hidden_states)
 
         query_layer = self.transpose_for_scores(mixed_query_layer)
         key_layer = self.transpose_for_scores(mixed_key_layer)
-        #value_layer = self.transpose_for_scores(mixed_value_layer)
-        value_layer = self.transpose_for_scores(hidden_states)
+        value_layer = self.transpose_for_scores(mixed_value_layer)
 
         attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
