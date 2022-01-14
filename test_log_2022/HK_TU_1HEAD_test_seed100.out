@@ -1,0 +1,135 @@
+2022-01-14 11:22:31,307 Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/Prostate_PROMISE12/TrainingData/', test_dataset='HK', num_classes=3, max_iterations=6800, max_epochs=400, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='HK', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/Prostate_PROMISE12/TrainingData/', test_dataset='HK', num_classes=3, max_iterations=6800, max_epochs=400, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='HK', z_spacing=1, is_pretrain=True, exp='TU_RUNMC256')
+2022-01-14 11:22:31,307 TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+2022-01-14 11:22:31,320 Already preprocessed this configuration. Loading now!
+Already preprocessed this configuration. Loading now!
+2022-01-14 11:22:50,691 ============================================================
+============================================================
+2022-01-14 11:22:50,696 Subject 1 out of 10: case44
+Subject 1 out of 10: case44
+2022-01-14 11:22:53,304 case 0 mean_dice 0.808667 mean_hd95 39.140747
+Predsum: 23817
+GtSum: 26164
+Predsum: 23817
+GtSum: 26164
+Predsum: 23817
+GtSum: 26164
+case 0 mean_dice 0.808667 mean_hd95 39.140747
+2022-01-14 11:22:53,443 ============================================================
+============================================================
+2022-01-14 11:22:53,444 Subject 2 out of 10: case43
+Subject 2 out of 10: case43
+2022-01-14 11:22:55,914 case 1 mean_dice 0.825302 mean_hd95 35.602668
+Predsum: 36459
+GtSum: 36026
+Predsum: 36459
+GtSum: 36026
+Predsum: 36459
+GtSum: 36026
+case 1 mean_dice 0.825302 mean_hd95 35.602668
+2022-01-14 11:22:56,038 ============================================================
+============================================================
+2022-01-14 11:22:56,038 Subject 3 out of 10: case45
+Subject 3 out of 10: case45
+2022-01-14 11:23:01,959 case 2 mean_dice 0.719233 mean_hd95 51.565492
+Predsum: 22489
+GtSum: 17067
+Predsum: 22489
+GtSum: 17067
+Predsum: 22489
+GtSum: 17067
+case 2 mean_dice 0.719233 mean_hd95 51.565492
+2022-01-14 11:23:02,427 ============================================================
+============================================================
+2022-01-14 11:23:02,428 Subject 4 out of 10: case47
+Subject 4 out of 10: case47
+2022-01-14 11:23:08,480 case 3 mean_dice 0.818404 mean_hd95 41.012193
+Predsum: 28625
+GtSum: 24234
+Predsum: 28625
+GtSum: 24234
+Predsum: 28625
+GtSum: 24234
+case 3 mean_dice 0.818404 mean_hd95 41.012193
+2022-01-14 11:23:08,973 ============================================================
+============================================================
+2022-01-14 11:23:08,973 Subject 5 out of 10: case39
+Subject 5 out of 10: case39
+2022-01-14 11:23:15,026 case 4 mean_dice 0.835928 mean_hd95 43.113803
+Predsum: 36886
+GtSum: 36917
+Predsum: 36886
+GtSum: 36917
+Predsum: 36886
+GtSum: 36917
+case 4 mean_dice 0.835928 mean_hd95 43.113803
+2022-01-14 11:23:15,173 ============================================================
+============================================================
+2022-01-14 11:23:15,174 Subject 6 out of 10: case41
+Subject 6 out of 10: case41
+2022-01-14 11:23:21,407 case 5 mean_dice 0.784869 mean_hd95 42.518231
+Predsum: 19324
+GtSum: 16682
+Predsum: 19324
+GtSum: 16682
+Predsum: 19324
+GtSum: 16682
+case 5 mean_dice 0.784869 mean_hd95 42.518231
+2022-01-14 11:23:21,870 ============================================================
+============================================================
+2022-01-14 11:23:21,871 Subject 7 out of 10: case46
+Subject 7 out of 10: case46
+2022-01-14 11:23:28,052 case 6 mean_dice 0.859153 mean_hd95 4.123106
+Predsum: 33905
+GtSum: 28766
+Predsum: 33905
+GtSum: 28766
+Predsum: 33905
+GtSum: 28766
+case 6 mean_dice 0.859153 mean_hd95 4.123106
+2022-01-14 11:23:28,204 ============================================================
+============================================================
+2022-01-14 11:23:28,204 Subject 8 out of 10: case38
+Subject 8 out of 10: case38
+2022-01-14 11:23:31,691 case 7 mean_dice 0.904718 mean_hd95 21.283797
+Predsum: 62083
+GtSum: 57583
+Predsum: 62083
+GtSum: 57583
+Predsum: 62083
+GtSum: 57583
+case 7 mean_dice 0.904718 mean_hd95 21.283797
+2022-01-14 11:23:31,812 ============================================================
+============================================================
+2022-01-14 11:23:31,812 Subject 9 out of 10: case40
+Subject 9 out of 10: case40
+2022-01-14 11:23:34,268 case 8 mean_dice 0.802717 mean_hd95 31.437235
+Predsum: 26883
+GtSum: 25372
+Predsum: 26883
+GtSum: 25372
+Predsum: 26883
+GtSum: 25372
+case 8 mean_dice 0.802717 mean_hd95 31.437235
+2022-01-14 11:23:34,387 ============================================================
+============================================================
+2022-01-14 11:23:34,387 Subject 10 out of 10: case42
+Subject 10 out of 10: case42
+2022-01-14 11:23:37,054 case 9 mean_dice 0.912530 mean_hd95 3.605551
+Predsum: 73611
+GtSum: 80225
+Predsum: 73611
+GtSum: 80225
+Predsum: 73611
+GtSum: 80225
+case 9 mean_dice 0.912530 mean_hd95 3.605551
+2022-01-14 11:23:37,054 Mean class 0 mean_dice 0.827152 mean_hd95 31.340282
+Mean class 0 mean_dice 0.827152 mean_hd95 31.340282
+2022-01-14 11:23:37,054 Mean class 1 mean_dice 0.827152 mean_hd95 31.340282
+Mean class 1 mean_dice 0.827152 mean_hd95 31.340282
+2022-01-14 11:23:37,054 Mean class 2 mean_dice 0.827152 mean_hd95 31.340282
+Mean class 2 mean_dice 0.827152 mean_hd95 31.340282
+2022-01-14 11:23:37,054 Testing performance in best val model: mean_dice : 0.827152 mean_hd95 : 31.340282
+Testing performance in best val model: mean_dice : 0.827152 mean_hd95 : 31.340282
+test.py successfully executed
