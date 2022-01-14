@@ -71,13 +71,17 @@ class Attention(nn.Module):
         return x.permute(0, 2, 1, 3)
 
     def forward(self, hidden_states):
-        mixed_query_layer = self.query(hidden_states)
-        mixed_key_layer = self.key(hidden_states)
-        mixed_value_layer = self.value(hidden_states)
+        #mixed_query_layer = self.query(hidden_states)
+        #mixed_key_layer = self.key(hidden_states)
+        #mixed_value_layer = self.value(hidden_states)
 
-        query_layer = self.transpose_for_scores(mixed_query_layer)
-        key_layer = self.transpose_for_scores(mixed_key_layer)
-        value_layer = self.transpose_for_scores(mixed_value_layer)
+        #query_layer = self.transpose_for_scores(mixed_query_layer)
+        #key_layer = self.transpose_for_scores(mixed_key_layer)
+        #value_layer = self.transpose_for_scores(mixed_value_layer)
+
+        query_layer = self.transpose_for_scores(hidden_states)
+        key_layer = self.transpose_for_scores(hidden_states)
+        value_layer = self.transpose_for_scores(hidden_states)
 
         attention_scores = torch.matmul(query_layer, key_layer.transpose(-1, -2))
         attention_scores = attention_scores / math.sqrt(self.attention_head_size)
@@ -231,9 +235,9 @@ class Encoder(nn.Module):
         self.vis = vis
         self.layer = nn.ModuleList()
         self.encoder_norm = LayerNorm(config.hidden_size, eps=1e-6)
-        #for _ in range(config.transformer["num_layers"]):
-        layer = Block(config, vis)
-        self.layer.append(copy.deepcopy(layer))
+        for _ in range(config.transformer["num_layers"]):
+            layer = Block(config, vis)
+            self.layer.append(copy.deepcopy(layer))
 
     def forward(self, hidden_states):
         attn_weights = []
