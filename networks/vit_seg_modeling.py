@@ -51,8 +51,7 @@ class Attention(nn.Module):
     def __init__(self, config, vis):
         super(Attention, self).__init__()
         self.vis = vis
-        #self.num_attention_heads = config.transformer["num_heads"]
-        self.num_attention_heads = 1
+        self.num_attention_heads = config.transformer["num_heads"]
         self.attention_head_size = int(config.hidden_size / self.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
@@ -232,9 +231,9 @@ class Encoder(nn.Module):
         self.vis = vis
         self.layer = nn.ModuleList()
         self.encoder_norm = LayerNorm(config.hidden_size, eps=1e-6)
-        for _ in range(config.transformer["num_layers"]):
-            layer = Block(config, vis)
-            self.layer.append(copy.deepcopy(layer))
+        #for _ in range(config.transformer["num_layers"]):
+        layer = Block(config, vis)
+        self.layer.append(copy.deepcopy(layer))
 
     def forward(self, hidden_states):
         attn_weights = []

@@ -1,0 +1,50 @@
+2022-01-14 11:35:24,308 Logging directory: /scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/log_dir/trRUNMC_cv1_r3/i2i2l/
+2022-01-14 11:35:24,309 Tensorboard directory: /scratch_net/biwidl217_second/arismu/Tensorboard/trRUNMC_cv1_r3/i2i2l/
+2022-01-14 11:35:24,309 ============================================================
+2022-01-14 11:35:24,309 EXPERIMENT NAME: trRUNMC_cv1_r3/i2i2l/
+2022-01-14 11:35:24,309 ============================================================
+2022-01-14 11:35:24,309 Loading data...
+2022-01-14 11:35:24,309 Reading NCI - RUNMC images...
+2022-01-14 11:35:24,309 Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+2022-01-14 11:35:24,311 Already preprocessed this configuration. Loading now!
+2022-01-14 11:35:24,329 Training Images: (256, 256, 286)
+2022-01-14 11:35:24,329 Training Labels: (256, 256, 286)
+2022-01-14 11:35:24,329 Validation Images: (256, 256, 98)
+2022-01-14 11:35:24,329 Validation Labels: (256, 256, 98)
+2022-01-14 11:35:24,329 ============================================================
+2022-01-14 11:35:26,016 17 iterations per epoch. 6800 max iterations 
+  0%|                                         | 0/400 [00:00<?, ?it/s]2022-01-14 11:35:27,051 iteration 1 : loss : 0.748680, loss_ce: 0.813152
+2022-01-14 11:35:27,926 iteration 2 : loss : 0.687758, loss_ce: 0.727867
+2022-01-14 11:35:28,905 iteration 3 : loss : 0.644251, loss_ce: 0.646115
+2022-01-14 11:35:29,793 iteration 4 : loss : 0.600084, loss_ce: 0.570941
+2022-01-14 11:35:30,684 iteration 5 : loss : 0.559824, loss_ce: 0.516192
+2022-01-14 11:35:31,594 iteration 6 : loss : 0.526839, loss_ce: 0.458064
+2022-01-14 11:35:32,554 iteration 7 : loss : 0.490368, loss_ce: 0.421747
+2022-01-14 11:35:33,468 iteration 8 : loss : 0.480446, loss_ce: 0.370247
+2022-01-14 11:35:34,403 iteration 9 : loss : 0.456436, loss_ce: 0.383615
+2022-01-14 11:35:35,364 iteration 10 : loss : 0.436094, loss_ce: 0.302628
+2022-01-14 11:35:36,379 iteration 11 : loss : 0.418611, loss_ce: 0.302606
+2022-01-14 11:35:37,282 iteration 12 : loss : 0.416003, loss_ce: 0.272010
+2022-01-14 11:35:38,166 iteration 13 : loss : 0.408004, loss_ce: 0.249446
+2022-01-14 11:35:39,026 iteration 14 : loss : 0.375357, loss_ce: 0.228955
+2022-01-14 11:35:39,957 iteration 15 : loss : 0.364658, loss_ce: 0.213437
+2022-01-14 11:35:40,865 iteration 16 : loss : 0.395476, loss_ce: 0.222023
+2022-01-14 11:35:41,773 iteration 17 : loss : 0.343946, loss_ce: 0.199376
+  0%|                               | 1/400 [00:15<1:45:15, 15.83s/it]2022-01-14 11:35:42,783 iteration 18 : loss : 0.364464, loss_ce: 0.170381
+2022-01-14 11:35:43,624 iteration 19 : loss : 0.320745, loss_ce: 0.159173
+2022-01-14 11:35:44,598 iteration 20 : loss : 0.311882, loss_ce: 0.148953
+2022-01-14 11:35:45,484 iteration 21 : loss : 0.339197, loss_ce: 0.136809
+2022-01-14 11:35:46,387 iteration 22 : loss : 0.308100, loss_ce: 0.152919
+2022-01-14 11:35:47,374 iteration 23 : loss : 0.289898, loss_ce: 0.117346
+2022-01-14 11:35:48,283 iteration 24 : loss : 0.295944, loss_ce: 0.130030
+2022-01-14 11:35:49,242 iteration 25 : loss : 0.367401, loss_ce: 0.196670
+2022-01-14 11:35:50,132 iteration 26 : loss : 0.291184, loss_ce: 0.130555
+2022-01-14 11:35:50,969 iteration 27 : loss : 0.288526, loss_ce: 0.138692
+2022-01-14 11:35:51,815 iteration 28 : loss : 0.284272, loss_ce: 0.128383
+2022-01-14 11:35:52,759 iteration 29 : loss : 0.291261, loss_ce: 0.125235
+2022-01-14 11:35:53,698 iteration 30 : loss : 0.299136, loss_ce: 0.134548
+2022-01-14 11:35:54,548 iteration 31 : loss : 0.274481, loss_ce: 0.123652
+2022-01-14 11:35:55,512 iteration 32 : loss : 0.293203, loss_ce: 0.152360
+2022-01-14 11:35:56,460 iteration 33 : loss : 0.303167, loss_ce: 0.155718
+2022-01-14 11:35:57,414 iteration 34 : loss : 0.296312, loss_ce: 0.159455
+  0%|▏                              | 2/400 [00:31<1:44:14, 15.71s/it]
