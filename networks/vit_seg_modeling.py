@@ -51,13 +51,14 @@ class Attention(nn.Module):
     def __init__(self, config, vis):
         super(Attention, self).__init__()
         self.vis = vis
-        self.num_attention_heads = config.transformer["num_heads"]
+        #self.num_attention_heads = config.transformer["num_heads"]
+        self.num_attention_heads = 1
         self.attention_head_size = int(config.hidden_size / self.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
-        self.query = Linear(config.hidden_size, self.all_head_size)
-        self.key = Linear(config.hidden_size, self.all_head_size)
-        self.value = Linear(config.hidden_size, self.all_head_size)
+        #self.query = Linear(config.hidden_size, self.all_head_size)
+        #self.key = Linear(config.hidden_size, self.all_head_size)
+        #self.value = Linear(config.hidden_size, self.all_head_size)
 
         self.out = Linear(config.hidden_size, config.hidden_size)
         self.attn_dropout = Dropout(config.transformer["attention_dropout_rate"])
