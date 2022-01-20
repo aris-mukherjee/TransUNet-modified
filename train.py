@@ -33,7 +33,7 @@ parser.add_argument('--base_lr', type=float,  default=1e-3,
 parser.add_argument('--img_size', type=int,
                     default=256, help='input patch size of network input')
 parser.add_argument('--seed', type=int,
-                    default=1234, help='random seed')
+                    default=100, help='random seed')
 parser.add_argument('--n_skip', type=int,
                     default=3, help='using number of skip-connect, default is num')
 parser.add_argument('--vit_name', type=str,
@@ -94,7 +94,7 @@ if __name__ == "__main__":
     snapshot_path = snapshot_path+'_bs'+str(args.batch_size)
     snapshot_path = snapshot_path + '_lr' + str(args.base_lr) if args.base_lr != 1e-3 else snapshot_path
     snapshot_path = snapshot_path + '_'+str(args.img_size)
-    snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=1234 else snapshot_path
+    snapshot_path = snapshot_path + '_s'+str(args.seed) if args.seed!=100 else snapshot_path
 
     if not os.path.exists(snapshot_path):
         os.makedirs(snapshot_path)
@@ -108,10 +108,10 @@ if __name__ == "__main__":
     # create an instance of the model 
     # ===========================      
     
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
     #net.load_from(weights=np.load(config_vit.pretrained_path))
 
-    #net = UNET(in_channels = 3, out_channels = 3, features = [64, 128, 256, 512]).cuda()
+    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
 
     # ===========================    
     # start training 
