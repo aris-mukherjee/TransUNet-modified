@@ -33,9 +33,9 @@ def load_data(input_folder,
     # ===============================
     # file to create or directly read if it already exists
     # ===============================
-    size_str = '_'.join([str(i) for i in size])
-    res_str = '_'.join([str(i) for i in target_resolution])
-    data_file_name = 'data_2d_from_%d_to_%d_size_%s_res_%s_%s.hdf5' % (idx_start, idx_end, size_str, res_str, labeller)
+    #size_str = '_'.join([str(i) for i in size])
+    #res_str = '_'.join([str(i) for i in target_resolution])
+    data_file_name = 'data_2d_from_%d_to_%d_size_%s_res_%s_%s.hdf5' % (idx_start, idx_end, size, target_resolution, labeller)
     data_file_path = os.path.join(preproc_folder, data_file_name)
     
     # ===============================
@@ -103,8 +103,8 @@ def prepare_data(input_folder,
     # ===============================
     data = {}
     num_slices = count_slices(folder_list, idx_start, idx_end)
-    data['images'] = hdf5_file.create_dataset("images", [num_slices] + list(size), dtype=np.float32)
-    data['labels'] = hdf5_file.create_dataset("labels", [num_slices] + list(size), dtype=np.float32)
+    data['images'] = hdf5_file.create_dataset("images", [num_slices] + list((size,size)), dtype=np.float32)
+    data['labels'] = hdf5_file.create_dataset("labels", [num_slices] + list((size,size)), dtype=np.float32)
     
     # ===============================
     # initialize lists
@@ -136,11 +136,15 @@ def prepare_data(input_folder,
         # read the image file
         # ==================
         image, _, image_hdr = utils.load_nii(folder_list[idx] + '/t2_tse_tra_n4.nii.gz')
+
+        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '00_test.nii.gz', data = image, affine = np.eye(4))
         
         # ============
         # normalize the image to be between 0 and 1
         # ============
         image_normalized = utils.normalise_image(image, norm_type='div_by_max')
+
+        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '01_test.nii.gz', data = image_normalized, affine = np.eye(4))
         
         # ==================
         # collect some header info.
@@ -170,8 +174,8 @@ def prepare_data(input_folder,
         # ======================================================  
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
         # ======================================================
-        scale_vector = [image_hdr.get_zooms()[0] / target_resolution[0],
-                        image_hdr.get_zooms()[1] / target_resolution[1]]
+        scale_vector = [image_hdr.get_zooms()[0] / target_resolution,
+                        image_hdr.get_zooms()[1] / target_resolution]
 
         for zz in range(image.shape[2]):
 
@@ -184,6 +188,9 @@ def prepare_data(input_folder,
                                                   preserve_range=True,
                                                   multichannel=False,
                                                   mode = 'constant')
+
+            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
+                                      
  
             label2d_rescaled = rescale(np.squeeze(label[:, :, zz]),
                                                   scale_vector,
@@ -198,11 +205,15 @@ def prepare_data(input_folder,
             image2d_rescaled_rotated = np.rot90(image2d_rescaled, k=3)
             label2d_rescaled_rotated = np.rot90(label2d_rescaled, k=3)
 
+            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '03_test.nii.gz', data = image2d_rescaled_rotated, affine = np.eye(4))
+
             # ============            
             # crop or pad to make of the same size
             # ============            
-            image2d_rescaled_rotated_cropped = crop_or_pad_slice_to_size(image2d_rescaled_rotated, size[0], size[1])
-            label2d_rescaled_rotated_cropped = crop_or_pad_slice_to_size(label2d_rescaled_rotated, size[0], size[1])
+            image2d_rescaled_rotated_cropped = crop_or_pad_slice_to_size(image2d_rescaled_rotated, size, size)
+            label2d_rescaled_rotated_cropped = crop_or_pad_slice_to_size(label2d_rescaled_rotated, size, size)
+
+            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '04_test.nii.gz', data = image2d_rescaled_rotated, affine = np.eye(4))
 
             image_list.append(image2d_rescaled_rotated_cropped)
             label_list.append(label2d_rescaled_rotated_cropped)

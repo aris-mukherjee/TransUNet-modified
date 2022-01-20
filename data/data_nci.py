@@ -53,7 +53,7 @@ def count_slices(image_folder,
         
         if folder.startswith(folder_base + '-01'):
             patient_id = int(folder.split('-')[-1])
-            if patient_id <=30:  #added because only 30 labeled patients
+            if patient_id <= 82:  #added because only 30 labeled patients
                 for _, _, fileList in os.walk(os.path.join(image_folder, folder)):
                     for filename in fileList:
                         if filename.lower().endswith('.dcm'):  # check whether the file's DICOM
@@ -86,7 +86,7 @@ def get_patient_folders(image_folder,
     
         if folder.startswith(folder_base + '-01'):
             patient_id = int(folder.split('-')[-1])  
-            if patient_id <= 30:  #added because labels folder only goes up to 30
+            if patient_id <= 82:  #added because labels folder only goes up to 30
                 train_test = test_train_val_split(patient_id, sub_dataset, cv_fold_number)
                 folder_list[train_test].append(os.path.join(image_folder, folder))
 
@@ -113,8 +113,8 @@ def prepare_data(input_folder,
         label_folder = input_folder + 'NCI_ISBI_Challenge-Prostate3T_Training_Segmentations/'
         folder_base = 'Prostate3T'
     elif sub_dataset == 'BMC':
-        image_folder = input_folder + 'Images/PROSTATE-DIAGNOSIS/'
-        label_folder = input_folder + 'Labels/PROSTATE-DIAGNOSIS/'
+        image_folder = input_folder + 'PROSTATE-DIAGNOSIS/Images/'
+        label_folder = input_folder + 'PROSTATE-DIAGNOSIS/Labels/'
         folder_base = 'ProstateDx'
 
     # =======================
@@ -380,7 +380,7 @@ def load_and_maybe_process_data(input_folder,
                                 size,
                                 target_resolution,
                                 force_overwrite=False,
-                                sub_dataset = 'RUNMC', # RUNMC / BMC
+                                sub_dataset = 'BMC', # RUNMC / BMC
                                 cv_fold_num = 1):
 
     #size_str = '_'.join([str(i) for i in size])

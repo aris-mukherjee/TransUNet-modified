@@ -377,6 +377,7 @@ def load_testing_data(test_dataset,
     
         logging.info('Reading ' + test_dataset + ' images...')    
         logging.info('Data root directory: ' + sys_config.orig_data_root_nci)
+
     
         data_pros = data_nci.load_and_maybe_process_data(input_folder = sys_config.orig_data_root_nci,
                                                          preprocessing_folder = sys_config.preproc_folder_nci,

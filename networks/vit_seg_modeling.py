@@ -12,13 +12,12 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm, BatchNorm2d
+from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm
 from torch.nn.modules.utils import _pair
 from scipy import ndimage
 from . import vit_seg_configs as configs
 from .vit_seg_modeling_resnet_skip import ResNetV2
 from .unet_for_TU import UNET_encoder
-from .SE_class import SE_Block
 
 
 logger = logging.getLogger(__name__)
@@ -143,7 +142,6 @@ class Embeddings(nn.Module):
         if self.hybrid:
             #self.hybrid_model = ResNetV2(block_units=config.resnet.num_layers, width_factor=config.resnet.width_factor)
             self.hybrid_model = UNET_encoder()
-            self.se_model = SE_Block(config.hidden_size)
             in_channels = self.hybrid_model.width * 16
         self.patch_embeddings = Conv2d(in_channels=in_channels,
                                        out_channels=config.hidden_size,
@@ -159,14 +157,13 @@ class Embeddings(nn.Module):
             x, features = self.hybrid_model(x)
         else:
             features = None
-        #x = self.patch_embeddings(x)  # (B, hidden. n_patches^(1/2), n_patches^(1/2))
-        x = self.se_model(x)
+        x = self.patch_embeddings(x)  # (B, hidden. n_patches^(1/2), n_patches^(1/2))
         x = x.flatten(2)
         x = x.transpose(-1, -2)  # (B, n_patches, hidden)
 
-        #embeddings = x + self.position_embeddings
-        #embeddings = self.dropout(embeddings)
-        return x, features
+        embeddings = x + self.position_embeddings
+        embeddings = self.dropout(embeddings)
+        return embeddings, features
 
 
 class Block(nn.Module):
@@ -181,14 +178,14 @@ class Block(nn.Module):
     def forward(self, x):
         h = x
         x = self.attention_norm(x)
-        x, weights = self.attn(x)
+        #x, weights = self.attn(x)
         x = x + h
 
         h = x
         x = self.ffn_norm(x)
         x = self.ffn(x)
         x = x + h
-        return x, weights
+        return x
 
     def load_from(self, weights, n_block):
         ROOT = f"Transformer/encoderblock_{n_block}"
@@ -241,11 +238,11 @@ class Encoder(nn.Module):
     def forward(self, hidden_states):
         attn_weights = []
         for layer_block in self.layer:
-            hidden_states, weights = layer_block(hidden_states)
-            if self.vis:
-                attn_weights.append(weights)
+            hidden_states = layer_block(hidden_states)
+            #if self.vis:
+            #    attn_weights.append(weights)
         encoded = self.encoder_norm(hidden_states)
-        return encoded, attn_weights
+        return encoded
 
 
 class Transformer(nn.Module):
@@ -256,8 +253,8 @@ class Transformer(nn.Module):
 
     def forward(self, input_ids):
         embedding_output, features = self.embeddings(input_ids)
-        #encoded, attn_weights = self.encoder(embedding_output)  # (B, n_patch, hidden)
-        return embedding_output, features
+        encoded = self.encoder(embedding_output)  # (B, n_patch, hidden)
+        return encoded, features
 
 
 class Conv2dReLU(nn.Sequential):
