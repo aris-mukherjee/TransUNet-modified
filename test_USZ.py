@@ -90,23 +90,25 @@ def inference(args, model, test_save_path=None):
 
         subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end of the loop
         subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
-        image = imts[subject_id_start_slice:subject_id_end_slice, :, :] 
-        label = gtts[subject_id_start_slice:subject_id_end_slice, :, :] 
+        image = imts[:,:, subject_id_start_slice:subject_id_end_slice] 
+        label = gtts[:,:, subject_id_start_slice:subject_id_end_slice] 
 
         utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '1_test.nii.gz', data = image, affine = np.eye(4))
 
         image = torch.from_numpy(image)
         label = torch.from_numpy(label)
-        #image, label = image.cuda(), label.cuda() 
-        image = image.permute(1, 2, 0)     
+        #image, label = image.cuda(), label.cuda()      
+        image = image.permute(2, 0, 1)
         label = label.permute(2, 0, 1)
 
+        #image = torch.rot90(image, 2, [1, 2])
+        #label = torch.rot90(label, 2, [1, 2])
         
 
         #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '2_test.nii.gz', data = image, affine = np.eye(4))
 
-        image = torch.rot90(image, 2, [0, 1])
-        label = torch.rot90(label, 2, [0, 1])
+        #image = torch.rot90(image, 2, [0, 1])
+        #label = torch.rot90(label, 2, [0, 1])
 
         #image = image.numpy()
 
@@ -125,7 +127,7 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'USZ', optim = 'ADAM', model_type = 'TU_SE_NET', seed = '100', patch_size=[args.img_size, args.img_size],
+        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'USZ', optim = 'ADAM', model_type = 'UNET', seed = '100', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
         metric_list += np.array(metric_i)
@@ -201,10 +203,10 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
-    #net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
+    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
+    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256])#.cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TU_SE_NET_best_val_loss_seed100.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_best_val_loss_seed100.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'no_data_aug_' + 'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -233,8 +235,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions_2022/'
-        test_save_path = os.path.join(args.test_save_dir, 'UCL_TU_SE_NET_test_seed100')
+        args.test_save_dir = '../predictions_2022/UNET/'
+        test_save_path = os.path.join(args.test_save_dir, 'USZ_UNET_test_seed100')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

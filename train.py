@@ -108,10 +108,10 @@ if __name__ == "__main__":
     # create an instance of the model 
     # ===========================      
     
-    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes)#.cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     #net.load_from(weights=np.load(config_vit.pretrained_path))
 
-    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
+    #net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
 
     # ===========================    
     # start training 

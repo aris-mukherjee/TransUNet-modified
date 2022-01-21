@@ -7,6 +7,7 @@ from skimage.transform import rescale
 import gc
 import h5py
 
+
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
 
 # Maximum number of data points that can be in memory at any time
@@ -22,7 +23,7 @@ def load_data(input_folder,
               idx_end,
               size,
               target_resolution,
-              labeller = 'kc',
+              labeller = 'ek',
               force_overwrite = False):
 
     # ===============================
@@ -103,8 +104,8 @@ def prepare_data(input_folder,
     # ===============================
     data = {}
     num_slices = count_slices(folder_list, idx_start, idx_end)
-    data['images'] = hdf5_file.create_dataset("images", [num_slices] + list((size,size)), dtype=np.float32)
-    data['labels'] = hdf5_file.create_dataset("labels", [num_slices] + list((size,size)), dtype=np.float32)
+    data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.float32)
     
     # ===============================
     # initialize lists
@@ -164,13 +165,17 @@ def prepare_data(input_folder,
             label, _, _ = utils.load_nii(folder_list[idx] + '/segmentation_' + labeller + '.nii.gz')
         elif 'segmentation_tra_' + labeller + '.nii.gz' in os.listdir(folder_list[idx]):
             label, _, _ = utils.load_nii(folder_list[idx] + '/segmentation_tra_' + labeller + '.nii.gz')
+
+        
+        
+
         
         # ================== 
         # remove extra label from some images
         # ================== 
         label[label > 2] = 0
         print(np.unique(label))
-        
+        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '01_label.nii.gz', data = label, affine = np.eye(4))
         # ======================================================  
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
         # ======================================================
@@ -179,26 +184,51 @@ def prepare_data(input_folder,
 
         for zz in range(image.shape[2]):
 
+            print(f'Max label value: {label.max()}')
+            print(f'Min label value: {label.min()}')
+
             # ============
             # rescale the images and labels so that their orientation matches that of the nci dataset
-            # ============            
-            image2d_rescaled = rescale(np.squeeze(image_normalized[:, :, zz]),
+            # ============        
+
+            patname = folder_list[idx][folder_list[idx].rfind('/')+1:]
+            
+            if patname in ['88800036', '88800035', '88800046', '88800038', '88800021', '88800053']:
+                    # For these images, rescaling directly to the target resolution (0.625) leads to faultily rescaled labels (all pixels get the value 0)
+                    # Not sure what is causing this.
+                    # Using this intermediate scaling as a workaround.
+                    scale_vector_tmp = [image_hdr.get_zooms()[0] / 0.625, image_hdr.get_zooms()[1] / 0.625]
+                    image2d_rescaled = rescale(image_normalized[:, :, zz], scale_vector_tmp, order=1, preserve_range=True, multichannel=False, mode = 'constant')
+                    label2d_rescaled = rescale(label[:, :, zz], scale_vector_tmp, order=0, preserve_range=True, multichannel=False, mode='constant')
+                    scale_vector_tmp = [0.625 / target_resolution, 0.625 / target_resolution]
+                    image2d_rescaled = rescale(image2d_rescaled, scale_vector_tmp, order=1, preserve_range=True, multichannel=False, mode = 'constant')
+                    label2d_rescaled = rescale(label2d_rescaled, scale_vector_tmp, order=0, preserve_range=True, multichannel=False, mode='constant')
+            
+            else:
+            
+                    image2d_rescaled = rescale(np.squeeze(image_normalized[:, :, zz]),
                                                   scale_vector,
                                                   order=1,
                                                   preserve_range=True,
                                                   multichannel=False,
                                                   mode = 'constant')
 
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
+                    
                                       
  
-            label2d_rescaled = rescale(np.squeeze(label[:, :, zz]),
+                    label2d_rescaled = rescale(np.squeeze(label[:, :, zz]),
                                                   scale_vector,
                                                   order=0,
                                                   preserve_range=True,
                                                   multichannel=False,
                                                   mode='constant')
             
+            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
+            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
+
+            print(f'Max label value label2d_rescaled: {label2d_rescaled.max()}')
+            print(f'Min label value label2d_rescaled: {label2d_rescaled.min()}')
+
             # ============
             # rotate the images and labels so that their orientation matches that of the nci dataset
             # ============            
@@ -237,16 +267,21 @@ def prepare_data(input_folder,
                 # update counters 
                 counter_from = counter_to
                 write_buffer = 0
+
+        print(f'Max label value image2d_rescaled_rotated_cropped: {image2d_rescaled_rotated_cropped.max()}')
+        print(f'Min label value image2d_rescaled_rotated_cropped: {image2d_rescaled_rotated_cropped.min()}')
+        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '05_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
+        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '05_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
         
     logging.info('Writing remaining data')
     counter_to = counter_from + write_buffer
-    _write_range_to_hdf5(data,
-                         image_list,
-                         label_list,
-                         counter_from,
-                         counter_to)
-    _release_tmp_memory(image_list,
-                        label_list)
+    #write_range_to_hdf5(data,
+    #                     image_list,
+    #                     label_list,
+    #                     counter_from,
+    #                     counter_to)
+    #_release_tmp_memory(image_list,
+    #                    label_list)
 
     # Write the small datasets
     hdf5_file.create_dataset('nx', data=np.asarray(nx_list, dtype=np.uint16))
@@ -297,8 +332,11 @@ def _write_range_to_hdf5(hdf5_data,
     img_arr = np.asarray(img_list, dtype=np.float32)
     lab_arr = np.asarray(mask_list, dtype=np.uint8)
 
-    hdf5_data['images'][counter_from : counter_to, ...] = img_arr
-    hdf5_data['labels'][counter_from : counter_to, ...] = lab_arr
+    img_arr = np.swapaxes(img_arr, 0, 2)
+    lab_arr = np.swapaxes(lab_arr, 0, 2)
+
+    hdf5_data['images'][..., counter_from : counter_to] = img_arr
+    hdf5_data['labels'][..., counter_from : counter_to] = lab_arr
 
 # ===============================================================
 # Helper function to reset the tmp lists and free the memory

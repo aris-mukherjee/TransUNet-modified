@@ -114,7 +114,7 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'NCI', optim = 'ADAM', model_type = 'TESTTU_SE_NET', seed = '100', patch_size=[args.img_size, args.img_size],
+        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'NCI', optim = 'ADAM', model_type = 'TU_NO_ATTN', seed = '100', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
         metric_list += np.array(metric_i)
@@ -190,20 +190,20 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    #net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TESTTU_SE_NET_best_val_loss_seed100.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TU_NO_ATTN_best_val_loss_seed100.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'no_data_aug_' + 'epoch_' + str(args.max_epochs-1))
 
     # ============================
     # Load the trained parameters into the model
     # ============================  
 
-    #net.load_state_dict(torch.load(snapshot))
+    net.load_state_dict(torch.load(snapshot))
 
-    size = sum(p.numel() for p in net.parameters())
-    print(f'Number of parameters: {size}')
+    #size = sum(p.numel() for p in net.parameters())
+    #print(f'Number of parameters: {size}')
 
     # ============================
     # Logging
@@ -223,7 +223,7 @@ if __name__ == "__main__":
 
     if args.is_savenii:
         args.test_save_dir = '../predictions_2022/'
-        test_save_path = os.path.join(args.test_save_dir, 'TESTUCL_TU_SE_NET_test_seed100')
+        test_save_path = os.path.join(args.test_save_dir, 'NCI_TU_NO_ATTN_test_seed100')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

@@ -86,16 +86,15 @@ def test_single_volume(image, label, net, classes, dataset, optim, model_type, s
         # Perform the prediction slice by slice
         # ============================ 
 
-        for ind in range(image.shape[0]):
-            if dataset == 'USZ':
-                slice = image[:, :, ind]
-            else:
-                slice = image[ind, :, :]
+        for ind in range(image.shape[0]):  
+            slice = image[ind, :, :]
             x, y = slice.shape[0], slice.shape[1]
             if x != patch_size[0] or y != patch_size[1]:
                 slice = zoom(slice, (patch_size[0] / x, patch_size[1] / y), order=3)  # previous using 0
             
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_test.nii.gz', data = slice, affine = np.eye(4))
+            #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_test.nii.gz', data = slice, affine = np.eye(4))
+            #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_label.nii.gz', data = label[:, :, ind], affine = np.eye(4))
+
             input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float().cuda()
             net.eval()
             with torch.no_grad():
