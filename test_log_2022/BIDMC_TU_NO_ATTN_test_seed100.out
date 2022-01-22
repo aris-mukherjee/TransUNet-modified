@@ -92,3 +92,44 @@ case 6 mean_dice 0.624427 mean_hd95 58.801360
 ============================================================
 2022-01-21 23:39:15,428 Subject 8 out of 10: case08
 Subject 8 out of 10: case08
+2022-01-21 23:39:19,549 case 7 mean_dice 0.596153 mean_hd95 51.756641
+Predsum: 23533
+GtSum: 24609
+Predsum: 23533
+GtSum: 24609
+Predsum: 23533
+GtSum: 24609
+case 7 mean_dice 0.596153 mean_hd95 51.756641
+2022-01-21 23:39:19,735 ============================================================
+============================================================
+2022-01-21 23:39:19,735 Subject 9 out of 10: case00
+Subject 9 out of 10: case00
+2022-01-21 23:39:24,526 case 8 mean_dice 0.534403 mean_hd95 48.259714
+Predsum: 98270
+GtSum: 46385
+Predsum: 98270
+GtSum: 46385
+Predsum: 98270
+GtSum: 46385
+case 8 mean_dice 0.534403 mean_hd95 48.259714
+2022-01-21 23:39:24,709 ============================================================
+============================================================
+2022-01-21 23:39:24,709 Subject 10 out of 10: case03
+Subject 10 out of 10: case03
+2022-01-21 23:39:28,981 case 9 mean_dice 0.474959 mean_hd95 51.503397
+Predsum: 66394
+GtSum: 23677
+Predsum: 66394
+GtSum: 23677
+Predsum: 66394
+GtSum: 23677
+case 9 mean_dice 0.474959 mean_hd95 51.503397
+2022-01-21 23:39:28,981 Mean class 0 mean_dice 0.580170 mean_hd95 49.958770
+Mean class 0 mean_dice 0.580170 mean_hd95 49.958770
+2022-01-21 23:39:28,981 Mean class 1 mean_dice 0.580170 mean_hd95 49.958770
+Mean class 1 mean_dice 0.580170 mean_hd95 49.958770
+2022-01-21 23:39:28,981 Mean class 2 mean_dice 0.580170 mean_hd95 49.958770
+Mean class 2 mean_dice 0.580170 mean_hd95 49.958770
+2022-01-21 23:39:28,981 Testing performance in best val model: mean_dice : 0.580170 mean_hd95 : 49.958770
+Testing performance in best val model: mean_dice : 0.580170 mean_hd95 : 49.958770
+test.py successfully executed

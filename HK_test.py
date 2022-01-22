@@ -116,7 +116,7 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'HK', optim = 'ADAM', model_type = 'TU_NO_ATTN', seed= '100', patch_size=[args.img_size, args.img_size],
+        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'HK', optim = 'ADAM', model_type = 'UNET_DROPOUT', seed= '100', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
         metric_list += np.array(metric_i)
@@ -187,10 +187,10 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    #net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
+    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TU_NO_ATTN_best_val_loss_seed100.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_DROPOUT_best_val_loss_seed100.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -216,8 +216,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions_2022/'
-        test_save_path = os.path.join(args.test_save_dir, 'HK_TU_NO_ATTN_test_seed100')
+        args.test_save_dir = '../predictions_2022/UNET/'
+        test_save_path = os.path.join(args.test_save_dir, 'HK_UNET_DROPOUT_test_seed100')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

@@ -78,7 +78,7 @@ def trainer_runmc(args, model, snapshot_path):
     dice_loss = DiceLoss(num_classes)
     #optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     optimizer = optim.Adam(model.parameters(), lr=base_lr)
-    writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/2022/' + 'TU_NO_ATTN_log_400epochs_seed100') 
+    writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/2022/' + 'UNET_DROPOUT_log_400epochs_seed100') 
     iter_num = 0
     max_epoch = args.max_epochs
     max_iterations = args.max_epochs * (args.batch_size+1) # max_epoch = max_iterations // len(trainloader) + 1
@@ -155,7 +155,7 @@ def trainer_runmc(args, model, snapshot_path):
                 writer.add_scalar('info/total_loss_validation_set', val_loss, iter_num)
 
                 if val_loss < best_val_loss:
-                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TU_NO_ATTN_best_val_loss_seed100' + '.pth')
+                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_DROPOUT_best_val_loss_seed100' + '.pth')
                     torch.save(model.state_dict(), save_mode_path)
                     logging.info(f"Found new lowest validation loss at iteration {iter_num}! Save model to {save_mode_path}")
                     best_val_loss = val_loss
@@ -167,11 +167,11 @@ def trainer_runmc(args, model, snapshot_path):
 
         """ save_interval = 50  # int(max_epoch/6)
         if epoch_num > int(max_epoch / 4) and (epoch_num + 1) % save_interval == 0:
-            save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TU_NO_ATTN_best_val_loss_seed100' + 'epoch_' + str(epoch_num) + '.pth')
+            save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_DROPOUT_best_val_loss_seed100' + 'epoch_' + str(epoch_num) + '.pth')
             torch.save(model.state_dict(), save_mode_path)
             logging.info("save model to {}".format(save_mode_path))
         if epoch_num >= max_epoch - 1:
-            save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/', 'TU_NO_ATTN_best_val_loss_seed100' + 'epoch_' + str(epoch_num) + '.pth')
+            save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_DROPOUT_best_val_loss_seed100' + 'epoch_' + str(epoch_num) + '.pth')
             torch.save(model.state_dict(), save_mode_path)
             logging.info("save model to {}".format(save_mode_path))
             iterator.close() 
