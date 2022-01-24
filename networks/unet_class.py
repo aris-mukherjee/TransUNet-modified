@@ -21,13 +21,12 @@ class DoubleConv(nn.Module):
 
 class UNET(nn.Module):
     def __init__(
-            self, in_channels=3, out_channels=1, features=[32, 64, 128, 256],
+            self, in_channels=3, out_channels=1, features=[64, 128, 256, 512],
     ):
         super(UNET, self).__init__()
         self.ups = nn.ModuleList()
         self.downs = nn.ModuleList()
         self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
-        self.dropout = nn.Dropout(0.1)
 
         # Down part of UNET
         for feature in features:
@@ -53,7 +52,6 @@ class UNET(nn.Module):
             x = down(x)
             skip_connections.append(x)
             x = self.pool(x)
-            x = self.dropout(x)
 
         x = self.bottleneck(x)
         skip_connections = skip_connections[::-1] #reverse skip connections as we are moving up now

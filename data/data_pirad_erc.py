@@ -105,7 +105,7 @@ def prepare_data(input_folder,
     data = {}
     num_slices = count_slices(folder_list, idx_start, idx_end)
     data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
-    data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.float32)
+    data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
     
     # ===============================
     # initialize lists
@@ -130,6 +130,10 @@ def prepare_data(input_folder,
     # iterate through the requested indices
     # ===============================
     for idx in range(idx_start, idx_end):
+
+        patname = folder_list[idx][folder_list[idx].rfind('/')+1:]
+
+        print(f"NEW PATIENT: {patname}")
         
         patient_counter = patient_counter + 1
         
@@ -139,7 +143,7 @@ def prepare_data(input_folder,
         image, _, image_hdr = utils.load_nii(folder_list[idx] + '/t2_tse_tra_n4.nii.gz')
 
         utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '00_test.nii.gz', data = image, affine = np.eye(4))
-        
+
         # ============
         # normalize the image to be between 0 and 1
         # ============
@@ -191,7 +195,7 @@ def prepare_data(input_folder,
             # rescale the images and labels so that their orientation matches that of the nci dataset
             # ============        
 
-            patname = folder_list[idx][folder_list[idx].rfind('/')+1:]
+            
             
             if patname in ['88800036', '88800035', '88800046', '88800038', '88800021', '88800053']:
                     # For these images, rescaling directly to the target resolution (0.625) leads to faultily rescaled labels (all pixels get the value 0)
@@ -200,10 +204,13 @@ def prepare_data(input_folder,
                     scale_vector_tmp = [image_hdr.get_zooms()[0] / 0.625, image_hdr.get_zooms()[1] / 0.625]
                     image2d_rescaled = rescale(image_normalized[:, :, zz], scale_vector_tmp, order=1, preserve_range=True, multichannel=False, mode = 'constant')
                     label2d_rescaled = rescale(label[:, :, zz], scale_vector_tmp, order=0, preserve_range=True, multichannel=False, mode='constant')
+                    utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '201_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
+                    print(f'1Max label value label2d_rescaled: {label2d_rescaled.max()}')
+                    print(f'1Min label value label2d_rescaled: {label2d_rescaled.min()}')
                     scale_vector_tmp = [0.625 / target_resolution, 0.625 / target_resolution]
                     image2d_rescaled = rescale(image2d_rescaled, scale_vector_tmp, order=1, preserve_range=True, multichannel=False, mode = 'constant')
                     label2d_rescaled = rescale(label2d_rescaled, scale_vector_tmp, order=0, preserve_range=True, multichannel=False, mode='constant')
-            
+                    utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '301_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
             else:
             
                     image2d_rescaled = rescale(np.squeeze(image_normalized[:, :, zz]),
@@ -226,8 +233,8 @@ def prepare_data(input_folder,
             utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
             utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
 
-            print(f'Max label value label2d_rescaled: {label2d_rescaled.max()}')
-            print(f'Min label value label2d_rescaled: {label2d_rescaled.min()}')
+            print(f'2Max label value label2d_rescaled: {label2d_rescaled.max()}')
+            print(f'2Min label value label2d_rescaled: {label2d_rescaled.min()}')
 
             # ============
             # rotate the images and labels so that their orientation matches that of the nci dataset

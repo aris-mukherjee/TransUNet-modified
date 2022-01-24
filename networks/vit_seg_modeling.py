@@ -12,7 +12,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm
+from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm, BatchNorm2d
 from torch.nn.modules.utils import _pair
 from scipy import ndimage
 from . import vit_seg_configs as configs
@@ -51,7 +51,8 @@ class Attention(nn.Module):
     def __init__(self, config, vis):
         super(Attention, self).__init__()
         self.vis = vis
-        self.num_attention_heads = config.transformer["num_heads"]
+        #self.num_attention_heads = config.transformer["num_heads"]
+        self.num_attention_heads = 1
         self.attention_head_size = int(config.hidden_size / self.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 

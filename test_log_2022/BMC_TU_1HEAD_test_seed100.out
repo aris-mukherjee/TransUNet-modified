@@ -1,0 +1,139 @@
+2022-01-22 16:48:32,921 Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', test_dataset='BMC', num_classes=3, max_iterations=6800, max_epochs=400, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='BMC', z_spacing=1, is_pretrain=True, exp='TU_BMC256')
+Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/', test_dataset='BMC', num_classes=3, max_iterations=6800, max_epochs=400, batch_size=16, img_size=256, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='BMC', z_spacing=1, is_pretrain=True, exp='TU_BMC256')
+2022-01-22 16:48:32,922 TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+TU_pretrain_R50-ViT-B_16_skip3_bs16_256
+2022-01-22 16:48:32,939 Reading BMC images...
+Reading BMC images...
+2022-01-22 16:48:32,939 Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+Data root directory: /itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/NCI_Prostate/
+2022-01-22 16:48:32,940 Already preprocessed this configuration. Loading now!
+Already preprocessed this configuration. Loading now!
+2022-01-22 16:48:38,210 ============================================================
+============================================================
+2022-01-22 16:48:38,248 Subject 1 out of 10: ProstateDx-01-0073
+Subject 1 out of 10: ProstateDx-01-0073
+2022-01-22 16:48:43,218 case 0 mean_dice 0.813450 mean_hd95 79.064214
+Predsum: 32991
+GtSum: 28987
+Predsum: 32991
+GtSum: 28987
+Predsum: 32991
+GtSum: 28987
+case 0 mean_dice 0.813450 mean_hd95 79.064214
+2022-01-22 16:48:43,254 ============================================================
+============================================================
+2022-01-22 16:48:43,254 Subject 2 out of 10: ProstateDx-01-0075
+Subject 2 out of 10: ProstateDx-01-0075
+2022-01-22 16:48:47,705 case 1 mean_dice 0.829811 mean_hd95 5.385165
+Predsum: 58021
+GtSum: 55547
+Predsum: 58021
+GtSum: 55547
+Predsum: 58021
+GtSum: 55547
+case 1 mean_dice 0.829811 mean_hd95 5.385165
+2022-01-22 16:48:47,736 ============================================================
+============================================================
+2022-01-22 16:48:47,736 Subject 3 out of 10: ProstateDx-01-0063
+Subject 3 out of 10: ProstateDx-01-0063
+2022-01-22 16:48:51,865 case 2 mean_dice 0.812123 mean_hd95 14.212670
+Predsum: 43468
+GtSum: 38197
+Predsum: 43468
+GtSum: 38197
+Predsum: 43468
+GtSum: 38197
+case 2 mean_dice 0.812123 mean_hd95 14.212670
+2022-01-22 16:48:51,893 ============================================================
+============================================================
+2022-01-22 16:48:51,893 Subject 4 out of 10: ProstateDx-01-0080
+Subject 4 out of 10: ProstateDx-01-0080
+2022-01-22 16:48:55,808 case 3 mean_dice 0.644640 mean_hd95 7.071068
+Predsum: 19208
+GtSum: 27553
+Predsum: 19208
+GtSum: 27553
+Predsum: 19208
+GtSum: 27553
+case 3 mean_dice 0.644640 mean_hd95 7.071068
+2022-01-22 16:48:55,837 ============================================================
+============================================================
+2022-01-22 16:48:55,837 Subject 5 out of 10: ProstateDx-01-0071
+Subject 5 out of 10: ProstateDx-01-0071
+2022-01-22 16:48:59,794 case 4 mean_dice 0.636773 mean_hd95 8.000000
+Predsum: 18689
+GtSum: 23483
+Predsum: 18689
+GtSum: 23483
+Predsum: 18689
+GtSum: 23483
+case 4 mean_dice 0.636773 mean_hd95 8.000000
+2022-01-22 16:48:59,822 ============================================================
+============================================================
+2022-01-22 16:48:59,822 Subject 6 out of 10: ProstateDx-01-0074
+Subject 6 out of 10: ProstateDx-01-0074
+2022-01-22 16:49:04,154 case 5 mean_dice 0.859626 mean_hd95 20.918847
+Predsum: 20914
+GtSum: 18317
+Predsum: 20914
+GtSum: 18317
+Predsum: 20914
+GtSum: 18317
+case 5 mean_dice 0.859626 mean_hd95 20.918847
+2022-01-22 16:49:04,181 ============================================================
+============================================================
+2022-01-22 16:49:04,181 Subject 7 out of 10: ProstateDx-01-0082
+Subject 7 out of 10: ProstateDx-01-0082
+2022-01-22 16:49:05,797 case 6 mean_dice 1.000000 mean_hd95 0.000000
+Predsum: 87748
+GtSum: 0
+Predsum: 87748
+GtSum: 0
+Predsum: 87748
+GtSum: 0
+case 6 mean_dice 1.000000 mean_hd95 0.000000
+2022-01-22 16:49:05,823 ============================================================
+============================================================
+2022-01-22 16:49:05,823 Subject 8 out of 10: ProstateDx-01-0060
+Subject 8 out of 10: ProstateDx-01-0060
+2022-01-22 16:49:09,824 case 7 mean_dice 0.872814 mean_hd95 4.000000
+Predsum: 81676
+GtSum: 85560
+Predsum: 81676
+GtSum: 85560
+Predsum: 81676
+GtSum: 85560
+case 7 mean_dice 0.872814 mean_hd95 4.000000
+2022-01-22 16:49:09,853 ============================================================
+============================================================
+2022-01-22 16:49:09,853 Subject 9 out of 10: ProstateDx-01-0076
+Subject 9 out of 10: ProstateDx-01-0076
+2022-01-22 16:49:13,511 case 8 mean_dice 0.831384 mean_hd95 6.000000
+Predsum: 30870
+GtSum: 29148
+Predsum: 30870
+GtSum: 29148
+Predsum: 30870
+GtSum: 29148
+case 8 mean_dice 0.831384 mean_hd95 6.000000
+2022-01-22 16:49:13,536 ============================================================
+============================================================
+2022-01-22 16:49:13,536 Subject 10 out of 10: ProstateDx-01-0059
+Subject 10 out of 10: ProstateDx-01-0059
+2022-01-22 16:49:17,171 case 9 mean_dice 0.817294 mean_hd95 3.000000
+Predsum: 23311
+GtSum: 25423
+Predsum: 23311
+GtSum: 25423
+Predsum: 23311
+GtSum: 25423
+case 9 mean_dice 0.817294 mean_hd95 3.000000
+2022-01-22 16:49:17,171 Mean class 0 mean_dice 0.811792 mean_hd95 14.765196
+Mean class 0 mean_dice 0.811792 mean_hd95 14.765196
+2022-01-22 16:49:17,171 Mean class 1 mean_dice 0.811792 mean_hd95 14.765196
+Mean class 1 mean_dice 0.811792 mean_hd95 14.765196
+2022-01-22 16:49:17,172 Mean class 2 mean_dice 0.811792 mean_hd95 14.765196
+Mean class 2 mean_dice 0.811792 mean_hd95 14.765196
+2022-01-22 16:49:17,172 Testing performance in best val model: mean_dice : 0.811792 mean_hd95 : 14.765196
+Testing performance in best val model: mean_dice : 0.811792 mean_hd95 : 14.765196
+test.py successfully executed
