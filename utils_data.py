@@ -4,6 +4,7 @@ import data.data_abide as data_abide
 import data.data_nci as data_nci
 import data.data_promise as data_promise
 import data.data_pirad_erc as data_pirad_erc
+import data.data_fets as data_fets
 import data.data_mnms as data_mnms
 import data.data_wmh as data_wmh
 import data.data_scgm as data_scgm
@@ -603,6 +604,37 @@ def load_testing_data(test_dataset,
         num_test_subjects = 10 # imts.shape[0] // image_depth
         ids = np.arange(idx_start, idx_end)
 
+    
+
+    # ================================================================
+    # FeTS
+    # ================================================================
+
+    elif test_dataset == 'FETS':
+        idx_start = 0
+        idx_end = 129
+
+        data_pros = data_fets.load_data(input_folder = sys_config.orig_data_root_fets,
+                                                preproc_folder = sys_config.preproc_folder_fets,
+                                                idx_start = idx_start,
+                                                idx_end = idx_end,
+                                                size = image_size,
+                                                target_resolution = target_resolution
+                                                )
+            
+        imts = data_pros['images']
+        gtts = data_pros['labels']
+        orig_data_res_x = data_pros['px'][:]
+        orig_data_res_y = data_pros['py'][:]
+        orig_data_res_z = data_pros['pz'][:]
+        orig_data_siz_x = data_pros['nx'][:]
+        orig_data_siz_y = data_pros['ny'][:]
+        orig_data_siz_z = data_pros['nz'][:]
+        name_test_subjects = data_pros['patnames']
+        num_test_subjects = 10 # orig_data_siz_z.shape[0] 
+        ids = np.arange(idx_start, idx_end)
+
+
     return (imts,  # 0
             gtts,  # 1
             orig_data_res_x, # 2
@@ -614,7 +646,6 @@ def load_testing_data(test_dataset,
             name_test_subjects, # 8
             num_test_subjects, # 9
             ids) # 10
-
 # ================================================================
 # ================================================================
 def load_testing_data_wo_preproc(test_dataset_name,

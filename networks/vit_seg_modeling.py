@@ -12,7 +12,7 @@ import torch
 import torch.nn as nn
 import numpy as np
 
-from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm, BatchNorm2d
+from torch.nn import CrossEntropyLoss, Dropout, Softmax, Linear, Conv2d, LayerNorm
 from torch.nn.modules.utils import _pair
 from scipy import ndimage
 from . import vit_seg_configs as configs
@@ -51,8 +51,7 @@ class Attention(nn.Module):
     def __init__(self, config, vis):
         super(Attention, self).__init__()
         self.vis = vis
-        #self.num_attention_heads = config.transformer["num_heads"]
-        self.num_attention_heads = 1
+        self.num_attention_heads = config.transformer["num_heads"]
         self.attention_head_size = int(config.hidden_size / self.num_attention_heads)
         self.all_head_size = self.num_attention_heads * self.attention_head_size
 
@@ -171,22 +170,22 @@ class Block(nn.Module):
     def __init__(self, config, vis):
         super(Block, self).__init__()
         self.hidden_size = config.hidden_size
-        self.attention_norm = LayerNorm(config.hidden_size, eps=1e-6)
+        #self.attention_norm = LayerNorm(config.hidden_size, eps=1e-6)
         self.ffn_norm = LayerNorm(config.hidden_size, eps=1e-6)
         self.ffn = Mlp(config)
-        self.attn = Attention(config, vis)
+        #self.attn = Attention(config, vis)
 
     def forward(self, x):
-        h = x
-        x = self.attention_norm(x)
-        x, weights = self.attn(x)
-        x = x + h
+        #h = x
+        #x = self.attention_norm(x)
+        #x, weights = self.attn(x)
+        #x = x + h
 
         h = x
         x = self.ffn_norm(x)
         x = self.ffn(x)
         x = x + h
-        return x, weights
+        return x
 
     def load_from(self, weights, n_block):
         ROOT = f"Transformer/encoderblock_{n_block}"
@@ -239,11 +238,11 @@ class Encoder(nn.Module):
     def forward(self, hidden_states):
         attn_weights = []
         for layer_block in self.layer:
-            hidden_states, weights = layer_block(hidden_states)
-            if self.vis:
-                attn_weights.append(weights)
+            hidden_states = layer_block(hidden_states)
+            #if self.vis:
+            #    attn_weights.append(weights)
         encoded = self.encoder_norm(hidden_states)
-        return encoded, attn_weights
+        return encoded
 
 
 class Transformer(nn.Module):
@@ -254,8 +253,8 @@ class Transformer(nn.Module):
 
     def forward(self, input_ids):
         embedding_output, features = self.embeddings(input_ids)
-        encoded, attn_weights = self.encoder(embedding_output)  # (B, n_patch, hidden)
-        return encoded, attn_weights, features
+        encoded = self.encoder(embedding_output)  # (B, n_patch, hidden)
+        return encoded, features
 
 
 class Conv2dReLU(nn.Sequential):
@@ -388,7 +387,7 @@ class VisionTransformer(nn.Module):
     def forward(self, x):
         if x.size()[1]== 1: 
             x = x.repeat(1,3,1,1)
-        x, attn_weights, features = self.transformer(x)  # (B, n_patch, hidden)
+        x, features = self.transformer(x)  # (B, n_patch, hidden)
         x = self.decoder(x, features)
         logits = self.segmentation_head(x)
         return logits
