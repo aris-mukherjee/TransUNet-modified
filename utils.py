@@ -18,6 +18,8 @@ from tensorboardX import SummaryWriter
 import matplotlib.pyplot as plt
 from skimage import io
 from skimage import color
+from sklearn.calibration import CalibrationDisplay
+import matplotlib.pyplot as plt
 
 writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/' + 'Test_Images_Output') 
 i = 0
@@ -77,10 +79,13 @@ def calculate_metric_percase(pred, gt):
 
 
 
-def test_single_volume(image, label, net, classes, dataset, optim, model_type, seed, patch_size=[256, 256], test_save_path=None, case=None, z_spacing=1):
+def  test_single_volume(image, label, net, classes, dataset, optim, model_type, seed, patch_size=[256, 256], test_save_path=None, case=None, z_spacing=1):
     image, label = image.cpu().detach().numpy(), label.cpu().detach().numpy()
     if len(image.shape) == 3:
         prediction = np.zeros_like(label)
+
+        foreground_list = []
+        label_list = []
 
         # ============================
         # Perform the prediction slice by slice
@@ -95,13 +100,12 @@ def test_single_volume(image, label, net, classes, dataset, optim, model_type, s
             #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_test.nii.gz', data = slice, affine = np.eye(4))
             #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_label.nii.gz', data = label[:, :, ind], affine = np.eye(4))
 
-            input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float().cuda()
+            input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float()#.cuda()
             net.eval()
             with torch.no_grad():
 
                 outputs = net(input)
                 out_soft = torch.softmax(outputs, dim=1)
-                
                 out_hard = (out_soft>0.5).float()
                 out_hard_argmax = torch.argmax(out_hard, dim=1).squeeze(0) 
                 out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
@@ -117,13 +121,19 @@ def test_single_volume(image, label, net, classes, dataset, optim, model_type, s
                         plt.imshow(out_soft_squeezed, cmap = 'gray', vmin = 0, vmax = 1)
                         plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_channel%s_seed%s.png' % (dataset, model_type, optim, case, ind, i, seed))
 
-                    """ for i in range(256):
-                        for j in range(256):
-                            if out_hard_argmax[i][j] != 0:
-                                rgb[i, j, out_hard_argmax[i][j]] = 255 #black if background, green if 1, blue if 2
-                            #print(rgb)
-                    plt.imshow(rgb)
-                    plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_seed%s.png' % (dataset, model_type, optim, case, ind, seed)) """
+                out_soft_sq = out_soft.squeeze(0)
+                out_soft_foreground = out_soft_sq[1, :, : ]+ out_soft_sq[2, :, : ]
+                out_soft_foreground = out_soft_foreground.flatten()
+                out_soft_foreground = out_soft_foreground.numpy()
+                foreground_list.append(out_soft_foreground)
+                
+
+                label_temp = label[ind]
+                label_temp = label_temp.flatten()
+                label_temp[np.where(label_temp > 0)] = 1
+                label_list.append(label_temp)
+                                                                                    
+
                 out = out.cpu().detach().numpy()
                 if x != patch_size[0] or y != patch_size[1]:
                     pred = zoom(out, (x / patch_size[0], y / patch_size[1]), order=0)
@@ -138,6 +148,24 @@ def test_single_volume(image, label, net, classes, dataset, optim, model_type, s
         with torch.no_grad():
             out = torch.argmax(torch.softmax(net(input), dim=1), dim=1).squeeze(0)
             prediction = out.cpu().detach().numpy()
+
+    
+    label_list_arr = np.array(label_list)
+    label_list_arr = label_list_arr.flatten()
+    print("Printing")
+    print(f"Max: {label_list_arr[744750:749000].max()}")
+    print(f"Min: {label_list_arr[744750:749000].min()}")
+
+    foreground_list_arr = np.array(foreground_list)
+    foreground_list_arr = foreground_list_arr.flatten()
+
+    test_label = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+    test_pred = [0.3, 0.2, 0.9, 0.4, 0.7, 0.3, 0.5, 0.6, 0.3, 0.9]
+    #disp = CalibrationDisplay.from_predictions(label_list_arr[744750:749000], foreground_list_arr[744750:749000])
+    disp = CalibrationDisplay.from_predictions(test_label, test_pred)
+    plt.show()
+    plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/{dataset}_case{case}.png')
+
     
 
 

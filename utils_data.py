@@ -293,6 +293,79 @@ def load_training_data(train_dataset,
         gtvl = data_brain_val['labels']
         orig_data_siz_z_val = data_brain_val['nz'][:]
         num_val_subjects = orig_data_siz_z_val.shape[0]
+
+
+
+
+    elif train_dataset in ['FETS_train']:
+
+        data_pros_part1, data_pros_part2, data_pros_part3, data_pros_val = data_fets.load_training_data(input_folder = sys_config.orig_data_root_fets,
+                                                            preproc_folder = sys_config.preproc_folder_fets,
+                                                            size = image_size,
+                                                            target_resolution = target_resolution
+                                                            )
+
+                        
+        imtr_part1 = data_pros_part1['images']
+        gttr_part1 = data_pros_part1['labels']
+        orig_data_res_x_part1 = data_pros_part1['px'][:]
+        orig_data_res_y_part1 = data_pros_part1['py'][:]
+        orig_data_res_z_part1 = data_pros_part1['pz'][:]
+        orig_data_siz_x_part1 = data_pros_part1['nx'][:]
+        orig_data_siz_y_part1 = data_pros_part1['ny'][:]
+        orig_data_siz_z_part1 = data_pros_part1['nz'][:]
+        name_training_subjects_part1 = data_pros_part1['patnames']
+        num_train_subjects_part1 = orig_data_siz_z_part1.shape[0]
+
+        imtr_part2 = data_pros_part2['images']
+        gttr_part2 = data_pros_part2['labels']
+        orig_data_res_x_part2 = data_pros_part2['px'][:]
+        orig_data_res_y_part2 = data_pros_part2['py'][:]
+        orig_data_res_z_part2 = data_pros_part2['pz'][:]
+        orig_data_siz_x_part2 = data_pros_part2['nx'][:]
+        orig_data_siz_y_part2 = data_pros_part2['ny'][:]
+        orig_data_siz_z_part2 = data_pros_part2['nz'][:]
+        name_training_subjects_part2 = data_pros_part2['patnames']
+        num_train_subjects_part2 = orig_data_siz_z_part2.shape[0]
+
+        imtr_part3 = data_pros_part3['images']
+        gttr_part3 = data_pros_part3['labels']
+        orig_data_res_x_part3 = data_pros_part3['px'][:]
+        orig_data_res_y_part3 = data_pros_part3['py'][:]
+        orig_data_res_z_part3 = data_pros_part3['pz'][:]
+        orig_data_siz_x_part3 = data_pros_part3['nx'][:]
+        orig_data_siz_y_part3 = data_pros_part3['ny'][:]
+        orig_data_siz_z_part3 = data_pros_part3['nz'][:]
+        name_training_subjects_part3 = data_pros_part3['patnames']
+        num_train_subjects_part3 = orig_data_siz_z_part3.shape[0]
+
+        imtr_val = data_pros_val['images']
+        gttr_val = data_pros_val['labels']
+        orig_data_res_x_val = data_pros_val['px'][:]
+        orig_data_res_y_val = data_pros_val['py'][:]
+        orig_data_res_z_val = data_pros_val['pz'][:]
+        orig_data_siz_x_val = data_pros_val['nx'][:]
+        orig_data_siz_y_val = data_pros_val['ny'][:]
+        orig_data_siz_z_val = data_pros_val['nz'][:]
+        name_training_subjects_val = data_pros_val['patnames']
+        num_train_subjects_val = orig_data_siz_z_val.shape[0]
+
+        return (imtr_part1, #0
+            gttr_part1, #1
+            num_train_subjects_part1, #2
+            imtr_part2, #3
+            gttr_part2, #4
+            num_train_subjects_part2, #5
+            imtr_part3, #6
+            gttr_part3, #7
+            num_train_subjects_part3, #8
+            imtr_val, #9
+            gttr_val, #10
+            num_train_subjects_val) #11
+            
+
+
+
                 
     return (imtr, # 0
             gttr, # 1
@@ -607,20 +680,49 @@ def load_testing_data(test_dataset,
     
 
     # ================================================================
-    # FeTS
+    # FeTS Test dataset in source domain
     # ================================================================
 
-    elif test_dataset == 'FETS':
-        idx_start = 0
-        idx_end = 129
+    elif test_dataset == 'FETS_TEST_SD':
+        
 
-        data_pros = data_fets.load_data(input_folder = sys_config.orig_data_root_fets,
+        data_pros = data_fets.load_test_sd_data(input_folder = sys_config.orig_data_root_fets,
                                                 preproc_folder = sys_config.preproc_folder_fets,
-                                                idx_start = idx_start,
-                                                idx_end = idx_end,
                                                 size = image_size,
                                                 target_resolution = target_resolution
                                                 )
+
+
+
+        imts = data_pros['images']
+        gtts = data_pros['labels']
+        orig_data_res_x = data_pros['px'][:]
+        orig_data_res_y = data_pros['py'][:]
+        orig_data_res_z = data_pros['pz'][:]
+        orig_data_siz_x = data_pros['nx'][:]
+        orig_data_siz_y = data_pros['ny'][:]
+        orig_data_siz_z = data_pros['nz'][:]
+        name_test_subjects = data_pros['patnames']
+        num_test_subjects = orig_data_siz_z.shape[0] 
+        ids = np.arange(num_test_subjects)
+
+    
+    # ================================================================
+    # FeTS Test dataset in target domain 1
+    # ================================================================
+
+    elif test_dataset == 'FETS_TEST_TD1':
+        
+
+        data_pros = data_fets.load_test_td1_data(input_folder = sys_config.orig_data_root_fets,
+                                                preproc_folder = sys_config.preproc_folder_fets,
+                                                size = image_size,
+                                                target_resolution = target_resolution
+                                                )
+
+
+
+
             
         imts = data_pros['images']
         gtts = data_pros['labels']
@@ -631,8 +733,37 @@ def load_testing_data(test_dataset,
         orig_data_siz_y = data_pros['ny'][:]
         orig_data_siz_z = data_pros['nz'][:]
         name_test_subjects = data_pros['patnames']
-        num_test_subjects = 10 # orig_data_siz_z.shape[0] 
-        ids = np.arange(idx_start, idx_end)
+        num_test_subjects = orig_data_siz_z.shape[0] 
+        ids = np.arange(num_test_subjects)
+
+
+    # ================================================================
+    # FeTS Test dataset in target domain 2
+    # ================================================================
+
+
+    elif test_dataset == 'FETS_TEST_TD2':
+        
+
+        data_pros = data_fets.load_test_td2_data(input_folder = sys_config.orig_data_root_fets,
+                                                preproc_folder = sys_config.preproc_folder_fets,
+                                                size = image_size,
+                                                target_resolution = target_resolution
+                                                )
+
+            
+        imts = data_pros['images']
+        gtts = data_pros['labels']
+        orig_data_res_x = data_pros['px'][:]
+        orig_data_res_y = data_pros['py'][:]
+        orig_data_res_z = data_pros['pz'][:]
+        orig_data_siz_x = data_pros['nx'][:]
+        orig_data_siz_y = data_pros['ny'][:]
+        orig_data_siz_z = data_pros['nz'][:]
+        name_test_subjects = data_pros['patnames']
+        num_test_subjects = orig_data_siz_z.shape[0] 
+        ids = np.arange(num_test_subjects)
+
 
 
     return (imts,  # 0
@@ -726,3 +857,30 @@ def load_testing_data_wo_preproc(test_dataset_name,
     return image_orig, labels_orig
 
 
+
+
+""" def load_validation_data(train_dataset,
+                       image_size,
+                       target_resolution,
+                       cv_fold_num = 1):
+
+
+    data_pros = data_fets.load_validation_data(input_folder = sys_config.orig_data_root_fets,
+                                                preproc_folder = sys_config.preproc_folder_fets,
+                                                size = image_size,
+                                                target_resolution = target_resolution
+                                                )
+
+            
+        imts = data_pros['images']
+        gtts = data_pros['labels']
+        orig_data_res_x = data_pros['px'][:]
+        orig_data_res_y = data_pros['py'][:]
+        orig_data_res_z = data_pros['pz'][:]
+        orig_data_siz_x = data_pros['nx'][:]
+        orig_data_siz_y = data_pros['ny'][:]
+        orig_data_siz_z = data_pros['nz'][:]
+        name_test_subjects = data_pros['patnames']
+        num_test_subjects = orig_data_siz_z.shape[0] 
+        ids = np.arange(num_test_subjects)
+ """

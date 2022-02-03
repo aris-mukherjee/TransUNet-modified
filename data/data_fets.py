@@ -6,6 +6,7 @@ import config.system_paths as sys_config
 from skimage.transform import rescale
 import gc
 import h5py
+import subprocess
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s %(message)s')
@@ -17,10 +18,8 @@ MAX_WRITE_BUFFER = 5
 # This function unzips and pre-processes the data if this has not already been done.
 # If this already been done, it reads the processed data and returns it.                    
 # ===============================================================                         
-def load_data(input_folder,
+def load_test_sd_data(input_folder,
               preproc_folder,
-              idx_start,
-              idx_end,
               size,
               target_resolution,
               force_overwrite = False):
@@ -33,52 +32,35 @@ def load_data(input_folder,
     # ===============================
     # file to create or directly read if it already exists
     # ===============================
-    #size_str = '_'.join([str(i) for i in size])
-    #res_str = '_'.join([str(i) for i in target_resolution])
-    data_file_name = 'data_2d_from_%d_to_%d_size_%s_res_%s.hdf5' % (idx_start, idx_end, size, target_resolution)
-    data_file_path = os.path.join(preproc_folder, data_file_name)
+
+    test_sd_file_name = 'data_test_sd.hdf5' 
+    test_sd_file_path = os.path.join(preproc_folder, test_sd_file_name)
     
     # ===============================
     # if the images have not already been extracted, do so
     # ===============================
-    if not os.path.exists(data_file_path) or force_overwrite:
+    if not os.path.exists(test_sd_file_path) or force_overwrite:
         
         logging.info('This configuration of protocol and data indices has not yet been preprocessed')
         logging.info('Preprocessing now...')
-        prepare_data(input_folder,
-                     data_file_path,
-                     idx_start,
-                     idx_end,
+        prepare_test_sd_data(input_folder,
+                     preproc_folder,
+                     test_sd_file_path,
                      size,
                      target_resolution
                      )
     else:        
         logging.info('Already preprocessed this configuration. Loading now...')
         
-    return h5py.File(data_file_path, 'r')
-
-# ===============================================================
-# count the total number of 2d slices to be read: this number is required to specify the dataset size while opening the hdf5 file
-# ===============================================================
-def count_slices(folder_list,
-                 idx_start,
-                 idx_end):
-
-    num_slices = 0
-    for idx in range(idx_start, idx_end):
-        image, _, _ = utils.load_nii(folder_list[idx] + '/t2_tse_tra.nii.gz')
-        num_slices = num_slices + image.shape[2]
-
-    return num_slices
+    return h5py.File(test_sd_file_path, 'r')
 
 # ===============================================================
 # Main function that prepares a dataset from the raw challenge data to an hdf5 dataset.
 # Extract the required files from their zipped directories
 # ===============================================================
-def prepare_data(input_folder,
-                 output_filepath,
-                 idx_start,
-                 idx_end,
+def prepare_test_sd_data(input_folder,
+                 preprocessing_folder, 
+                 test_sd_file_path,
                  size,
                  target_resolution
                  ):
@@ -86,29 +68,66 @@ def prepare_data(input_folder,
     # ===============================
     # create a hdf5 file
     # ===============================
-    hdf5_file = h5py.File(output_filepath, "w")
+    hdf5_file = h5py.File(test_sd_file_path, "w")
     
     # ===============================
     # read all the patient folders from the base input folder
     # ===============================
+
+
+    logging.info('Counting files and parsing meta data...')
+
+    training_folder = input_folder + 'MICCAI_FeTS2021_TrainingData/'
+
     folder_list = []
-    for folder in os.listdir(input_folder):
-        folder_path = os.path.join(input_folder, folder)        
-        if os.path.isdir(folder_path) and 't2_tse_tra.nii.gz' in os.listdir(folder_path):
-            if 'segmentation_' + labeller + '.nii.gz' in os.listdir(folder_path) or 'segmentation_tra_' +  labeller + '.nii.gz' in os.listdir(folder_path):
-                folder_list.append(folder_path)
-    
+
+    test_ids_sd = [8, 7, 6, 5, 4, 3, 2, 31, 32, 14, 22, 63, 62, 61, 60, 59, 58, 57, 56, 55]
+
+    num_slices = 0
+
+    for folder in os.listdir(training_folder):
+        if not (folder.lower().endswith('.csv') or folder.lower().endswith('.md')):
+            folder_path = os.path.join(training_folder, folder)  
+            patient_id = int(folder.split('_')[-1])      
+            if os.path.isdir(folder_path):
+                if patient_id in test_ids_sd : 
+                    folder_list.append(folder_path)
+
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                            
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_flair.shape[2]
+
+
+
     # ===============================
     # Create datasets for images and labels
     # ===============================
+
     data = {}
-    num_slices = count_slices(folder_list, idx_start, idx_end)
     data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
     data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+
+    #data = {}
+    #num_slices = count_slices(folder_list, idx_start, idx_end)
+    #data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    #data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
     
     # ===============================
     # initialize lists
-    # ===============================        
+    # ===============================    
+
     label_list = []
     image_list = []
     nx_list = []
@@ -118,154 +137,130 @@ def prepare_data(input_folder,
     py_list = []
     pz_list = []
     pat_names_list = []
+
     
     # ===============================        
     # ===============================        
+    logging.info('Parsing image files')
+    
+        
+    patient_counter = 0
     write_buffer = 0
     counter_from = 0
-    patient_counter = 0
-    
-    # ===============================
-    # iterate through the requested indices
-    # ===============================
-    for idx in range(idx_start, idx_end):
 
-        patname = folder_list[idx][folder_list[idx].rfind('/')+1:]
+    for folder in folder_list:
 
-        print(f"NEW PATIENT: {patname}")
-        
-        patient_counter = patient_counter + 1
-        
-        # ==================
-        # read the image file
-        # ==================
-        image, _, image_hdr = utils.load_nii(folder_list[idx] + '/t2_tse_tra_n4.nii.gz')
+        patient_counter += 1
 
-        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '00_test.nii.gz', data = image, affine = np.eye(4))
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list.append(patname)
 
-        # ============
-        # normalize the image to be between 0 and 1
-        # ============
-        image_normalized = utils.normalise_image(image, norm_type='div_by_max')
 
-        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '01_test.nii.gz', data = image_normalized, affine = np.eye(4))
-        
-        # ==================
-        # collect some header info.
-        # ==================
-        px_list.append(float(image_hdr.get_zooms()[0]))
-        py_list.append(float(image_hdr.get_zooms()[1]))
-        pz_list.append(float(image_hdr.get_zooms()[2]))
-        nx_list.append(image.shape[0])
-        ny_list.append(image.shape[1])
-        nz_list.append(image.shape[2])
-        pat_names_list.append(folder_list[idx][folder_list[idx].rfind('/')+1:])
-        
-        # ==================
-        # read the label file
-        # ==================        
-        if 'segmentation_' + labeller + '.nii.gz' in os.listdir(folder_list[idx]):
-            label, _, _ = utils.load_nii(folder_list[idx] + '/segmentation_' + labeller + '.nii.gz')
-        elif 'segmentation_tra_' + labeller + '.nii.gz' in os.listdir(folder_list[idx]):
-            label, _, _ = utils.load_nii(folder_list[idx] + '/segmentation_tra_' + labeller + '.nii.gz')
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
 
-        
-        
 
-        
-        # ================== 
-        # remove extra label from some images
-        # ================== 
-        label[label > 2] = 0
-        print(np.unique(label))
-        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '01_label.nii.gz', data = label, affine = np.eye(4))
-        # ======================================================  
-        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
-        # ======================================================
-        scale_vector = [image_hdr.get_zooms()[0] / target_resolution,
-                        image_hdr.get_zooms()[1] / target_resolution]
+        px_list.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list.append(float(image_t1_hdr.get_zooms()[2]))
 
-        for zz in range(image.shape[2]):
 
-            print(f'Max label value: {label.max()}')
-            print(f'Min label value: {label.min()}')
 
-            # ============
-            # rescale the images and labels so that their orientation matches that of the nci dataset
-            # ============        
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
 
-            
-            
-            if patname in ['88800036', '88800035', '88800046', '88800038', '88800021', '88800053']:
-                    # For these images, rescaling directly to the target resolution (0.625) leads to faultily rescaled labels (all pixels get the value 0)
-                    # Not sure what is causing this.
-                    # Using this intermediate scaling as a workaround.
-                    scale_vector_tmp = [image_hdr.get_zooms()[0] / 0.625, image_hdr.get_zooms()[1] / 0.625]
-                    image2d_rescaled = rescale(image_normalized[:, :, zz], scale_vector_tmp, order=1, preserve_range=True, multichannel=False, mode = 'constant')
-                    label2d_rescaled = rescale(label[:, :, zz], scale_vector_tmp, order=0, preserve_range=True, multichannel=False, mode='constant')
-                    utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '201_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
-                    print(f'1Max label value label2d_rescaled: {label2d_rescaled.max()}')
-                    print(f'1Min label value label2d_rescaled: {label2d_rescaled.min()}')
-                    scale_vector_tmp = [0.625 / target_resolution, 0.625 / target_resolution]
-                    image2d_rescaled = rescale(image2d_rescaled, scale_vector_tmp, order=1, preserve_range=True, multichannel=False, mode = 'constant')
-                    label2d_rescaled = rescale(label2d_rescaled, scale_vector_tmp, order=0, preserve_range=True, multichannel=False, mode='constant')
-                    utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '301_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
             else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list.append(image_n4.shape[0])
+        ny_list.append(image_n4.shape[1])
+        nz_list.append(image_n4.shape[2])
             
-                    image2d_rescaled = rescale(np.squeeze(image_normalized[:, :, zz]),
-                                                  scale_vector,
-                                                  order=1,
-                                                  preserve_range=True,
-                                                  multichannel=False,
-                                                  mode = 'constant')
 
-                    
-                                      
- 
-                    label2d_rescaled = rescale(np.squeeze(label[:, :, zz]),
-                                                  scale_vector,
-                                                  order=0,
-                                                  preserve_range=True,
-                                                  multichannel=False,
-                                                  mode='constant')
-            
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '02_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
+        # ================================    
+        # normalize the image
+        # ================================      
 
-            print(f'2Max label value label2d_rescaled: {label2d_rescaled.max()}')
-            print(f'2Min label value label2d_rescaled: {label2d_rescaled.min()}')
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
-            # ============
-            # rotate the images and labels so that their orientation matches that of the nci dataset
-            # ============            
-            image2d_rescaled_rotated = np.rot90(image2d_rescaled, k=3)
-            label2d_rescaled_rotated = np.rot90(label2d_rescaled, k=3)
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
 
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '03_test.nii.gz', data = image2d_rescaled_rotated, affine = np.eye(4))
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
 
-            # ============            
-            # crop or pad to make of the same size
-            # ============            
-            image2d_rescaled_rotated_cropped = crop_or_pad_slice_to_size(image2d_rescaled_rotated, size, size)
-            label2d_rescaled_rotated_cropped = crop_or_pad_slice_to_size(label2d_rescaled_rotated, size, size)
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-            utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '04_test.nii.gz', data = image2d_rescaled_rotated, affine = np.eye(4))
+        for zz in range(img.shape[2]):
 
-            image_list.append(image2d_rescaled_rotated_cropped)
-            label_list.append(label2d_rescaled_rotated_cropped)
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list.append(img_normalised[:, :, zz])
+            label_list.append(label[:, :, zz])
 
             write_buffer += 1
 
-            # Writing needs to happen inside the loop over the slices
             if write_buffer >= MAX_WRITE_BUFFER:
 
                 counter_to = counter_from + write_buffer
 
                 _write_range_to_hdf5(data,
-                                     image_list,
-                                     label_list,
-                                     counter_from,
-                                     counter_to)
+                                    image_list,
+                                    label_list,
+                                    counter_from,
+                                    counter_to)
                 
                 _release_tmp_memory(image_list,
                                     label_list)
@@ -274,55 +269,1438 @@ def prepare_data(input_folder,
                 counter_from = counter_to
                 write_buffer = 0
 
-        print(f'Max label value image2d_rescaled_rotated_cropped: {image2d_rescaled_rotated_cropped.max()}')
-        print(f'Min label value image2d_rescaled_rotated_cropped: {image2d_rescaled_rotated_cropped.min()}')
-        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '05_test.nii.gz', data = image2d_rescaled, affine = np.eye(4))
-        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '05_label.nii.gz', data = label2d_rescaled, affine = np.eye(4))
-        
-    logging.info('Writing remaining data')
-    counter_to = counter_from + write_buffer
-    #write_range_to_hdf5(data,
-    #                     image_list,
-    #                     label_list,
-    #                     counter_from,
-    #                     counter_to)
-    #_release_tmp_memory(image_list,
-    #                    label_list)
 
-    # Write the small datasets
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
     hdf5_file.create_dataset('nx', data=np.asarray(nx_list, dtype=np.uint16))
     hdf5_file.create_dataset('ny', data=np.asarray(ny_list, dtype=np.uint16))
     hdf5_file.create_dataset('nz', data=np.asarray(nz_list, dtype=np.uint16))
     hdf5_file.create_dataset('px', data=np.asarray(px_list, dtype=np.float32))
     hdf5_file.create_dataset('py', data=np.asarray(py_list, dtype=np.float32))
     hdf5_file.create_dataset('pz', data=np.asarray(pz_list, dtype=np.float32))
-    hdf5_file.create_dataset('patnames', data=np.asarray(pat_names_list, dtype="S10"))
+    hdf5_file.create_dataset('patnames', data=np.asarray(pat_names_list, dtype="S20"))
     
     # After test train loop:
+    logging.info('Test SD loop done')
     hdf5_file.close()
 
+
+
+
+
+
+
+# ===============================
+# TD1
+# ===============================
+
+
+
+
+
+def load_test_td1_data(input_folder,
+              preproc_folder,
+              size,
+              target_resolution,
+              force_overwrite = False):
+
+    # ===============================
+    # create the pre-processing folder, if it does not exist
+    # ===============================
+    utils.makefolder(preproc_folder)    
+    
+    # ===============================
+    # file to create or directly read if it already exists
+    # ===============================
+
+    test_td1_file_name = 'data_test_td1.hdf5' 
+    test_td1_file_path = os.path.join(preproc_folder, test_td1_file_name)
+    
+    # ===============================
+    # if the images have not already been extracted, do so
+    # ===============================
+    if not os.path.exists(test_td1_file_path) or force_overwrite:
+        
+        logging.info('This configuration of protocol and data indices has not yet been preprocessed')
+        logging.info('Preprocessing now...')
+        prepare_test_td1_data(input_folder,
+                     preproc_folder,
+                     test_td1_file_path,
+                     size,
+                     target_resolution
+                     )
+    else:        
+        logging.info('Already preprocessed this configuration. Loading now...')
+        
+    return h5py.File(test_td1_file_path, 'r')
+
 # ===============================================================
+# Main function that prepares a dataset from the raw challenge data to an hdf5 dataset.
+# Extract the required files from their zipped directories
 # ===============================================================
-def crop_or_pad_slice_to_size(slice, nx, ny):
-    x, y = slice.shape
+def prepare_test_td1_data(input_folder,
+                 preprocessing_folder, 
+                 test_td1_file_path,
+                 size,
+                 target_resolution
+                 ):
 
-    x_s = (x - nx) // 2
-    y_s = (y - ny) // 2
-    x_c = (nx - x) // 2
-    y_c = (ny - y) // 2
+    # ===============================
+    # create a hdf5 file
+    # ===============================
+    hdf5_file = h5py.File(test_td1_file_path, "w")
+    
+    # ===============================
+    # read all the patient folders from the base input folder
+    # ===============================
 
-    if x > nx and y > ny:
-        slice_cropped = slice[x_s:x_s + nx, y_s:y_s + ny]
-    else:
-        slice_cropped = np.zeros((nx, ny))
-        if x <= nx and y > ny:
-            slice_cropped[x_c:x_c + x, :] = slice[:, y_s:y_s + ny]
-        elif x > nx and y <= ny:
-            slice_cropped[:, y_c:y_c + y] = slice[x_s:x_s + nx, :]
-        else:
-            slice_cropped[x_c:x_c + x, y_c:y_c + y] = slice[:, :]
 
-    return slice_cropped
+    logging.info('Counting files and parsing meta data...')
+
+    training_folder = input_folder + 'MICCAI_FeTS2021_TrainingData/'
+
+    folder_list = []
+
+    test_ids_td1= [351, 352, 353, 354, 355, 356, 357, 358, 359, 361, 367, 362, 363, 364, 365, 366, 350, 360, 349, 369, 347, 368, 336, 337, 
+                      348, 339, 340, 338, 342, 343, 344, 345, 346, 341]
+    num_slices = 0
+
+    for folder in os.listdir(training_folder):
+        if not (folder.lower().endswith('.csv') or folder.lower().endswith('.md')):
+            folder_path = os.path.join(training_folder, folder)  
+            patient_id = int(folder.split('_')[-1])      
+            if os.path.isdir(folder_path):
+                if patient_id in test_ids_td1 : 
+                    folder_list.append(folder_path)
+
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                            
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_flair.shape[2]
+
+
+
+    # ===============================
+    # Create datasets for images and labels
+    # ===============================
+
+    data = {}
+    data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+
+    #data = {}
+    #num_slices = count_slices(folder_list, idx_start, idx_end)
+    #data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    #data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+    
+    # ===============================
+    # initialize lists
+    # ===============================    
+
+    label_list = []
+    image_list = []
+    nx_list = []
+    ny_list = []
+    nz_list = []
+    px_list = []
+    py_list = []
+    pz_list = []
+    pat_names_list = []
+
+    
+    # ===============================        
+    # ===============================        
+    logging.info('Parsing image files')
+    
+        
+    patient_counter = 0
+    write_buffer = 0
+    counter_from = 0
+
+    for folder in folder_list:
+
+        patient_counter += 1
+
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list.append(patname)
+
+
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
+
+
+        px_list.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list.append(float(image_t1_hdr.get_zooms()[2]))
+
+
+
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
+
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
+            else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list.append(image_n4.shape[0])
+        ny_list.append(image_n4.shape[1])
+        nz_list.append(image_n4.shape[2])
+            
+
+        # ================================    
+        # normalize the image
+        # ================================      
+
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
+
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
+
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
+
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
+
+        for zz in range(img.shape[2]):
+
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list.append(img_normalised[:, :, zz])
+            label_list.append(label[:, :, zz])
+
+            write_buffer += 1
+
+            if write_buffer >= MAX_WRITE_BUFFER:
+
+                counter_to = counter_from + write_buffer
+
+                _write_range_to_hdf5(data,
+                                    image_list,
+                                    label_list,
+                                    counter_from,
+                                    counter_to)
+                
+                _release_tmp_memory(image_list,
+                                    label_list)
+
+                # update counters 
+                counter_from = counter_to
+                write_buffer = 0
+
+
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
+    hdf5_file.create_dataset('nx', data=np.asarray(nx_list, dtype=np.uint16))
+    hdf5_file.create_dataset('ny', data=np.asarray(ny_list, dtype=np.uint16))
+    hdf5_file.create_dataset('nz', data=np.asarray(nz_list, dtype=np.uint16))
+    hdf5_file.create_dataset('px', data=np.asarray(px_list, dtype=np.float32))
+    hdf5_file.create_dataset('py', data=np.asarray(py_list, dtype=np.float32))
+    hdf5_file.create_dataset('pz', data=np.asarray(pz_list, dtype=np.float32))
+    hdf5_file.create_dataset('patnames', data=np.asarray(pat_names_list, dtype="S20"))
+    
+    # After test train loop:
+    logging.info('Test TD1 loop done')
+    hdf5_file.close()
+
+
+
+
+
+
+
+# ===============================
+# TD2
+# ===============================
+
+def load_test_td2_data(input_folder,
+              preproc_folder,
+              size,
+              target_resolution,
+              force_overwrite = False):
+
+    # ===============================
+    # create the pre-processing folder, if it does not exist
+    # ===============================
+    utils.makefolder(preproc_folder)    
+    
+    # ===============================
+    # file to create or directly read if it already exists
+    # ===============================
+
+    test_td2_file_name = 'data_test_td2.hdf5' 
+    test_td2_file_path = os.path.join(preproc_folder, test_td2_file_name)
+    
+    # ===============================
+    # if the images have not already been extracted, do so
+    # ===============================
+    if not os.path.exists(test_td2_file_path) or force_overwrite:
+        
+        logging.info('This configuration of protocol and data indices has not yet been preprocessed')
+        logging.info('Preprocessing now...')
+        prepare_test_td2_data(input_folder,
+                     preproc_folder,
+                     test_td2_file_path,
+                     size,
+                     target_resolution
+                     )
+    else:        
+        logging.info('Already preprocessed this configuration. Loading now...')
+        
+    return h5py.File(test_td2_file_path, 'r')
+
+# ===============================================================
+# Main function that prepares a dataset from the raw challenge data to an hdf5 dataset.
+# Extract the required files from their zipped directories
+# ===============================================================
+def prepare_test_td2_data(input_folder,
+                 preprocessing_folder, 
+                 test_td2_file_path,
+                 size,
+                 target_resolution
+                 ):
+
+    # ===============================
+    # create a hdf5 file
+    # ===============================
+    hdf5_file = h5py.File(test_td2_file_path, "w")
+    
+    # ===============================
+    # read all the patient folders from the base input folder
+    # ===============================
+
+
+    logging.info('Counting files and parsing meta data...')
+
+    training_folder = input_folder + 'MICCAI_FeTS2021_TrainingData/'
+
+    folder_list = []
+
+    test_ids_td2 = [204, 199, 200, 201, 202, 203, 206, 211, 208, 209, 210, 198, 212, 213, 207, 197, 205, 195, 181, 182, 183, 184, 185, 187, 188, 
+                186, 189, 190, 191, 192, 193, 194, 180, 196]
+
+    num_slices = 0
+
+    for folder in os.listdir(training_folder):
+        if not (folder.lower().endswith('.csv') or folder.lower().endswith('.md')):
+            folder_path = os.path.join(training_folder, folder)  
+            patient_id = int(folder.split('_')[-1])      
+            if os.path.isdir(folder_path):
+                if patient_id in test_ids_td2 : 
+                    folder_list.append(folder_path)
+
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                            
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices += image_flair.shape[2]
+
+
+
+    # ===============================
+    # Create datasets for images and labels
+    # ===============================
+
+    data = {}
+    data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+
+    #data = {}
+    #num_slices = count_slices(folder_list, idx_start, idx_end)
+    #data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    #data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+    
+    # ===============================
+    # initialize lists
+    # ===============================    
+
+    label_list = []
+    image_list = []
+    nx_list = []
+    ny_list = []
+    nz_list = []
+    px_list = []
+    py_list = []
+    pz_list = []
+    pat_names_list = []
+
+    
+    # ===============================        
+    # ===============================        
+    logging.info('Parsing image files')
+    
+        
+    patient_counter = 0
+    write_buffer = 0
+    counter_from = 0
+
+    for folder in folder_list:
+
+        patient_counter += 1
+
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list.append(patname)
+
+
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
+
+
+        px_list.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list.append(float(image_t1_hdr.get_zooms()[2]))
+
+
+
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
+
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
+            else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list.append(image_n4.shape[0])
+        ny_list.append(image_n4.shape[1])
+        nz_list.append(image_n4.shape[2])
+            
+
+        # ================================    
+        # normalize the image
+        # ================================      
+
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
+
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
+
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
+
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
+
+        for zz in range(img.shape[2]):
+
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list.append(img_normalised[:, :, zz])
+            label_list.append(label[:, :, zz])
+
+            write_buffer += 1
+
+            if write_buffer >= MAX_WRITE_BUFFER:
+
+                counter_to = counter_from + write_buffer
+
+                _write_range_to_hdf5(data,
+                                    image_list,
+                                    label_list,
+                                    counter_from,
+                                    counter_to)
+                
+                _release_tmp_memory(image_list,
+                                    label_list)
+
+                # update counters 
+                counter_from = counter_to
+                write_buffer = 0
+
+
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
+    hdf5_file.create_dataset('nx', data=np.asarray(nx_list, dtype=np.uint16))
+    hdf5_file.create_dataset('ny', data=np.asarray(ny_list, dtype=np.uint16))
+    hdf5_file.create_dataset('nz', data=np.asarray(nz_list, dtype=np.uint16))
+    hdf5_file.create_dataset('px', data=np.asarray(px_list, dtype=np.float32))
+    hdf5_file.create_dataset('py', data=np.asarray(py_list, dtype=np.float32))
+    hdf5_file.create_dataset('pz', data=np.asarray(pz_list, dtype=np.float32))
+    hdf5_file.create_dataset('patnames', data=np.asarray(pat_names_list, dtype="S20"))
+    
+    # After test train loop:
+    logging.info('Test TD2 loop done')
+    hdf5_file.close()
+
+
+
+
+
+# ===============================
+# Training Data
+# ===============================
+
+def load_training_data(input_folder,
+              preproc_folder,
+              size,
+              target_resolution,
+              force_overwrite = False):
+
+    # ===============================
+    # create the pre-processing folder, if it does not exist
+    # ===============================
+    utils.makefolder(preproc_folder)    
+    
+    # ===============================
+    # file to create or directly read if it already exists
+    # ===============================
+
+    train_file_name_part1 = 'data_training_part1.hdf5' 
+    train_file_path_part1 = os.path.join(preproc_folder, train_file_name_part1)
+
+    train_file_name_part2 = 'data_training_part2.hdf5' 
+    train_file_path_part2 = os.path.join(preproc_folder, train_file_name_part2)
+
+    train_file_name_part3 = 'data_training_part3.hdf5' 
+    train_file_path_part3 = os.path.join(preproc_folder, train_file_name_part3)
+
+    val_file_name = 'data_validation.hdf5' 
+    val_file_path = os.path.join(preproc_folder, val_file_name)
+
+    
+    # ===============================
+    # if the images have not already been extracted, do so
+    # ===============================
+    #if not os.path.exists(train_file_path_part1 or train_file_path_part2 or train_file_path_part3) or force_overwrite:
+    if not os.path.exists(train_file_path_part1 or train_file_path_part2 or train_file_path_part3 or val_file_path) or force_overwrite:
+
+        logging.info('This configuration of protocol and data indices has not yet been preprocessed')
+        logging.info('Preprocessing now...')
+        prepare_training_data(input_folder,
+                     preproc_folder,
+                     train_file_path_part1,
+                     train_file_path_part2,
+                     train_file_path_part3,
+                     val_file_path,
+                     size,
+                     target_resolution
+                     )
+    else:        
+        logging.info('Already preprocessed this configuration. Loading now...')
+        
+    return h5py.File(train_file_path_part1, 'r'), h5py.File(train_file_path_part2, 'r'), h5py.File(train_file_path_part3, 'r'), h5py.File(val_file_path, 'r')
+
+
+
+
+
+def prepare_training_data(input_folder,
+                 preprocessing_folder, 
+                 train_file_path_part1,
+                 train_file_path_part2,
+                 train_file_path_part3,
+                 val_file_path, 
+                 size,
+                 target_resolution
+                 ):
+
+    # ===============================
+    # create a hdf5 file
+    # ===============================
+    hdf5_file_part1 = h5py.File(train_file_path_part1, "w")
+    
+    
+
+    
+    # ===============================
+    # read all the patient folders from the base input folder
+    # ===============================
+
+
+    logging.info('Counting files and parsing meta data...')
+
+    training_folder = input_folder + 'MICCAI_FeTS2021_TrainingData/'
+
+    folder_list_part1 = []
+    folder_list_part2 = []
+    folder_list_part3 = []
+    folder_list_val = []
+
+    training_ids_part1 = [1, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 83, 97, 82, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68] 
+    training_ids_part2 = [81, 98, 99, 100, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109,
+                          108, 107, 106, 105] 
+    training_ids_part3 = [104, 103, 102, 101, 67, 66, 84, 64, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 65, 13, 12, 11, 10, 9]
+    validation_ids = [54, 53, 51, 50, 49, 52, 47, 35, 36, 37, 38, 48, 40, 41, 39, 43, 44, 45, 46, 42]
+
+    num_slices_part1 = 0
+    num_slices_part2 = 0
+    num_slices_part3 = 0
+    num_slices_val = 0
+
+
+    for folder in os.listdir(training_folder):
+        if not (folder.lower().endswith('.csv') or folder.lower().endswith('.md')):
+            folder_path = os.path.join(training_folder, folder)  
+            patient_id = int(folder.split('_')[-1])      
+            if os.path.isdir(folder_path):
+                if patient_id in training_ids_part1: 
+                    folder_list_part1.append(folder_path)
+
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part1 += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part1 += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part1 += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part1 += image_flair.shape[2]
+                    
+                elif patient_id in training_ids_part2:
+                    folder_list_part2.append(folder_path)
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part2 += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part2 += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part2 += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part2 += image_flair.shape[2]
+
+                elif patient_id in training_ids_part3:
+                    folder_list_part3.append(folder_path)
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part3 += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part3 += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part3 += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_part3 += image_flair.shape[2]
+                
+                elif patient_id in validation_ids:
+                    folder_list_val.append(folder_path)
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_flair.shape[2]
+
+    # ===============================
+    # Create datasets for images and labels
+    # ===============================
+
+    data_part1 = {}
+
+    data_part1['images'] = hdf5_file_part1.create_dataset("images", list((size,size)) + [num_slices_part1], dtype=np.float32)
+    data_part1['labels'] = hdf5_file_part1.create_dataset("labels", list((size,size)) + [num_slices_part1], dtype=np.uint8)
+
+    
+
+    #data = {}
+    #num_slices = count_slices(folder_list, idx_start, idx_end)
+    #data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    #data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+    
+    # ===============================
+    # initialize lists
+    # ===============================    
+
+    label_list_part1 = []
+    image_list_part1 = []
+    nx_list_part1 = []
+    ny_list_part1 = []
+    nz_list_part1 = []
+    px_list_part1 = []
+    py_list_part1 = []
+    pz_list_part1= []
+    pat_names_list_part1 = []
+
+    label_list_part2 = []
+    image_list_part2 = []
+    nx_list_part2 = []
+    ny_list_part2 = []
+    nz_list_part2 = []
+    px_list_part2 = []
+    py_list_part2 = []
+    pz_list_part2 = []
+    pat_names_list_part2 = []
+
+    label_list_part3 = []
+    image_list_part3 = []
+    nx_list_part3 = []
+    ny_list_part3 = []
+    nz_list_part3 = []
+    px_list_part3 = []
+    py_list_part3 = []
+    pz_list_part3= []
+    pat_names_list_part3 = []
+    
+    label_list_val = []
+    image_list_val = []
+    nx_list_val = []
+    ny_list_val = []
+    nz_list_val = []
+    px_list_val = []
+    py_list_val = []
+    pz_list_val= []
+    pat_names_list_val = []
+
+    # ===============================        
+    # ===============================        
+    logging.info('Parsing image files')
+    
+        
+    patient_counter = 0
+    write_buffer = 0
+    counter_from = 0
+
+    for folder in folder_list_part1:
+
+        patient_counter += 1
+
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list_part1.append(patname)
+
+
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
+
+
+        px_list_part1.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list_part1.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list_part1.append(float(image_t1_hdr.get_zooms()[2]))
+
+
+
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
+
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
+            else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list_part1.append(image_n4.shape[0])
+        ny_list_part1.append(image_n4.shape[1])
+        nz_list_part1.append(image_n4.shape[2])
+            
+
+        # ================================    
+        # normalize the image
+        # ================================      
+
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
+
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
+
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
+
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
+
+        for zz in range(img.shape[2]):
+
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list_part1.append(img_normalised[:, :, zz])
+            label_list_part1.append(label[:, :, zz])
+
+            write_buffer += 1
+
+            if write_buffer >= MAX_WRITE_BUFFER:
+
+                counter_to = counter_from + write_buffer
+
+                _write_range_to_hdf5(data_part1,
+                                    image_list_part1,
+                                    label_list_part1,
+                                    counter_from,
+                                    counter_to)
+                
+                _release_tmp_memory(image_list_part1,
+                                    label_list_part1)
+
+                # update counters 
+                counter_from = counter_to
+                write_buffer = 0
+
+
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
+    hdf5_file_part1.create_dataset('nx', data=np.asarray(nx_list_part1, dtype=np.uint16))
+    hdf5_file_part1.create_dataset('ny', data=np.asarray(ny_list_part1, dtype=np.uint16))
+    hdf5_file_part1.create_dataset('nz', data=np.asarray(nz_list_part1, dtype=np.uint16))
+    hdf5_file_part1.create_dataset('px', data=np.asarray(px_list_part1, dtype=np.float32))
+    hdf5_file_part1.create_dataset('py', data=np.asarray(py_list_part1, dtype=np.float32))
+    hdf5_file_part1.create_dataset('pz', data=np.asarray(pz_list_part1, dtype=np.float32))
+    hdf5_file_part1.create_dataset('patnames', data=np.asarray(pat_names_list_part1, dtype="S20"))
+    
+    # After test train loop:
+    logging.info('Training part1 loop done')
+    hdf5_file_part1.close()
+
+
+    hdf5_file_part2 = h5py.File(train_file_path_part2, "w")
+    data_part2 = {}
+    data_part2['images'] = hdf5_file_part2.create_dataset("images", list((size,size)) + [num_slices_part2], dtype=np.float32)
+    data_part2['labels'] = hdf5_file_part2.create_dataset("labels", list((size,size)) + [num_slices_part2], dtype=np.uint8)
+
+
+    for folder in folder_list_part2:
+
+        patient_counter += 1
+
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list_part2.append(patname)
+
+
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
+
+
+        px_list_part2.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list_part2.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list_part2.append(float(image_t1_hdr.get_zooms()[2]))
+
+
+
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
+
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
+            else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list_part2.append(image_n4.shape[0])
+        ny_list_part2.append(image_n4.shape[1])
+        nz_list_part2.append(image_n4.shape[2])
+            
+
+        # ================================    
+        # normalize the image
+        # ================================      
+
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
+
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
+
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
+
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
+
+        for zz in range(img.shape[2]):
+
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list_part2.append(img_normalised[:, :, zz])
+            label_list_part2.append(label[:, :, zz])
+
+            write_buffer += 1
+
+            if write_buffer >= MAX_WRITE_BUFFER:
+
+                counter_to = counter_from + write_buffer
+
+                _write_range_to_hdf5(data_part2,
+                                    image_list_part2,
+                                    label_list_part2,
+                                    counter_from,
+                                    counter_to)
+                
+                _release_tmp_memory(image_list_part2,
+                                    label_list_part2)
+
+                # update counters 
+                counter_from = counter_to
+                write_buffer = 0
+
+
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
+    hdf5_file_part2.create_dataset('nx', data=np.asarray(nx_list_part2, dtype=np.uint16))
+    hdf5_file_part2.create_dataset('ny', data=np.asarray(ny_list_part2, dtype=np.uint16))
+    hdf5_file_part2.create_dataset('nz', data=np.asarray(nz_list_part2, dtype=np.uint16))
+    hdf5_file_part2.create_dataset('px', data=np.asarray(px_list_part2, dtype=np.float32))
+    hdf5_file_part2.create_dataset('py', data=np.asarray(py_list_part2, dtype=np.float32))
+    hdf5_file_part2.create_dataset('pz', data=np.asarray(pz_list_part2, dtype=np.float32))
+    hdf5_file_part2.create_dataset('patnames', data=np.asarray(pat_names_list_part2, dtype="S20"))
+    
+    # After test train loop:
+    logging.info('Training part2 loop done')
+    hdf5_file_part2.close()
+
+
+    hdf5_file_part3 = h5py.File(train_file_path_part3, "w")
+    data_part3 = {}
+    data_part3['images'] = hdf5_file_part3.create_dataset("images", list((size,size)) + [num_slices_part3], dtype=np.float32)
+    data_part3['labels'] = hdf5_file_part3.create_dataset("labels", list((size,size)) + [num_slices_part3], dtype=np.uint8)
+
+
+    for folder in folder_list_part3:
+
+        patient_counter += 1
+
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list_part3.append(patname)
+
+
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
+
+
+        px_list_part3.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list_part3.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list_part3.append(float(image_t1_hdr.get_zooms()[2]))
+
+
+
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
+
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
+            else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list_part3.append(image_n4.shape[0])
+        ny_list_part3.append(image_n4.shape[1])
+        nz_list_part3.append(image_n4.shape[2])
+            
+
+        # ================================    
+        # normalize the image
+        # ================================      
+
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
+
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
+
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
+
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
+
+        for zz in range(img.shape[2]):
+
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list_part3.append(img_normalised[:, :, zz])
+            label_list_part3.append(label[:, :, zz])
+
+            write_buffer += 1
+
+            if write_buffer >= MAX_WRITE_BUFFER:
+
+                counter_to = counter_from + write_buffer
+
+                _write_range_to_hdf5(data_part3,
+                                    image_list_part3,
+                                    label_list_part3,
+                                    counter_from,
+                                    counter_to)
+                
+                _release_tmp_memory(image_list_part3,
+                                    label_list_part3)
+
+                # update counters 
+                counter_from = counter_to
+                write_buffer = 0
+
+
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
+    hdf5_file_part3.create_dataset('nx', data=np.asarray(nx_list_part3, dtype=np.uint16))
+    hdf5_file_part3.create_dataset('ny', data=np.asarray(ny_list_part3, dtype=np.uint16))
+    hdf5_file_part3.create_dataset('nz', data=np.asarray(nz_list_part3, dtype=np.uint16))
+    hdf5_file_part3.create_dataset('px', data=np.asarray(px_list_part3, dtype=np.float32))
+    hdf5_file_part3.create_dataset('py', data=np.asarray(py_list_part3, dtype=np.float32))
+    hdf5_file_part3.create_dataset('pz', data=np.asarray(pz_list_part3, dtype=np.float32))
+    hdf5_file_part3.create_dataset('patnames', data=np.asarray(pat_names_list_part3, dtype="S20"))
+    
+    # After test train loop:
+    logging.info('Training part3 loop done')
+    hdf5_file_part3.close()
+
+
+
+
+    hdf5_file_val = h5py.File(val_file_path, "w")
+    data_val = {}
+    data_val['images'] = hdf5_file_val.create_dataset("images", list((size,size)) + [num_slices_val], dtype=np.float32)
+    data_val['labels'] = hdf5_file_val.create_dataset("labels", list((size,size)) + [num_slices_val], dtype=np.uint8)
+
+
+
+    for folder in folder_list_val:
+
+        patient_counter += 1
+
+        logging.info('================================')
+        logging.info('Doing: %s' % folder)
+        patname = folder.split('/')[-1]
+        pat_names_list_val.append(patname)
+
+
+        image_t1, _, image_t1_hdr = utils.load_nii(folder + f'/{patname}_t1.nii.gz')
+        image_t1ce, _, image_t1ce_hdr = utils.load_nii(folder + f'/{patname}_t1ce.nii.gz')
+        image_t2, _, image_t2_hdr = utils.load_nii(folder + f'/{patname}_t2.nii.gz')
+        image_flair, _, image_flair_hdr = utils.load_nii(folder + f'/{patname}_flair.nii.gz')
+
+
+        px_list_val.append(float(image_t1_hdr.get_zooms()[0]))
+        py_list_val.append(float(image_t1_hdr.get_zooms()[1]))
+        pz_list_val.append(float(image_t1_hdr.get_zooms()[2]))
+
+
+
+        nifti_img_path = preprocessing_folder + '/Individual_NIFTI/' + patname + '/'
+        if not os.path.exists(nifti_img_path):
+            utils.makefolder(nifti_img_path)
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1.nii.gz', data = image_t1, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t1ce.nii.gz', data = image_t1ce, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_t2.nii.gz', data = image_t2, affine = np.eye(4))
+        #utils.save_nii(img_path = nifti_img_path + '_img_flair.nii.gz', data = image_flair, affine = np.eye(4))
+
+
+        # ================================
+        # do bias field correction
+        # ================================
+        input_img_t1 = nifti_img_path + patname + '_img_t1.nii.gz'
+        output_img_t1 = nifti_img_path + patname + '_img_t1_n4.nii.gz'
+        input_img_t1ce = nifti_img_path + patname + '_img_t1ce.nii.gz'
+        output_img_t1ce = nifti_img_path + patname + '_img_t1ce_n4.nii.gz'
+        input_img_t2 = nifti_img_path + patname + '_img_t2.nii.gz'
+        output_img_t2 = nifti_img_path + patname + '_img_t2_n4.nii.gz'
+        input_img_flair = nifti_img_path + patname + '_img_flair.nii.gz'
+        output_img_flair = nifti_img_path + patname + '_img_flair_n4.nii.gz'
+
+
+        # If bias corrected image does not exist, do it now
+        for input_img, output_img in zip([input_img_t1, input_img_t1ce, input_img_t2, input_img_flair], [output_img_t1, output_img_t1ce, output_img_t2, output_img_flair]):
+            if os.path.isfile(output_img):
+                img = utils.load_nii(img_path = output_img)[0]
+            else:
+                subprocess.call(["/itet-stor/arismu/bmicdatasets_bmicnas01/Sharing/N4_th", input_img, output_img])
+                img = utils.load_nii(img_path = output_img)[0]
+
+            if input_img == input_img_t1:
+                img_t1_n4 = img
+            elif input_img == input_img_t1ce:
+                img_t1ce_n4 = img
+            elif input_img == input_img_t2:
+                img_t2_n4 = img
+            elif input_img == input_img_flair:
+                img_flair_n4 = img
+
+        image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
+        image_n4 = np.concatenate((image_n4, img_flair_n4), axis = 2)
+
+        nx_list_val.append(image_n4.shape[0])
+        ny_list_val.append(image_n4.shape[1])
+        nz_list_val.append(image_n4.shape[2])
+            
+
+        # ================================    
+        # normalize the image
+        # ================================      
+
+        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
+
+        # ================================    
+        # read the labels
+        # ================================   
+        
+        
+        label, _, _ = utils.load_nii(folder + f'/{patname}_seg.nii.gz')
+
+        label_temp = np.concatenate((label, label), axis = 2) #concatenate 3 times since all 4 image types share the same label
+        label_temp = np.concatenate((label_temp, label), axis = 2)
+        label = np.concatenate((label_temp, label), axis = 2)
+        
+        if not os.path.isfile(nifti_img_path + patname + '_lbl.nii.gz'):
+            utils.save_nii(img_path = nifti_img_path + patname + '_lbl.nii.gz', data = label, affine = np.eye(4))
+
+        ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
+
+        for zz in range(img.shape[2]):
+
+            #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
+
+            #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
+            #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
+
+            image_list_val.append(img_normalised[:, :, zz])
+            label_list_val.append(label[:, :, zz])
+
+            write_buffer += 1
+
+            if write_buffer >= MAX_WRITE_BUFFER:
+
+                counter_to = counter_from + write_buffer
+
+                _write_range_to_hdf5(data_val,
+                                    image_list_val,
+                                    label_list_val,
+                                    counter_from,
+                                    counter_to)
+                
+                _release_tmp_memory(image_list_val,
+                                    label_list_val)
+
+                # update counters 
+                counter_from = counter_to
+                write_buffer = 0
+
+
+    #logging.info('Writing remaining data')
+    #counter_to = counter_from + write_buffer
+
+    #_write_range_to_hdf5(data, image_list, label_list, counter_from, counter_to)
+   # _release_tmp_memory(image_list, label_list)
+
+
+   
+    hdf5_file_val.create_dataset('nx', data=np.asarray(nx_list_val, dtype=np.uint16))
+    hdf5_file_val.create_dataset('ny', data=np.asarray(ny_list_val, dtype=np.uint16))
+    hdf5_file_val.create_dataset('nz', data=np.asarray(nz_list_val, dtype=np.uint16))
+    hdf5_file_val.create_dataset('px', data=np.asarray(px_list_val, dtype=np.float32))
+    hdf5_file_val.create_dataset('py', data=np.asarray(py_list_val, dtype=np.float32))
+    hdf5_file_val.create_dataset('pz', data=np.asarray(pz_list_val, dtype=np.float32))
+    hdf5_file_val.create_dataset('patnames', data=np.asarray(pat_names_list_val, dtype="S20"))
+    
+    # After test train loop:
+    logging.info('Validation loop done')
+    hdf5_file_val.close()
+
+
 
 # ===============================================================
 # Helper function to write a range of data to the hdf5 datasets
@@ -354,66 +1732,6 @@ def _release_tmp_memory(img_list,
     mask_list.clear()
     gc.collect()
 
-# ===============================================================
-# function to read a single subjects image and labels without any pre-processing
-# ===============================================================
-def load_without_size_preprocessing(input_folder,
-                                    subject_name,
-                                    labeller):
 
-    # ==================
-    # read the image file
-    # ==================              
-    folder_path = input_folder + subject_name
-    image, _, _ = utils.load_nii(folder_path + '/t2_tse_tra_n4.nii.gz')
-    # ============
-    # normalize the image to be between 0 and 1
-    # ============
-    image = utils.normalise_image(image, norm_type='div_by_max')
-    
-    # ==================
-    # read the label file
-    # ==================        
-    if 'segmentation_' + labeller + '.nii.gz' in os.listdir(folder_path):
-        label, _, _ = utils.load_nii(folder_path + '/segmentation_' + labeller + '.nii.gz')
-    elif 'segmentation_tra_' + labeller + '.nii.gz' in os.listdir(folder_path):
-        label, _, _ = utils.load_nii(folder_path + '/segmentation_tra_' + labeller + '.nii.gz')    
-    # ================== 
-    # remove extra label from some images
-    # ================== 
-    label[label > 2] = 0
-    
-    return image, label
-        
-# ===============================================================
-# Main function that runs if this file is run directly
-# ===============================================================
-if __name__ == '__main__':
-    
-    data_pirad_erc_test = load_data(input_folder = sys_config.orig_data_root_pirad_erc,
-                                    preproc_folder = sys_config.preproc_folder_pirad_erc,
-                                    idx_start = 0,
-                                    idx_end = 20,
-                                    size = (256, 256),
-                                    target_resolution = (0.625, 0.625),
-                                    labeller = 'ek')
-    
-    data_pirad_erc_val = load_data(input_folder = sys_config.orig_data_root_pirad_erc,
-                                   preproc_folder = sys_config.preproc_folder_pirad_erc,
-                                   idx_start = 20,
-                                   idx_end = 40,
-                                   size = (256, 256),
-                                   target_resolution = (0.625, 0.625),
-                                   labeller = 'ek')
-    
-    data_pirad_erc_train = load_data(input_folder = sys_config.orig_data_root_pirad_erc,
-                                     preproc_folder = sys_config.preproc_folder_pirad_erc,
-                                     idx_start = 40,
-                                     idx_end = 68,
-                                     size = (256, 256),
-                                     target_resolution = (0.625, 0.625),
-                                     labeller = 'ek')
-    
-# ===============================================================
-# End of file
-# ===============================================================
+
+
