@@ -18,6 +18,7 @@ import utils_data
 from networks.unet_class import UNET
 import utils
 from sklearn.calibration import CalibrationDisplay
+import matplotlib.pyplot as plt
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -80,6 +81,8 @@ def inference(args, model, test_save_path=None):
 
     model.eval()
     metric_list = 0.0
+    pred_list = []
+    label_list = []
 
     
     for sub_num in range(num_test_subjects):
@@ -98,7 +101,7 @@ def inference(args, model, test_save_path=None):
 
         image = torch.from_numpy(image)
         label = torch.from_numpy(label)
-        #image, label = image.cuda(), label.cuda()      
+        image, label = image.cuda(), label.cuda()      
         image = image.permute(2, 0, 1)
         label = label.permute(2, 0, 1)
 
@@ -115,10 +118,12 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'NCI', optim = 'ADAM', model_type = 'UNET_DROPOUT', seed = 'TESTTTTT100', patch_size=[args.img_size, args.img_size],
+        metric_i, pred_l, label_l = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'NCI', optim = 'ADAM', model_type = 'UNWT', seed = '1234', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
         metric_list += np.array(metric_i)
+        pred_list.extend(pred_l)
+        label_list.extend(label_l)
         logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_i, axis=0)[0], np.mean(metric_i, axis=0)[1]))
     metric_list = metric_list / num_test_subjects   #get mean metrics for every class
 
@@ -126,7 +131,10 @@ def inference(args, model, test_save_path=None):
         # Log the mean performance achieved for each class
         # ============================ 
 
-    
+    disp = CalibrationDisplay.from_predictions(label_list, pred_list)
+    plt.show()
+    plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/UNWT_NCI.png')
+
 
     for i in range(0, args.num_classes):
         logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i][0], metric_list[i][1]))
@@ -191,17 +199,17 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256])#.cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    #net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_DROPOUT_best_val_loss_seed100.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2021/TU_3seeds/', 'REVISED_ADAM_best_val_loss_seed1234.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'no_data_aug_' + 'epoch_' + str(args.max_epochs-1))
 
     # ============================
     # Load the trained parameters into the model
     # ============================  
 
-    #net.load_state_dict(torch.load(snapshot))
+    net.load_state_dict(torch.load(snapshot))
 
     #size = sum(p.numel() for p in net.parameters())
     #print(f'Number of parameters: {size}')
@@ -224,7 +232,7 @@ if __name__ == "__main__":
 
     if args.is_savenii:
         args.test_save_dir = '../predictions_2022/UNET/'
-        test_save_path = os.path.join(args.test_save_dir, 'TESTTTNCI_UNET_DROPOUT_test_seed100')
+        test_save_path = os.path.join(args.test_save_dir, 'NCI_UNWT_test_seed1234')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

@@ -100,7 +100,7 @@ def  test_single_volume(image, label, net, classes, dataset, optim, model_type, 
             #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_test.nii.gz', data = slice, affine = np.eye(4))
             #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_label.nii.gz', data = label[:, :, ind], affine = np.eye(4))
 
-            input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float()#.cuda()
+            input = torch.from_numpy(slice).unsqueeze(0).unsqueeze(0).float().cuda()
             net.eval()
             with torch.no_grad():
 
@@ -112,19 +112,19 @@ def  test_single_volume(image, label, net, classes, dataset, optim, model_type, 
                 #color_map = torch.tensor([[255, 0, 0], [0, 255, 0], [0, 0, 255]])
                 rgb = np.zeros((256, 256, 3))
                 #io.imshow(color.label2rgb(out, slice))
-                if (dataset == 'NCI' and case == 5 and ind == 10) or (dataset == 'UCL' and case == 3 and ind == 14) or (dataset == 'HK' and case == 2 and ind == 13) or (dataset == 'BIDMC' and case == 5 and ind == 26):
+                """ if (dataset == 'NCI' and case == 5 and ind == 10) or (dataset == 'UCL' and case == 3 and ind == 14) or (dataset == 'HK' and case == 2 and ind == 13) or (dataset == 'BIDMC' and case == 5 and ind == 26):
                     
                     for i in range(3):
                         out_soft_squeezed = out_soft.squeeze(0)
                         out_soft_squeezed = out_soft_squeezed[i, :, :]
                         out_soft_squeezed = out_soft_squeezed.cpu().detach().numpy()
                         plt.imshow(out_soft_squeezed, cmap = 'gray', vmin = 0, vmax = 1)
-                        plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_channel%s_seed%s.png' % (dataset, model_type, optim, case, ind, i, seed))
+                        plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_channel%s_seed%s.png' % (dataset, model_type, optim, case, ind, i, seed)) """
 
                 out_soft_sq = out_soft.squeeze(0)
-                out_soft_foreground = out_soft_sq[1, :, : ]+ out_soft_sq[2, :, : ]
+                out_soft_foreground = out_soft_sq[1, :, : ] + out_soft_sq[2, :, : ]
                 out_soft_foreground = out_soft_foreground.flatten()
-                out_soft_foreground = out_soft_foreground.numpy()
+                out_soft_foreground = out_soft_foreground.cpu().detach().numpy()
                 foreground_list.append(out_soft_foreground)
                 
 
@@ -152,19 +152,16 @@ def  test_single_volume(image, label, net, classes, dataset, optim, model_type, 
     
     label_list_arr = np.array(label_list)
     label_list_arr = label_list_arr.flatten()
-    print("Printing")
-    print(f"Max: {label_list_arr[744750:749000].max()}")
-    print(f"Min: {label_list_arr[744750:749000].min()}")
 
     foreground_list_arr = np.array(foreground_list)
     foreground_list_arr = foreground_list_arr.flatten()
 
-    test_label = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
-    test_pred = [0.3, 0.2, 0.9, 0.4, 0.7, 0.3, 0.5, 0.6, 0.3, 0.9]
-    #disp = CalibrationDisplay.from_predictions(label_list_arr[744750:749000], foreground_list_arr[744750:749000])
-    disp = CalibrationDisplay.from_predictions(test_label, test_pred)
-    plt.show()
-    plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/{dataset}_case{case}.png')
+    #test_label = [0, 1, 0, 1, 0, 1, 0, 1, 0, 1]
+    #test_pred = [0.3, 0.2, 0.9, 0.4, 0.7, 0.3, 0.5, 0.6, 0.3, 0.9]
+    #disp = CalibrationDisplay.from_predictions(label_list_arr, foreground_list_arr)
+    #disp = CalibrationDisplay.from_predictions(test_label, test_pred)
+    #plt.show()
+    #plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/{dataset}_case{case}.png')
 
     
 
@@ -194,7 +191,7 @@ def  test_single_volume(image, label, net, classes, dataset, optim, model_type, 
         sitk.WriteImage(prd_itk, test_save_path + '/'+"{}".format(case) + "_pred.nii.gz")
         sitk.WriteImage(img_itk, test_save_path + '/'+"{}".format(case) + "_img.nii.gz")
         sitk.WriteImage(lab_itk, test_save_path + '/'+"{}".format(case) + "_gt.nii.gz")
-    return metric_list
+    return metric_list, foreground_list_arr, label_list_arr
 
 
 

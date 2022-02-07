@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH  --output=train_log_2022/%j.out
+#SBATCH  --output=train_log_FETS/%j.out
 #SBATCH  --gres=gpu:1
 #SBATCH  --mem=50G
 #SBATCH  --constraint=geforce_gtx_titan_x

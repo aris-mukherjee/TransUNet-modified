@@ -103,10 +103,11 @@ def trainer_fets(args, model, snapshot_path):
     dice_loss = DiceLoss(num_classes)
     #optimizer = optim.SGD(model.parameters(), lr=base_lr, momentum=0.9, weight_decay=0.0001)
     optimizer = optim.Adam(model.parameters(), lr=base_lr)
-    writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/2022/UNET/' + 'FETS_UNET_log_1000epochs_seed100') 
+    writer = SummaryWriter('/scratch_net/biwidl217_second/arismu/Tensorboard/2022/FETS/UNWT/' + 'FETS_UNWT_CORR_log_seed2') 
     iter_num = 0
     max_epoch = args.max_epochs
-    max_iterations = args.max_epochs * (args.batch_size+1) # max_epoch = max_iterations // len(trainloader) + 1
+    #max_iterations = args.max_epochs * (args.batch_size+1) # max_epoch = max_iterations // len(trainloader) + 1
+    max_iterations = 50000
     logging.info("{} iterations per epoch. {} max iterations ".format(args.batch_size+1 , max_iterations))
     best_val_loss = 1.0
 
@@ -116,6 +117,7 @@ def trainer_fets(args, model, snapshot_path):
 
     iterator = tqdm(range(max_epoch), ncols=70)
     for epoch_num in iterator:
+        print(f"EPOCH: {epoch_num}")
         for sampled_batch in iterate_minibatches(args, imtr, gttr, batch_size = exp_config.batch_size, train_or_eval = 'train'):
             model.train()
             image_batch, label_batch = sampled_batch[0], sampled_batch[1]
@@ -157,7 +159,7 @@ def trainer_fets(args, model, snapshot_path):
             # ===========================
             # Compute the loss on the entire training set
             # ===========================
-            if (iter_num+1) % 500 == 0:   #every 5 epochs (17 iterations per epoch)
+            if (iter_num+1) % 3410 == 0:   #every epoch (3410 iterations per epoch)
                 logging.info('Training Data Eval:')
                 train_loss = do_train_eval(imtr, gttr, batch_size, model, ce_loss, dice_loss)                   
                 
@@ -169,7 +171,7 @@ def trainer_fets(args, model, snapshot_path):
             # ===========================
             # Evaluate the model periodically on a validation set 
             # ===========================
-            if (iter_num+1) % 500 == 0:
+            if (iter_num+1) % 3410 == 0:
                 logging.info('Validation Data Eval:')
                 val_loss = do_validation_eval(imvl, gtvl, batch_size, model, ce_loss, dice_loss)                    
                 
@@ -178,10 +180,14 @@ def trainer_fets(args, model, snapshot_path):
                 writer.add_scalar('info/total_loss_validation_set', val_loss, iter_num)
 
                 if val_loss < best_val_loss:
-                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'FETS_UNET_best_val_loss_seed100' + '.pth')
+                    save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/FETS/UNWT/', 'FETS_UNWT_CORR_best_val_loss_seed2' + '.pth')
                     torch.save(model.state_dict(), save_mode_path)
                     logging.info(f"Found new lowest validation loss at iteration {iter_num}! Save model to {save_mode_path}")
                     best_val_loss = val_loss
+            
+            if (iter_num+1) % 5000 == 0:
+                logging.info(f'Saving model at iteration {iter_num}')
+                save_mode_path = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/FETS/UNWT/', f'FETS_UNWT_CORR_seed2_iternum{iter_num}' + '.pth')
 
 
     # ============================
