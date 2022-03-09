@@ -17,7 +17,7 @@ from torch.nn.modules.utils import _pair
 from scipy import ndimage
 from . import vit_seg_configs as configs
 from .vit_seg_modeling_resnet_skip import ResNetV2
-from .unet_for_TU import UNET_encoder
+from .unet_for_TU import UNET_encoder, UNET_encoder_FETS
 
 
 logger = logging.getLogger(__name__)
@@ -141,7 +141,7 @@ class Embeddings(nn.Module):
 
         if self.hybrid:
             #self.hybrid_model = ResNetV2(block_units=config.resnet.num_layers, width_factor=config.resnet.width_factor)
-            self.hybrid_model = UNET_encoder()
+            self.hybrid_model = UNET_encoder_FETS()
             in_channels = self.hybrid_model.width * 16
         self.patch_embeddings = Conv2d(in_channels=in_channels,
                                        out_channels=config.hidden_size,

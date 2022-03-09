@@ -33,7 +33,7 @@ def load_test_sd_data(input_folder,
     # file to create or directly read if it already exists
     # ===============================
 
-    test_sd_file_name = 'data_test_sd.hdf5' 
+    test_sd_file_name = 'data_test_sd_NEW.hdf5' 
     test_sd_file_path = os.path.join(preproc_folder, test_sd_file_name)
     
     # ===============================
@@ -202,12 +202,16 @@ def prepare_test_sd_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -217,12 +221,6 @@ def prepare_test_sd_data(input_folder,
         ny_list.append(image_n4.shape[1])
         nz_list.append(image_n4.shape[2])
             
-
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -240,14 +238,14 @@ def prepare_test_sd_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list.append(img_normalised[:, :, zz])
+            image_list.append(image_n4[:, :, zz])
             label_list.append(label[:, :, zz])
 
             write_buffer += 1
@@ -488,12 +486,16 @@ def prepare_test_td1_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -503,12 +505,6 @@ def prepare_test_td1_data(input_folder,
         ny_list.append(image_n4.shape[1])
         nz_list.append(image_n4.shape[2])
             
-
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -526,14 +522,14 @@ def prepare_test_td1_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list.append(img_normalised[:, :, zz])
+            image_list.append(image_n4[:, :, zz])
             label_list.append(label[:, :, zz])
 
             write_buffer += 1
@@ -771,12 +767,16 @@ def prepare_test_td2_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -786,12 +786,6 @@ def prepare_test_td2_data(input_folder,
         ny_list.append(image_n4.shape[1])
         nz_list.append(image_n4.shape[2])
             
-
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -809,14 +803,14 @@ def prepare_test_td2_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list.append(img_normalised[:, :, zz])
+            image_list.append(image_n4[:, :, zz])
             label_list.append(label[:, :, zz])
 
             write_buffer += 1
@@ -891,15 +885,13 @@ def load_training_data(input_folder,
     train_file_name_part3 = 'data_training_part3.hdf5' 
     train_file_path_part3 = os.path.join(preproc_folder, train_file_name_part3)
 
-    val_file_name = 'data_validation.hdf5' 
-    val_file_path = os.path.join(preproc_folder, val_file_name)
 
     
     # ===============================
     # if the images have not already been extracted, do so
     # ===============================
     #if not os.path.exists(train_file_path_part1 or train_file_path_part2 or train_file_path_part3) or force_overwrite:
-    if not os.path.exists(train_file_path_part1 or train_file_path_part2 or train_file_path_part3 or val_file_path) or force_overwrite:
+    if not os.path.exists(train_file_path_part1 or train_file_path_part2 or train_file_path_part3) or force_overwrite:
 
         logging.info('This configuration of protocol and data indices has not yet been preprocessed')
         logging.info('Preprocessing now...')
@@ -908,14 +900,13 @@ def load_training_data(input_folder,
                      train_file_path_part1,
                      train_file_path_part2,
                      train_file_path_part3,
-                     val_file_path,
                      size,
                      target_resolution
                      )
     else:        
         logging.info('Already preprocessed this configuration. Loading now...')
         
-    return h5py.File(train_file_path_part1, 'r'), h5py.File(train_file_path_part2, 'r'), h5py.File(train_file_path_part3, 'r'), h5py.File(val_file_path, 'r')
+    return h5py.File(train_file_path_part1, 'r'), h5py.File(train_file_path_part2, 'r'), h5py.File(train_file_path_part3, 'r')
 
 
 
@@ -926,7 +917,6 @@ def prepare_training_data(input_folder,
                  train_file_path_part1,
                  train_file_path_part2,
                  train_file_path_part3,
-                 val_file_path, 
                  size,
                  target_resolution
                  ):
@@ -951,18 +941,16 @@ def prepare_training_data(input_folder,
     folder_list_part1 = []
     folder_list_part2 = []
     folder_list_part3 = []
-    folder_list_val = []
 
     training_ids_part1 = [1, 96, 95, 94, 93, 92, 91, 90, 89, 88, 87, 86, 85, 83, 97, 82, 80, 79, 78, 77, 76, 75, 74, 73, 72, 71, 70, 69, 68] 
     training_ids_part2 = [81, 98, 99, 100, 129, 128, 127, 126, 125, 124, 123, 122, 121, 120, 119, 118, 117, 116, 115, 114, 113, 112, 111, 110, 109,
                           108, 107, 106, 105] 
     training_ids_part3 = [104, 103, 102, 101, 67, 66, 84, 64, 30, 29, 28, 27, 26, 25, 24, 23, 22, 21, 20, 19, 18, 17, 16, 15, 65, 13, 12, 11, 10, 9]
-    validation_ids = [54, 53, 51, 50, 49, 52, 47, 35, 36, 37, 38, 48, 40, 41, 39, 43, 44, 45, 46, 42]
+    #validation_ids = [54, 53, 51, 50, 49, 52, 47, 35, 36, 37, 38, 48, 40, 41, 39, 43, 44, 45, 46, 42]
 
     num_slices_part1 = 0
     num_slices_part2 = 0
     num_slices_part3 = 0
-    num_slices_val = 0
 
 
     for folder in os.listdir(training_folder):
@@ -1021,23 +1009,7 @@ def prepare_training_data(input_folder,
                                 elif filename.lower().endswith('flair.nii.gz'):
                                     image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
                                     num_slices_part3 += image_flair.shape[2]
-                
-                elif patient_id in validation_ids:
-                    folder_list_val.append(folder_path)
-                    for _, _, fileList in os.walk(folder_path):
-                        for filename in fileList:
-                                if filename.lower().endswith('t1.nii.gz'):
-                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
-                                    num_slices_val += image_t1.shape[2]
-                                elif filename.lower().endswith('t1ce.nii.gz'):
-                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
-                                    num_slices_val += image_t1ce.shape[2]
-                                elif filename.lower().endswith('t2.nii.gz'):
-                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
-                                    num_slices_val += image_t2.shape[2]
-                                elif filename.lower().endswith('flair.nii.gz'):
-                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
-                                    num_slices_val += image_flair.shape[2]
+        
 
     # ===============================
     # Create datasets for images and labels
@@ -1088,16 +1060,6 @@ def prepare_training_data(input_folder,
     py_list_part3 = []
     pz_list_part3= []
     pat_names_list_part3 = []
-    
-    label_list_val = []
-    image_list_val = []
-    nx_list_val = []
-    ny_list_val = []
-    nz_list_val = []
-    px_list_val = []
-    py_list_val = []
-    pz_list_val= []
-    pat_names_list_val = []
 
     # ===============================        
     # ===============================        
@@ -1162,12 +1124,16 @@ def prepare_training_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -1177,12 +1143,6 @@ def prepare_training_data(input_folder,
         ny_list_part1.append(image_n4.shape[1])
         nz_list_part1.append(image_n4.shape[2])
             
-
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -1200,14 +1160,14 @@ def prepare_training_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list_part1.append(img_normalised[:, :, zz])
+            image_list_part1.append(image_n4[:, :, zz])
             label_list_part1.append(label[:, :, zz])
 
             write_buffer += 1
@@ -1311,12 +1271,16 @@ def prepare_training_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -1327,11 +1291,6 @@ def prepare_training_data(input_folder,
         nz_list_part2.append(image_n4.shape[2])
             
 
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -1349,14 +1308,14 @@ def prepare_training_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list_part2.append(img_normalised[:, :, zz])
+            image_list_part2.append(image_n4[:, :, zz])
             label_list_part2.append(label[:, :, zz])
 
             write_buffer += 1
@@ -1460,12 +1419,16 @@ def prepare_training_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -1475,12 +1438,6 @@ def prepare_training_data(input_folder,
         ny_list_part3.append(image_n4.shape[1])
         nz_list_part3.append(image_n4.shape[2])
             
-
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -1498,14 +1455,14 @@ def prepare_training_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list_part3.append(img_normalised[:, :, zz])
+            image_list_part3.append(image_n4[:, :, zz])
             label_list_part3.append(label[:, :, zz])
 
             write_buffer += 1
@@ -1551,7 +1508,164 @@ def prepare_training_data(input_folder,
 
 
 
+# ===============================================================
+# Helper function to write a range of data to the hdf5 datasets
+# ===============================================================
+def _write_range_to_hdf5(hdf5_data,
+                         img_list,
+                         mask_list,
+                         counter_from,
+                         counter_to):
+
+    logging.info('Writing data from %d to %d' % (counter_from, counter_to))
+
+    img_arr = np.asarray(img_list, dtype=np.float32)
+    lab_arr = np.asarray(mask_list, dtype=np.uint8)
+
+    img_arr = np.swapaxes(img_arr, 0, 2)
+    lab_arr = np.swapaxes(lab_arr, 0, 2)
+
+    hdf5_data['images'][..., counter_from : counter_to] = img_arr
+    hdf5_data['labels'][..., counter_from : counter_to] = lab_arr
+
+# ===============================================================
+# Helper function to reset the tmp lists and free the memory
+# ===============================================================
+def _release_tmp_memory(img_list,
+                        mask_list):
+
+    img_list.clear()
+    mask_list.clear()
+    gc.collect()
+
+
+
+
+def load_validation_data(input_folder,
+              preproc_folder,
+              size,
+              target_resolution,
+              force_overwrite = False):
+
+    # ===============================
+    # create the pre-processing folder, if it does not exist
+    # ===============================
+    utils.makefolder(preproc_folder)    
+    
+    # ===============================
+    # file to create or directly read if it already exists
+    # ===============================
+
+    val_file_name = 'validation_data_NEW.hdf5' 
+    val_file_path = os.path.join(preproc_folder, val_file_name)
+
+    
+    # ===============================
+    # if the images have not already been extracted, do so
+    # ===============================
+    #if not os.path.exists(train_file_path_part1 or train_file_path_part2 or train_file_path_part3) or force_overwrite:
+    if not os.path.exists(val_file_path) or force_overwrite:
+
+        logging.info('This configuration of protocol and data indices has not yet been preprocessed')
+        logging.info('Preprocessing now...')
+        prepare_validation_data(input_folder,
+                     preproc_folder,
+                     val_file_path,
+                     size,
+                     target_resolution
+                     )
+    else:        
+        logging.info('Already preprocessed this configuration. Loading now...')
+        
+    return h5py.File(val_file_path, 'r')
+
+
+
+def prepare_validation_data(input_folder,
+                 preprocessing_folder,
+                 val_file_path, 
+                 size,
+                 target_resolution
+                 ):
+
+    # ===============================
+    # create a hdf5 file
+    # ===============================
     hdf5_file_val = h5py.File(val_file_path, "w")
+    
+
+    # ===============================
+    # read all the patient folders from the base input folder
+    # ===============================
+
+
+    logging.info('Counting files and parsing meta data...')
+
+    training_folder = input_folder + 'MICCAI_FeTS2021_TrainingData/'
+
+    
+    folder_list_val = []
+
+    validation_ids = [54, 53, 51, 50, 49, 52, 47, 35, 36, 37, 38, 48, 40, 41, 39, 43, 44, 45, 46, 42]
+    num_slices_val = 0
+
+
+    for folder in os.listdir(training_folder):
+        if not (folder.lower().endswith('.csv') or folder.lower().endswith('.md')):
+            folder_path = os.path.join(training_folder, folder)  
+            patient_id = int(folder.split('_')[-1])      
+            if os.path.isdir(folder_path):
+                
+                if patient_id in validation_ids:
+                    folder_list_val.append(folder_path)
+                    for _, _, fileList in os.walk(folder_path):
+                        for filename in fileList:
+                                if filename.lower().endswith('t1.nii.gz'):
+                                    image_t1, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_t1.shape[2]
+                                elif filename.lower().endswith('t1ce.nii.gz'):
+                                    image_t1ce, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_t1ce.shape[2]
+                                elif filename.lower().endswith('t2.nii.gz'):
+                                    image_t2, _, _= utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_t2.shape[2]
+                                elif filename.lower().endswith('flair.nii.gz'):
+                                    image_flair, _, _ = utils.load_nii(training_folder + folder + '/' + filename)
+                                    num_slices_val += image_flair.shape[2]
+
+    # ===============================
+    # Create datasets for images and labels
+    # ===============================
+
+   
+    #num_slices = count_slices(folder_list, idx_start, idx_end)
+    #data['images'] = hdf5_file.create_dataset("images", list((size,size)) + [num_slices], dtype=np.float32)
+    #data['labels'] = hdf5_file.create_dataset("labels", list((size,size)) + [num_slices], dtype=np.uint8)
+    
+    # ===============================
+    # initialize lists
+    # ===============================    
+    
+    label_list_val = []
+    image_list_val = []
+    nx_list_val = []
+    ny_list_val = []
+    nz_list_val = []
+    px_list_val = []
+    py_list_val = []
+    pz_list_val= []
+    pat_names_list_val = []
+
+    # ===============================        
+    # ===============================        
+    logging.info('Parsing image files')
+    
+        
+    patient_counter = 0
+    write_buffer = 0
+    counter_from = 0
+
+    
     data_val = {}
     data_val['images'] = hdf5_file_val.create_dataset("images", list((size,size)) + [num_slices_val], dtype=np.float32)
     data_val['labels'] = hdf5_file_val.create_dataset("labels", list((size,size)) + [num_slices_val], dtype=np.uint8)
@@ -1612,12 +1726,16 @@ def prepare_training_data(input_folder,
 
             if input_img == input_img_t1:
                 img_t1_n4 = img
+                img_t1_n4 = utils.normalise_image(img_t1_n4, norm_type='div_by_max')
             elif input_img == input_img_t1ce:
                 img_t1ce_n4 = img
+                img_t1ce_n4 = utils.normalise_image(img_t1ce_n4, norm_type='div_by_max')
             elif input_img == input_img_t2:
                 img_t2_n4 = img
+                img_t2_n4 = utils.normalise_image(img_t2_n4, norm_type='div_by_max')
             elif input_img == input_img_flair:
                 img_flair_n4 = img
+                img_flair_n4 = utils.normalise_image(img_flair_n4, norm_type='div_by_max')
 
         image_n4 = np.concatenate((img_t1_n4, img_t1ce_n4), axis = 2)
         image_n4 = np.concatenate((image_n4, img_t2_n4), axis = 2)
@@ -1627,12 +1745,6 @@ def prepare_training_data(input_folder,
         ny_list_val.append(image_n4.shape[1])
         nz_list_val.append(image_n4.shape[2])
             
-
-        # ================================    
-        # normalize the image
-        # ================================      
-
-        img_normalised = utils.normalise_image(image_n4, norm_type='div_by_max')
 
         # ================================    
         # read the labels
@@ -1650,14 +1762,14 @@ def prepare_training_data(input_folder,
 
         ### PROCESSING LOOP FOR SLICE-BY-SLICE 2D DATA ###################
 
-        for zz in range(img.shape[2]):
+        for zz in range(image_n4.shape[2]):
 
             #no rescaling needed since all images (SD & TDs) have same scale/dimensions already
 
             #image_cropped = crop_or_pad_slice_to_size(img_normalised[:, :, zz], size, size)
             #label_cropped = crop_or_pad_slice_to_size(label[:, :, zz], size, size)
 
-            image_list_val.append(img_normalised[:, :, zz])
+            image_list_val.append(image_n4[:, :, zz])
             label_list_val.append(label[:, :, zz])
 
             write_buffer += 1
@@ -1699,39 +1811,3 @@ def prepare_training_data(input_folder,
     # After test train loop:
     logging.info('Validation loop done')
     hdf5_file_val.close()
-
-
-
-# ===============================================================
-# Helper function to write a range of data to the hdf5 datasets
-# ===============================================================
-def _write_range_to_hdf5(hdf5_data,
-                         img_list,
-                         mask_list,
-                         counter_from,
-                         counter_to):
-
-    logging.info('Writing data from %d to %d' % (counter_from, counter_to))
-
-    img_arr = np.asarray(img_list, dtype=np.float32)
-    lab_arr = np.asarray(mask_list, dtype=np.uint8)
-
-    img_arr = np.swapaxes(img_arr, 0, 2)
-    lab_arr = np.swapaxes(lab_arr, 0, 2)
-
-    hdf5_data['images'][..., counter_from : counter_to] = img_arr
-    hdf5_data['labels'][..., counter_from : counter_to] = lab_arr
-
-# ===============================================================
-# Helper function to reset the tmp lists and free the memory
-# ===============================================================
-def _release_tmp_memory(img_list,
-                        mask_list):
-
-    img_list.clear()
-    mask_list.clear()
-    gc.collect()
-
-
-
-

@@ -19,6 +19,11 @@ from networks.unet_class import UNET
 import utils
 from sklearn.calibration import CalibrationDisplay
 import matplotlib.pyplot as plt
+from calibration_functions import find_bin_values
+from calibration_functions import find_area
+from calibration_functions import plot_roc_curve
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_auc_score
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -83,6 +88,9 @@ def inference(args, model, test_save_path=None):
     metric_list = 0.0
     pred_list = []
     label_list = []
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
 
     
     for sub_num in [1, 2, 4, 8, 10, 11, 12, 14, 18, 19]:
@@ -97,7 +105,7 @@ def inference(args, model, test_save_path=None):
         image = imts[:,:, subject_id_start_slice:subject_id_end_slice] 
         label = gtts[:,:, subject_id_start_slice:subject_id_end_slice] 
 
-        utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '1_test.nii.gz', data = image, affine = np.eye(4))
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '1_test.nii.gz', data = image, affine = np.eye(4))
 
         image = torch.from_numpy(image)
         label = torch.from_numpy(label)
@@ -130,10 +138,16 @@ def inference(args, model, test_save_path=None):
         # ============================
         # Log the mean performance achieved for each class
         # ============================ 
-
+    
+    first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos = find_bin_values(pred_list, label_list)
+    find_area(first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos)
     disp = CalibrationDisplay.from_predictions(label_list, pred_list)
     plt.show()
     plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/UNWT_USZ.png')
+
+    fpr, tpr, _ = roc_curve(label_list, pred_list)
+    roc_auc = auc(fpr, tpr)
+    plot_roc_curve(fpr, tpr, roc_auc, 'ROC_UNWT_USZ')
     
 
     for i in range(0, args.num_classes):

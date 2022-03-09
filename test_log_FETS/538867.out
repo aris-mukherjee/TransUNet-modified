@@ -1,0 +1,864 @@
+2022-03-08 14:17:40,821 Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/FeTS/', test_dataset='FETS_TEST_TD1', num_classes=4, max_iterations=6800, max_epochs=400, batch_size=16, img_size=240, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='FETS_TEST_TD1', z_spacing=1, is_pretrain=True, exp='TU_FETS_TEST_TD1240')
+Namespace(volume_path='/itet-stor/arismu/bmicdatasets-originals/Originals/Challenge_Datasets/FeTS/', test_dataset='FETS_TEST_TD1', num_classes=4, max_iterations=6800, max_epochs=400, batch_size=16, img_size=240, is_savenii=True, n_skip=3, vit_name='R50-ViT-B_16', test_save_dir='../predictions', deterministic=1, base_lr=0.001, seed=1234, vit_patches_size=16, target_resolution=0.625, image_depth_tr=32, image_depth_ts=32, test_cv_fold_num=1, NORMALIZE=1, Dataset='FETS_TEST_TD1', z_spacing=1, is_pretrain=True, exp='TU_FETS_TEST_TD1240')
+2022-03-08 14:17:40,822 TU_pretrain_R50-ViT-B_16_skip3_bs16_240
+TU_pretrain_R50-ViT-B_16_skip3_bs16_240
+2022-03-08 14:17:40,838 Already preprocessed this configuration. Loading now...
+Already preprocessed this configuration. Loading now...
+2022-03-08 14:21:16,784 ============================================================
+============================================================
+2022-03-08 14:21:16,784 Subject 1 out of 34: FeTS21_Training_366
+Subject 1 out of 34: FeTS21_Training_366
+2022-03-08 14:21:29,787 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 388772
+GtSum: 46230
+TUMOR CORE (LABELS 1 and 4
+Predsum: 271654
+GtSum: 23663
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 227210
+GtSum: 19747
+WHOLE TUMOR:
+2022-03-08 14:21:29,787 case 0 mean_dice 0.201571 mean_hd95 82.686154
+case 0 mean_dice 0.201571 mean_hd95 82.686154
+2022-03-08 14:21:29,787 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:21:29,787 case 0 mean_dice 0.126532 mean_hd95 82.625662
+case 0 mean_dice 0.126532 mean_hd95 82.625662
+2022-03-08 14:21:29,787 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:21:29,787 case 0 mean_dice 0.154681 mean_hd95 82.905669
+case 0 mean_dice 0.154681 mean_hd95 82.905669
+2022-03-08 14:21:29,844 ============================================================
+============================================================
+2022-03-08 14:21:29,844 Subject 2 out of 34: FeTS21_Training_345
+Subject 2 out of 34: FeTS21_Training_345
+2022-03-08 14:21:42,641 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 360337
+GtSum: 95788
+TUMOR CORE (LABELS 1 and 4
+Predsum: 174532
+GtSum: 6152
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 134848
+GtSum: 5942
+WHOLE TUMOR:
+2022-03-08 14:21:42,642 case 1 mean_dice 0.310783 mean_hd95 60.860496
+case 1 mean_dice 0.310783 mean_hd95 60.860496
+2022-03-08 14:21:42,642 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:21:42,642 case 1 mean_dice 0.062433 mean_hd95 88.481637
+case 1 mean_dice 0.062433 mean_hd95 88.481637
+2022-03-08 14:21:42,642 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:21:42,642 case 1 mean_dice 0.050807 mean_hd95 88.396833
+case 1 mean_dice 0.050807 mean_hd95 88.396833
+2022-03-08 14:21:42,699 ============================================================
+============================================================
+2022-03-08 14:21:42,699 Subject 3 out of 34: FeTS21_Training_340
+Subject 3 out of 34: FeTS21_Training_340
+2022-03-08 14:21:55,647 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 1153618
+GtSum: 77740
+TUMOR CORE (LABELS 1 and 4
+Predsum: 452379
+GtSum: 47325
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 234233
+GtSum: 30930
+WHOLE TUMOR:
+2022-03-08 14:21:55,648 case 2 mean_dice 0.125299 mean_hd95 56.718604
+case 2 mean_dice 0.125299 mean_hd95 56.718604
+2022-03-08 14:21:55,648 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:21:55,648 case 2 mean_dice 0.152917 mean_hd95 59.312731
+case 2 mean_dice 0.152917 mean_hd95 59.312731
+2022-03-08 14:21:55,648 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:21:55,648 case 2 mean_dice 0.180167 mean_hd95 60.024995
+case 2 mean_dice 0.180167 mean_hd95 60.024995
+2022-03-08 14:21:55,720 ============================================================
+============================================================
+2022-03-08 14:21:55,720 Subject 4 out of 34: FeTS21_Training_363
+Subject 4 out of 34: FeTS21_Training_363
+2022-03-08 14:22:08,611 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 240702
+GtSum: 120394
+TUMOR CORE (LABELS 1 and 4
+Predsum: 165178
+GtSum: 70428
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 103579
+GtSum: 46541
+WHOLE TUMOR:
+2022-03-08 14:22:08,611 case 3 mean_dice 0.559308 mean_hd95 62.321746
+case 3 mean_dice 0.559308 mean_hd95 62.321746
+2022-03-08 14:22:08,611 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:22:08,611 case 3 mean_dice 0.389568 mean_hd95 69.325320
+case 3 mean_dice 0.389568 mean_hd95 69.325320
+2022-03-08 14:22:08,611 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:22:08,612 case 3 mean_dice 0.492067 mean_hd95 70.107061
+case 3 mean_dice 0.492067 mean_hd95 70.107061
+2022-03-08 14:22:08,683 ============================================================
+============================================================
+2022-03-08 14:22:08,683 Subject 5 out of 34: FeTS21_Training_368
+Subject 5 out of 34: FeTS21_Training_368
+2022-03-08 14:22:21,140 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 910640
+GtSum: 83463
+TUMOR CORE (LABELS 1 and 4
+Predsum: 498549
+GtSum: 17989
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 253529
+GtSum: 16658
+WHOLE TUMOR:
+2022-03-08 14:22:21,141 case 4 mean_dice 0.162671 mean_hd95 71.056316
+case 4 mean_dice 0.162671 mean_hd95 71.056316
+2022-03-08 14:22:21,141 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:22:21,141 case 4 mean_dice 0.099279 mean_hd95 93.338095
+case 4 mean_dice 0.099279 mean_hd95 93.338095
+2022-03-08 14:22:21,141 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:22:21,141 case 4 mean_dice 0.065598 mean_hd95 93.680307
+case 4 mean_dice 0.065598 mean_hd95 93.680307
+2022-03-08 14:22:21,217 ============================================================
+============================================================
+2022-03-08 14:22:21,217 Subject 6 out of 34: FeTS21_Training_341
+Subject 6 out of 34: FeTS21_Training_341
+2022-03-08 14:22:33,577 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 717210
+GtSum: 12470
+TUMOR CORE (LABELS 1 and 4
+Predsum: 455370
+GtSum: 7624
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 343129
+GtSum: 7220
+WHOLE TUMOR:
+2022-03-08 14:22:33,577 case 5 mean_dice 0.033620 mean_hd95 94.345111
+case 5 mean_dice 0.033620 mean_hd95 94.345111
+2022-03-08 14:22:33,578 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:22:33,578 case 5 mean_dice 0.036598 mean_hd95 94.799789
+case 5 mean_dice 0.036598 mean_hd95 94.799789
+2022-03-08 14:22:33,578 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:22:33,578 case 5 mean_dice 0.032013 mean_hd95 95.131488
+case 5 mean_dice 0.032013 mean_hd95 95.131488
+2022-03-08 14:22:33,654 ============================================================
+============================================================
+2022-03-08 14:22:33,654 Subject 7 out of 34: FeTS21_Training_349
+Subject 7 out of 34: FeTS21_Training_349
+2022-03-08 14:22:46,465 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 635880
+GtSum: 173793
+TUMOR CORE (LABELS 1 and 4
+Predsum: 428757
+GtSum: 107080
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 288002
+GtSum: 58809
+WHOLE TUMOR:
+2022-03-08 14:22:46,465 case 6 mean_dice 0.383024 mean_hd95 73.793631
+case 6 mean_dice 0.383024 mean_hd95 73.793631
+2022-03-08 14:22:46,465 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:22:46,465 case 6 mean_dice 0.214987 mean_hd95 79.050617
+case 6 mean_dice 0.214987 mean_hd95 79.050617
+2022-03-08 14:22:46,465 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:22:46,466 case 6 mean_dice 0.240420 mean_hd95 79.837335
+case 6 mean_dice 0.240420 mean_hd95 79.837335
+2022-03-08 14:22:46,541 ============================================================
+============================================================
+2022-03-08 14:22:46,542 Subject 8 out of 34: FeTS21_Training_351
+Subject 8 out of 34: FeTS21_Training_351
+2022-03-08 14:22:58,769 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 87078
+GtSum: 98996
+TUMOR CORE (LABELS 1 and 4
+Predsum: 24255
+GtSum: 19414
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 18795
+GtSum: 16124
+WHOLE TUMOR:
+2022-03-08 14:22:58,770 case 7 mean_dice 0.657738 mean_hd95 39.385274
+case 7 mean_dice 0.657738 mean_hd95 39.385274
+2022-03-08 14:22:58,770 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:22:58,770 case 7 mean_dice 0.718119 mean_hd95 69.422978
+case 7 mean_dice 0.718119 mean_hd95 69.422978
+2022-03-08 14:22:58,770 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:22:58,770 case 7 mean_dice 0.636745 mean_hd95 74.313188
+case 7 mean_dice 0.636745 mean_hd95 74.313188
+2022-03-08 14:22:58,846 ============================================================
+============================================================
+2022-03-08 14:22:58,846 Subject 9 out of 34: FeTS21_Training_354
+Subject 9 out of 34: FeTS21_Training_354
+2022-03-08 14:23:11,440 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 358197
+GtSum: 170299
+TUMOR CORE (LABELS 1 and 4
+Predsum: 110441
+GtSum: 98081
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 54335
+GtSum: 60230
+WHOLE TUMOR:
+2022-03-08 14:23:11,440 case 8 mean_dice 0.579766 mean_hd95 49.040799
+case 8 mean_dice 0.579766 mean_hd95 49.040799
+2022-03-08 14:23:11,440 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:23:11,440 case 8 mean_dice 0.675896 mean_hd95 48.082221
+case 8 mean_dice 0.675896 mean_hd95 48.082221
+2022-03-08 14:23:11,440 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:23:11,440 case 8 mean_dice 0.589501 mean_hd95 60.514461
+case 8 mean_dice 0.589501 mean_hd95 60.514461
+2022-03-08 14:23:11,515 ============================================================
+============================================================
+2022-03-08 14:23:11,515 Subject 10 out of 34: FeTS21_Training_352
+Subject 10 out of 34: FeTS21_Training_352
+2022-03-08 14:23:24,110 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 643135
+GtSum: 51790
+TUMOR CORE (LABELS 1 and 4
+Predsum: 227751
+GtSum: 9475
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 163163
+GtSum: 9110
+WHOLE TUMOR:
+2022-03-08 14:23:24,110 case 9 mean_dice 0.134181 mean_hd95 93.043001
+case 9 mean_dice 0.134181 mean_hd95 93.043001
+2022-03-08 14:23:24,110 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:23:24,110 case 9 mean_dice 0.077725 mean_hd95 117.051271
+case 9 mean_dice 0.077725 mean_hd95 117.051271
+2022-03-08 14:23:24,110 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:23:24,111 case 9 mean_dice 0.070313 mean_hd95 115.416637
+case 9 mean_dice 0.070313 mean_hd95 115.416637
+2022-03-08 14:23:24,186 ============================================================
+============================================================
+2022-03-08 14:23:24,186 Subject 11 out of 34: FeTS21_Training_343
+Subject 11 out of 34: FeTS21_Training_343
+2022-03-08 14:23:37,039 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 724802
+GtSum: 157400
+TUMOR CORE (LABELS 1 and 4
+Predsum: 150216
+GtSum: 61196
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 60974
+GtSum: 33164
+WHOLE TUMOR:
+2022-03-08 14:23:37,040 case 10 mean_dice 0.325306 mean_hd95 65.711491
+case 10 mean_dice 0.325306 mean_hd95 65.711491
+2022-03-08 14:23:37,040 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:23:37,040 case 10 mean_dice 0.526036 mean_hd95 72.801099
+case 10 mean_dice 0.526036 mean_hd95 72.801099
+2022-03-08 14:23:37,040 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:23:37,041 case 10 mean_dice 0.395673 mean_hd95 75.119904
+case 10 mean_dice 0.395673 mean_hd95 75.119904
+2022-03-08 14:23:37,116 ============================================================
+============================================================
+2022-03-08 14:23:37,116 Subject 12 out of 34: FeTS21_Training_359
+Subject 12 out of 34: FeTS21_Training_359
+2022-03-08 14:23:49,693 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 557476
+GtSum: 84845
+TUMOR CORE (LABELS 1 and 4
+Predsum: 176144
+GtSum: 51455
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 81623
+GtSum: 31534
+WHOLE TUMOR:
+2022-03-08 14:23:49,693 case 11 mean_dice 0.252537 mean_hd95 65.061509
+case 11 mean_dice 0.252537 mean_hd95 65.061509
+2022-03-08 14:23:49,693 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:23:49,693 case 11 mean_dice 0.460175 mean_hd95 81.156947
+case 11 mean_dice 0.460175 mean_hd95 81.156947
+2022-03-08 14:23:49,694 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:23:49,694 case 11 mean_dice 0.406496 mean_hd95 83.934498
+case 11 mean_dice 0.406496 mean_hd95 83.934498
+2022-03-08 14:23:49,769 ============================================================
+============================================================
+2022-03-08 14:23:49,769 Subject 13 out of 34: FeTS21_Training_369
+Subject 13 out of 34: FeTS21_Training_369
+2022-03-08 14:24:02,940 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 1012483
+GtSum: 224832
+TUMOR CORE (LABELS 1 and 4
+Predsum: 298824
+GtSum: 63310
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 145344
+GtSum: 42721
+WHOLE TUMOR:
+2022-03-08 14:24:02,941 case 12 mean_dice 0.352908 mean_hd95 52.554733
+case 12 mean_dice 0.352908 mean_hd95 52.554733
+2022-03-08 14:24:02,941 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:24:02,941 case 12 mean_dice 0.393364 mean_hd95 63.189002
+case 12 mean_dice 0.393364 mean_hd95 63.189002
+2022-03-08 14:24:02,941 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:24:02,941 case 12 mean_dice 0.296724 mean_hd95 64.148266
+case 12 mean_dice 0.296724 mean_hd95 64.148266
+2022-03-08 14:24:03,018 ============================================================
+============================================================
+2022-03-08 14:24:03,018 Subject 14 out of 34: FeTS21_Training_339
+Subject 14 out of 34: FeTS21_Training_339
+2022-03-08 14:24:15,526 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 434993
+GtSum: 147383
+TUMOR CORE (LABELS 1 and 4
+Predsum: 118972
+GtSum: 64008
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 50444
+GtSum: 38523
+WHOLE TUMOR:
+2022-03-08 14:24:15,527 case 13 mean_dice 0.493046 mean_hd95 44.147480
+case 13 mean_dice 0.493046 mean_hd95 44.147480
+2022-03-08 14:24:15,527 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:24:15,527 case 13 mean_dice 0.730248 mean_hd95 47.256744
+case 13 mean_dice 0.730248 mean_hd95 47.256744
+2022-03-08 14:24:15,527 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:24:15,527 case 13 mean_dice 0.631238 mean_hd95 58.050840
+case 13 mean_dice 0.631238 mean_hd95 58.050840
+2022-03-08 14:24:15,602 ============================================================
+============================================================
+2022-03-08 14:24:15,602 Subject 15 out of 34: FeTS21_Training_347
+Subject 15 out of 34: FeTS21_Training_347
+2022-03-08 14:24:28,055 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 389620
+GtSum: 111614
+TUMOR CORE (LABELS 1 and 4
+Predsum: 127535
+GtSum: 32541
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 67826
+GtSum: 24882
+WHOLE TUMOR:
+2022-03-08 14:24:28,056 case 14 mean_dice 0.443206 mean_hd95 76.295478
+case 14 mean_dice 0.443206 mean_hd95 76.295478
+2022-03-08 14:24:28,056 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:24:28,056 case 14 mean_dice 0.498684 mean_hd95 88.413234
+case 14 mean_dice 0.498684 mean_hd95 88.413234
+2022-03-08 14:24:28,056 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:24:28,056 case 14 mean_dice 0.401259 mean_hd95 90.713836
+case 14 mean_dice 0.401259 mean_hd95 90.713836
+2022-03-08 14:24:28,130 ============================================================
+============================================================
+2022-03-08 14:24:28,131 Subject 16 out of 34: FeTS21_Training_346
+Subject 16 out of 34: FeTS21_Training_346
+2022-03-08 14:24:40,871 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 194193
+GtSum: 78584
+TUMOR CORE (LABELS 1 and 4
+Predsum: 113295
+GtSum: 67871
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 54182
+GtSum: 28376
+WHOLE TUMOR:
+2022-03-08 14:24:40,872 case 15 mean_dice 0.545772 mean_hd95 56.718604
+case 15 mean_dice 0.545772 mean_hd95 56.718604
+2022-03-08 14:24:40,872 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:24:40,872 case 15 mean_dice 0.572180 mean_hd95 51.188376
+case 15 mean_dice 0.572180 mean_hd95 51.188376
+2022-03-08 14:24:40,872 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:24:40,873 case 15 mean_dice 0.665699 mean_hd95 55.751233
+case 15 mean_dice 0.665699 mean_hd95 55.751233
+2022-03-08 14:24:40,950 ============================================================
+============================================================
+2022-03-08 14:24:40,950 Subject 17 out of 34: FeTS21_Training_360
+Subject 17 out of 34: FeTS21_Training_360
+2022-03-08 14:24:53,338 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 720426
+GtSum: 98512
+TUMOR CORE (LABELS 1 and 4
+Predsum: 412106
+GtSum: 56523
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 211170
+GtSum: 43764
+WHOLE TUMOR:
+2022-03-08 14:24:53,339 case 16 mean_dice 0.227717 mean_hd95 67.609171
+case 16 mean_dice 0.227717 mean_hd95 67.609171
+2022-03-08 14:24:53,339 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:24:53,339 case 16 mean_dice 0.269199 mean_hd95 71.916618
+case 16 mean_dice 0.269199 mean_hd95 71.916618
+2022-03-08 14:24:53,339 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:24:53,339 case 16 mean_dice 0.227907 mean_hd95 72.725511
+case 16 mean_dice 0.227907 mean_hd95 72.725511
+2022-03-08 14:24:53,414 ============================================================
+============================================================
+2022-03-08 14:24:53,414 Subject 18 out of 34: FeTS21_Training_357
+Subject 18 out of 34: FeTS21_Training_357
+2022-03-08 14:25:05,710 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 763648
+GtSum: 59365
+TUMOR CORE (LABELS 1 and 4
+Predsum: 405305
+GtSum: 24765
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 198317
+GtSum: 14708
+WHOLE TUMOR:
+2022-03-08 14:25:05,710 case 17 mean_dice 0.135534 mean_hd95 62.928531
+case 17 mean_dice 0.135534 mean_hd95 62.928531
+2022-03-08 14:25:05,710 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:25:05,710 case 17 mean_dice 0.102251 mean_hd95 68.644009
+case 17 mean_dice 0.102251 mean_hd95 68.644009
+2022-03-08 14:25:05,710 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:25:05,711 case 17 mean_dice 0.079113 mean_hd95 71.449283
+case 17 mean_dice 0.079113 mean_hd95 71.449283
+2022-03-08 14:25:05,784 ============================================================
+============================================================
+2022-03-08 14:25:05,785 Subject 19 out of 34: FeTS21_Training_355
+Subject 19 out of 34: FeTS21_Training_355
+2022-03-08 14:25:17,981 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 324038
+GtSum: 138024
+TUMOR CORE (LABELS 1 and 4
+Predsum: 86488
+GtSum: 92541
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 40493
+GtSum: 60306
+WHOLE TUMOR:
+2022-03-08 14:25:17,982 case 18 mean_dice 0.561864 mean_hd95 60.448325
+case 18 mean_dice 0.561864 mean_hd95 60.448325
+2022-03-08 14:25:17,982 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:25:17,982 case 18 mean_dice 0.733202 mean_hd95 22.561028
+case 18 mean_dice 0.733202 mean_hd95 22.561028
+2022-03-08 14:25:17,982 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:25:17,982 case 18 mean_dice 0.835876 mean_hd95 60.051228
+case 18 mean_dice 0.835876 mean_hd95 60.051228
+2022-03-08 14:25:18,058 ============================================================
+============================================================
+2022-03-08 14:25:18,059 Subject 20 out of 34: FeTS21_Training_336
+Subject 20 out of 34: FeTS21_Training_336
+2022-03-08 14:25:30,617 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 284426
+GtSum: 105016
+TUMOR CORE (LABELS 1 and 4
+Predsum: 113273
+GtSum: 67964
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 49170
+GtSum: 32177
+WHOLE TUMOR:
+2022-03-08 14:25:30,618 case 19 mean_dice 0.528890 mean_hd95 69.000000
+case 19 mean_dice 0.528890 mean_hd95 69.000000
+2022-03-08 14:25:30,618 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:25:30,618 case 19 mean_dice 0.620281 mean_hd95 66.992537
+case 19 mean_dice 0.620281 mean_hd95 66.992537
+2022-03-08 14:25:30,618 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:25:30,618 case 19 mean_dice 0.635797 mean_hd95 73.783467
+case 19 mean_dice 0.635797 mean_hd95 73.783467
+2022-03-08 14:25:30,695 ============================================================
+============================================================
+2022-03-08 14:25:30,695 Subject 21 out of 34: FeTS21_Training_365
+Subject 21 out of 34: FeTS21_Training_365
+2022-03-08 14:25:43,348 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 1051822
+GtSum: 147861
+TUMOR CORE (LABELS 1 and 4
+Predsum: 400032
+GtSum: 63842
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 86298
+GtSum: 31532
+WHOLE TUMOR:
+2022-03-08 14:25:43,349 case 20 mean_dice 0.234865 mean_hd95 63.914005
+case 20 mean_dice 0.234865 mean_hd95 63.914005
+2022-03-08 14:25:43,349 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:25:43,349 case 20 mean_dice 0.402835 mean_hd95 69.864154
+case 20 mean_dice 0.402835 mean_hd95 69.864154
+2022-03-08 14:25:43,349 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:25:43,349 case 20 mean_dice 0.211721 mean_hd95 71.944423
+case 20 mean_dice 0.211721 mean_hd95 71.944423
+2022-03-08 14:25:43,426 ============================================================
+============================================================
+2022-03-08 14:25:43,426 Subject 22 out of 34: FeTS21_Training_361
+Subject 22 out of 34: FeTS21_Training_361
+2022-03-08 14:25:56,041 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 492530
+GtSum: 78549
+TUMOR CORE (LABELS 1 and 4
+Predsum: 172612
+GtSum: 3240
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 59498
+GtSum: 282
+WHOLE TUMOR:
+2022-03-08 14:25:56,041 case 21 mean_dice 0.257863 mean_hd95 80.616376
+case 21 mean_dice 0.257863 mean_hd95 80.616376
+2022-03-08 14:25:56,041 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:25:56,041 case 21 mean_dice 0.002610 mean_hd95 84.740781
+case 21 mean_dice 0.002610 mean_hd95 84.740781
+2022-03-08 14:25:56,041 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:25:56,042 case 21 mean_dice 0.017299 mean_hd95 82.787982
+case 21 mean_dice 0.017299 mean_hd95 82.787982
+2022-03-08 14:25:56,117 ============================================================
+============================================================
+2022-03-08 14:25:56,118 Subject 23 out of 34: FeTS21_Training_364
+Subject 23 out of 34: FeTS21_Training_364
+2022-03-08 14:26:08,554 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 132616
+GtSum: 98011
+TUMOR CORE (LABELS 1 and 4
+Predsum: 52437
+GtSum: 50150
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 29262
+GtSum: 30508
+WHOLE TUMOR:
+2022-03-08 14:26:08,554 case 22 mean_dice 0.695313 mean_hd95 57.784081
+case 22 mean_dice 0.695313 mean_hd95 57.784081
+2022-03-08 14:26:08,554 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:26:08,555 case 22 mean_dice 0.708081 mean_hd95 71.624018
+case 22 mean_dice 0.708081 mean_hd95 71.624018
+2022-03-08 14:26:08,555 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:26:08,555 case 22 mean_dice 0.697320 mean_hd95 79.424807
+case 22 mean_dice 0.697320 mean_hd95 79.424807
+2022-03-08 14:26:08,631 ============================================================
+============================================================
+2022-03-08 14:26:08,631 Subject 24 out of 34: FeTS21_Training_338
+Subject 24 out of 34: FeTS21_Training_338
+2022-03-08 14:26:20,949 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 110569
+GtSum: 138460
+TUMOR CORE (LABELS 1 and 4
+Predsum: 59443
+GtSum: 63867
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 37828
+GtSum: 47126
+WHOLE TUMOR:
+2022-03-08 14:26:20,949 case 23 mean_dice 0.764537 mean_hd95 43.875961
+case 23 mean_dice 0.764537 mean_hd95 43.875961
+2022-03-08 14:26:20,949 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:26:20,950 case 23 mean_dice 0.797961 mean_hd95 39.458839
+case 23 mean_dice 0.797961 mean_hd95 39.458839
+2022-03-08 14:26:20,950 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:26:20,950 case 23 mean_dice 0.712465 mean_hd95 50.338852
+case 23 mean_dice 0.712465 mean_hd95 50.338852
+2022-03-08 14:26:21,025 ============================================================
+============================================================
+2022-03-08 14:26:21,026 Subject 25 out of 34: FeTS21_Training_356
+Subject 25 out of 34: FeTS21_Training_356
+2022-03-08 14:26:33,753 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 360449
+GtSum: 42643
+TUMOR CORE (LABELS 1 and 4
+Predsum: 115125
+GtSum: 30932
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 67664
+GtSum: 20127
+WHOLE TUMOR:
+2022-03-08 14:26:33,754 case 24 mean_dice 0.200217 mean_hd95 88.209977
+case 24 mean_dice 0.200217 mean_hd95 88.209977
+2022-03-08 14:26:33,754 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:26:33,754 case 24 mean_dice 0.326298 mean_hd95 94.926287
+case 24 mean_dice 0.326298 mean_hd95 94.926287
+2022-03-08 14:26:33,754 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:26:33,754 case 24 mean_dice 0.397228 mean_hd95 98.371744
+case 24 mean_dice 0.397228 mean_hd95 98.371744
+2022-03-08 14:26:33,830 ============================================================
+============================================================
+2022-03-08 14:26:33,830 Subject 26 out of 34: FeTS21_Training_350
+Subject 26 out of 34: FeTS21_Training_350
+2022-03-08 14:26:45,990 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 137171
+GtSum: 107675
+TUMOR CORE (LABELS 1 and 4
+Predsum: 63335
+GtSum: 49376
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 34869
+GtSum: 38973
+WHOLE TUMOR:
+2022-03-08 14:26:45,991 case 25 mean_dice 0.856865 mean_hd95 40.311289
+case 25 mean_dice 0.856865 mean_hd95 40.311289
+2022-03-08 14:26:45,991 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:26:45,991 case 25 mean_dice 0.893909 mean_hd95 2.236068
+case 25 mean_dice 0.893909 mean_hd95 2.236068
+2022-03-08 14:26:45,991 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:26:45,991 case 25 mean_dice 0.849819 mean_hd95 33.261087
+case 25 mean_dice 0.849819 mean_hd95 33.261087
+2022-03-08 14:26:46,066 ============================================================
+============================================================
+2022-03-08 14:26:46,067 Subject 27 out of 34: FeTS21_Training_342
+Subject 27 out of 34: FeTS21_Training_342
+2022-03-08 14:26:58,794 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 816763
+GtSum: 150203
+TUMOR CORE (LABELS 1 and 4
+Predsum: 169246
+GtSum: 111871
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 66531
+GtSum: 57055
+WHOLE TUMOR:
+2022-03-08 14:26:58,795 case 26 mean_dice 0.292263 mean_hd95 50.960769
+case 26 mean_dice 0.292263 mean_hd95 50.960769
+2022-03-08 14:26:58,795 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:26:58,795 case 26 mean_dice 0.577962 mean_hd95 58.625933
+case 26 mean_dice 0.577962 mean_hd95 58.625933
+2022-03-08 14:26:58,795 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:26:58,795 case 26 mean_dice 0.568824 mean_hd95 66.850580
+case 26 mean_dice 0.568824 mean_hd95 66.850580
+2022-03-08 14:26:58,870 ============================================================
+============================================================
+2022-03-08 14:26:58,870 Subject 28 out of 34: FeTS21_Training_353
+Subject 28 out of 34: FeTS21_Training_353
+2022-03-08 14:27:11,517 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 530996
+GtSum: 46538
+TUMOR CORE (LABELS 1 and 4
+Predsum: 283126
+GtSum: 14715
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 175964
+GtSum: 9120
+WHOLE TUMOR:
+2022-03-08 14:27:11,518 case 27 mean_dice 0.156185 mean_hd95 88.419455
+case 27 mean_dice 0.156185 mean_hd95 88.419455
+2022-03-08 14:27:11,518 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:27:11,518 case 27 mean_dice 0.088068 mean_hd95 100.691112
+case 27 mean_dice 0.088068 mean_hd95 100.691112
+2022-03-08 14:27:11,518 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:27:11,519 case 27 mean_dice 0.086717 mean_hd95 101.098961
+case 27 mean_dice 0.086717 mean_hd95 101.098961
+2022-03-08 14:27:11,594 ============================================================
+============================================================
+2022-03-08 14:27:11,594 Subject 29 out of 34: FeTS21_Training_367
+Subject 29 out of 34: FeTS21_Training_367
+2022-03-08 14:27:24,510 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 365613
+GtSum: 126642
+TUMOR CORE (LABELS 1 and 4
+Predsum: 126336
+GtSum: 21460
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 73364
+GtSum: 19484
+WHOLE TUMOR:
+2022-03-08 14:27:24,511 case 28 mean_dice 0.470894 mean_hd95 52.621288
+case 28 mean_dice 0.470894 mean_hd95 52.621288
+2022-03-08 14:27:24,511 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:27:24,511 case 28 mean_dice 0.377843 mean_hd95 78.262379
+case 28 mean_dice 0.377843 mean_hd95 78.262379
+2022-03-08 14:27:24,511 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:27:24,511 case 28 mean_dice 0.252294 mean_hd95 79.277992
+case 28 mean_dice 0.252294 mean_hd95 79.277992
+2022-03-08 14:27:24,587 ============================================================
+============================================================
+2022-03-08 14:27:24,587 Subject 30 out of 34: FeTS21_Training_362
+Subject 30 out of 34: FeTS21_Training_362
+2022-03-08 14:27:37,257 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 277181
+GtSum: 158381
+TUMOR CORE (LABELS 1 and 4
+Predsum: 49763
+GtSum: 59926
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 23309
+GtSum: 39129
+WHOLE TUMOR:
+2022-03-08 14:27:37,257 case 29 mean_dice 0.493689 mean_hd95 58.830264
+case 29 mean_dice 0.493689 mean_hd95 58.830264
+2022-03-08 14:27:37,257 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:27:37,257 case 29 mean_dice 0.457350 mean_hd95 71.052445
+case 29 mean_dice 0.457350 mean_hd95 71.052445
+2022-03-08 14:27:37,257 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:27:37,258 case 29 mean_dice 0.348877 mean_hd95 72.890329
+case 29 mean_dice 0.348877 mean_hd95 72.890329
+2022-03-08 14:27:37,334 ============================================================
+============================================================
+2022-03-08 14:27:37,334 Subject 31 out of 34: FeTS21_Training_337
+Subject 31 out of 34: FeTS21_Training_337
+2022-03-08 14:27:50,077 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 324585
+GtSum: 111967
+TUMOR CORE (LABELS 1 and 4
+Predsum: 123120
+GtSum: 49901
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 50962
+GtSum: 28232
+WHOLE TUMOR:
+2022-03-08 14:27:50,078 case 30 mean_dice 0.481102 mean_hd95 60.149813
+case 30 mean_dice 0.481102 mean_hd95 60.149813
+2022-03-08 14:27:50,078 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:27:50,078 case 30 mean_dice 0.567846 mean_hd95 63.817709
+case 30 mean_dice 0.567846 mean_hd95 63.817709
+2022-03-08 14:27:50,078 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:27:50,078 case 30 mean_dice 0.510481 mean_hd95 68.912989
+case 30 mean_dice 0.510481 mean_hd95 68.912989
+2022-03-08 14:27:50,154 ============================================================
+============================================================
+2022-03-08 14:27:50,154 Subject 32 out of 34: FeTS21_Training_344
+Subject 32 out of 34: FeTS21_Training_344
+2022-03-08 14:28:02,706 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 994987
+GtSum: 79098
+TUMOR CORE (LABELS 1 and 4
+Predsum: 480817
+GtSum: 19454
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 220443
+GtSum: 8988
+WHOLE TUMOR:
+2022-03-08 14:28:02,707 case 31 mean_dice 0.132029 mean_hd95 67.690472
+case 31 mean_dice 0.132029 mean_hd95 67.690472
+2022-03-08 14:28:02,707 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:28:02,707 case 31 mean_dice 0.032393 mean_hd95 88.509886
+case 31 mean_dice 0.032393 mean_hd95 88.509886
+2022-03-08 14:28:02,707 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:28:02,707 case 31 mean_dice 0.027917 mean_hd95 89.224436
+case 31 mean_dice 0.027917 mean_hd95 89.224436
+2022-03-08 14:28:02,783 ============================================================
+============================================================
+2022-03-08 14:28:02,784 Subject 33 out of 34: FeTS21_Training_358
+Subject 33 out of 34: FeTS21_Training_358
+2022-03-08 14:28:15,270 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 203247
+GtSum: 107935
+TUMOR CORE (LABELS 1 and 4
+Predsum: 76337
+GtSum: 15643
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 39538
+GtSum: 12469
+WHOLE TUMOR:
+2022-03-08 14:28:15,270 case 32 mean_dice 0.672211 mean_hd95 54.166410
+case 32 mean_dice 0.672211 mean_hd95 54.166410
+2022-03-08 14:28:15,270 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:28:15,270 case 32 mean_dice 0.436403 mean_hd95 74.168727
+case 32 mean_dice 0.436403 mean_hd95 74.168727
+2022-03-08 14:28:15,270 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:28:15,270 case 32 mean_dice 0.301761 mean_hd95 76.057873
+case 32 mean_dice 0.301761 mean_hd95 76.057873
+2022-03-08 14:28:15,346 ============================================================
+============================================================
+2022-03-08 14:28:15,346 Subject 34 out of 34: FeTS21_Training_348
+Subject 34 out of 34: FeTS21_Training_348
+2022-03-08 14:28:27,914 WHOLE TUMOR:
+WHOLE TUMOR (ALL LABELS)
+Predsum: 549075
+GtSum: 85112
+TUMOR CORE (LABELS 1 and 4
+Predsum: 148721
+GtSum: 60044
+ENHANCING TUMOR (ONLY LABEL 4
+Predsum: 55987
+GtSum: 43762
+WHOLE TUMOR:
+2022-03-08 14:28:27,915 case 33 mean_dice 0.262708 mean_hd95 64.459289
+case 33 mean_dice 0.262708 mean_hd95 64.459289
+2022-03-08 14:28:27,915 ENHANCING TUMOR:
+ENHANCING TUMOR:
+2022-03-08 14:28:27,915 case 33 mean_dice 0.497469 mean_hd95 66.820655
+case 33 mean_dice 0.497469 mean_hd95 66.820655
+2022-03-08 14:28:27,915 TUMOR CORE:
+TUMOR CORE:
+2022-03-08 14:28:27,915 case 33 mean_dice 0.505679 mean_hd95 69.050706
+case 33 mean_dice 0.505679 mean_hd95 69.050706
+2022-03-08 14:28:27,916 WHOLE TUMOR:
+WHOLE TUMOR:
+Traceback (most recent call last):
+  File "/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/test_FETS_TD1.py", line 358, in <module>
+    inference(args, net, test_save_path)
+  File "/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/TransUNet/test_FETS_TD1.py", line 245, in inference
+    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_whole[i][0], metric_list_whole[i][1]))
+IndexError: index 5269 is out of bounds for axis 0 with size 1

@@ -10,13 +10,21 @@ import torch.nn as nn
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from datasets.dataset_synapse import Synapse_dataset
-from utils import test_single_volume
+from utils import test_single_volume, test_single_volume_FETS
 from networks.vit_seg_modeling import VisionTransformer as ViT_seg
 from networks.vit_seg_modeling import CONFIGS as CONFIGS_ViT_seg
 import config.system_paths as sys_config
 import utils_data
 from networks.unet_class import UNET
 import utils
+from sklearn.calibration import CalibrationDisplay
+import matplotlib.pyplot as plt
+from calibration_functions import find_bin_values
+from calibration_functions import find_area
+
+seed = 1234
+model_type = 'UNET'
+data_aug = 0.25
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -50,6 +58,9 @@ args = parser.parse_args()
 
 
 
+
+
+
 def inference(args, model, test_save_path=None):
 
     # ============================
@@ -75,10 +86,91 @@ def inference(args, model, test_save_path=None):
     num_test_subjects = loaded_test_data[9]
     ids = loaded_test_data[10]
 
-    breakpoint()
+    imts = np.array(imts)
+    gtts = np.array(gtts)
+
+    #print(f"Unique1: {np.unique(gtts)}")
+    gtts[np.where(gtts == 4)] = 3
+    #print(f"Unique2: {np.unique(gtts)}")
+
 
     model.eval()
-    metric_list = 0.0
+    metric_list_whole = 0.0
+    metric_list_enhancing = 0.0
+    metric_list_core = 0.0
+    pred_list = []
+    label_list = []
+
+    img_list = []
+    label_list = []
+
+    imts = torch.from_numpy(imts)
+    gtts = torch.from_numpy(gtts)
+
+
+    lim1 = 0
+    lim2 = 155 
+    lim3 = 310
+    lim4 = 465
+    x = []
+
+
+    for i in range(imts.shape[2]):
+        if lim1 != 0 and (lim1 % 155) == 0:
+            lim1 = lim4
+            lim2 = lim1 + 155
+            lim3 = lim1 + 310
+            lim4 = lim1 + 465
+        x.append(imts[:, :, lim1])
+        x.append(imts[:, :, lim2])
+        x.append(imts[:, :, lim3])
+        x.append(imts[:, :, lim4])
+        y = torch.stack(x, dim = -1)
+        img_list.append(y)
+
+
+        lim1 += 1
+        lim2 += 1
+        lim3 += 1
+        lim4 += 1
+        x = []
+        
+        if lim4 == (imts.shape[2]):
+            break
+
+    
+    lim1 = 0
+    lim2 = 155 
+    lim3 = 310
+    lim4 = 465
+    x = []
+
+
+    for i in range(gtts.shape[2]):
+        if lim1 != 0 and (lim1 % 155) == 0:
+            lim1 = lim4
+            lim2 = lim1 + 155
+            lim3 = lim1 + 310
+            lim4 = lim1 + 465
+        x.append(gtts[:, :, lim1])
+        x.append(gtts[:, :, lim2])
+        x.append(gtts[:, :, lim3])
+        x.append(gtts[:, :, lim4])
+        y = torch.stack(x, dim = -1)
+        label_list.append(y)
+
+
+        lim1 += 1
+        lim2 += 1
+        lim3 += 1
+        lim4 += 1
+        x = []
+        
+        if lim4 == (gtts.shape[2]):
+            break
+
+        sub_subject_id_start_slice = 0
+        subject_id_end_slice = 155
 
     
     for sub_num in range(num_test_subjects):
@@ -88,18 +180,27 @@ def inference(args, model, test_save_path=None):
         # Group slices belonging to the same patients
         # ============================ 
 
-        subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end of the loop
+        image = img_list[sub_subject_id_start_slice:subject_id_end_slice]
+        label = label_list[sub_subject_id_start_slice:subject_id_end_slice]
+        sub_subject_id_start_slice = subject_id_end_slice
+        subject_id_end_slice = sub_subject_id_start_slice + 155
+
+
+        image = torch.stack(image)
+        label = torch.stack(label)
+
+        """ subject_id_start_slice = np.sum(orig_data_siz_z[:sub_num])   #194 at the end of the loop
         subject_id_end_slice = np.sum(orig_data_siz_z[:sub_num+1])   #174 at the end of the loop
         image = imts[:,:, subject_id_start_slice:subject_id_end_slice] 
         label = gtts[:,:, subject_id_start_slice:subject_id_end_slice] 
+ """
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'FETS_TEST_SD_test.nii.gz', data = image, affine = np.eye(4))
 
-        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'BEFORE_NCI_test.nii.gz', data = image, affine = np.eye(4))
-
-        image = torch.from_numpy(image)
-        label = torch.from_numpy(label)
-        #image, label = image.cuda(), label.cuda()      
-        image = image.permute(2, 0, 1)
-        label = label.permute(2, 0, 1)
+        #image = torch.from_numpy(image)
+        #label = torch.from_numpy(label)
+        image, label = image.cuda(), label.cuda()      
+        #image = image.permute(2, 0, 1)
+        #label = label.permute(2, 0, 1)
 
        
         # ==================================================================
@@ -114,24 +215,54 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'NCI', optim = 'ADAM', model_type = 'UNET_DROPOUT', seed = '100', patch_size=[args.img_size, args.img_size],
+        metric_whole, metric_enhancing, metric_core, pred_l, label_l = test_single_volume_FETS(image, label, model, classes=args.num_classes, dataset = 'FETS_SD', optim = 'ADAM', model_type = f'{model_type}', seed = '{seed}', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
-        metric_list += np.array(metric_i)
-        logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_i, axis=0)[0], np.mean(metric_i, axis=0)[1]))
-    metric_list = metric_list / num_test_subjects   #get mean metrics for every class
+        logging.info("WHOLE TUMOR:")
+        metric_list_whole += np.array(metric_whole)
+        logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_whole, axis=0)[0], np.mean(metric_whole, axis=0)[1]))
+
+        logging.info("ENHANCING TUMOR:")
+        metric_list_enhancing += np.array(metric_enhancing)
+        logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_enhancing, axis=0)[0], np.mean(metric_enhancing, axis=0)[1]))
+
+        logging.info("TUMOR CORE:")
+        metric_list_core += np.array(metric_core)
+        logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_core, axis=0)[0], np.mean(metric_core, axis=0)[1]))
+
+    metric_list_whole = metric_list_whole / num_test_subjects   #get mean metrics for every class      
+    metric_list_enhancing = metric_list_enhancing / num_test_subjects   #get mean metrics for every class
+    metric_list_core = metric_list_core / num_test_subjects
+
 
         # ============================
         # Log the mean performance achieved for each class
         # ============================ 
 
-    
+    #first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos = find_bin_values(pred_list, label_list)
+    #find_area(first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos)
+    #disp = CalibrationDisplay.from_predictions(label_list, pred_list)
+    #plt.show()
+    #plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/UNET_FETS_SD.png')
 
-    for i in range(0, args.num_classes):
-        logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i][0], metric_list[i][1]))
-    performance = np.mean(metric_list, axis=0)[0]
-    mean_hd95 = np.mean(metric_list, axis=0)[1]
+    logging.info("WHOLE TUMOR:")
+    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_whole[i][0], metric_list_whole[i][1]))
+    performance = np.mean(metric_list_whole, axis=0)[0]
+    mean_hd95 = np.mean(metric_list_whole, axis=0)[1]
     logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
+
+    logging.info("ENHANCING TUMOR:")
+    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_enhancing[i][0], metric_list_enhancing[i][1]))
+    performance = np.mean(metric_list_enhancing, axis=0)[0]
+    mean_hd95 = np.mean(metric_list_enhancing, axis=0)[1]
+    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
+
+    logging.info("TUMOR CORE:")
+    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_core[i][0], metric_list_core[i][1]))
+    performance = np.mean(metric_list_core, axis=0)[0]
+    mean_hd95 = np.mean(metric_list_core, axis=0)[1]
+    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
+
     return "Testing Finished!"
 
     
@@ -191,16 +322,16 @@ if __name__ == "__main__":
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
     #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256])#.cuda()
+    net = UNET(in_channels = 4, out_channels = 4, features = [32, 64, 128, 256]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_DROPOUT_best_val_loss_seed100.pth')
+    snapshot = os.path.join(f'/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/FETS/{model_type}/', f'FETS_UNET_best_val_loss_seed1234_da0.25_ATTEMPT2.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'no_data_aug_' + 'epoch_' + str(args.max_epochs-1))
 
     # ============================
     # Load the trained parameters into the model
     # ============================  
 
-    #net.load_state_dict(torch.load(snapshot))
+    net.load_state_dict(torch.load(snapshot))
 
     #size = sum(p.numel() for p in net.parameters())
     #print(f'Number of parameters: {size}')
@@ -222,8 +353,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions_2022/UNET/'
-        test_save_path = os.path.join(args.test_save_dir, 'NCI_UNET_DROPOUT_test_seed100')
+        args.test_save_dir = f'../predictions_2022/FETS/{model_type}/'
+        test_save_path = os.path.join(args.test_save_dir, f'SD_FETS_{model_type}_test_seed{seed}_da{data_aug}')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None

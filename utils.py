@@ -172,9 +172,11 @@ def  test_single_volume(image, label, net, classes, dataset, optim, model_type, 
     metric_list = []
     
 
+
     for i in range(0, classes):
         metric_list.append(calculate_metric_percase(prediction > 0, label > 0))
         
+    
          
 
     # ============================
@@ -1020,3 +1022,370 @@ def rescale_image_and_label(image,
     label_rescaled_cropped = crop_or_pad_volume_to_size_along_x(label_rescaled, new_depth).astype(np.uint8)
             
     return image_rescaled_cropped, label_rescaled_cropped
+
+
+def do_data_augmentation_FETS(images,
+                         labels,
+                         data_aug_ratio,
+                         sigma,
+                         alpha,
+                         trans_min,
+                         trans_max,
+                         rot_min,
+                         rot_max,
+                         scale_min,
+                         scale_max,
+                         gamma_min,
+                         gamma_max,
+                         brightness_min,
+                         brightness_max,
+                         noise_min,
+                         noise_max,
+                         rot90 = False):
+        
+    images_ = np.copy(images)
+    labels_ = np.copy(labels)
+
+    
+    #import utils
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_NOTaugmented' + '_img_n4.nii.gz', data = images, affine = np.eye(4))
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_NOTaugmented' + '_lbl.nii.gz', data = labels, affine = np.eye(4))
+    
+    for i in range(images.shape[3]):
+
+        # ========
+        # elastic deformation
+        # ========
+        if np.random.rand() < data_aug_ratio:
+
+            augm_list = []
+            lab_list = []
+
+            for j in range(images.shape[2]):
+                images_[:,:,j,i], labels_[:,:,j,i] = elastic_transform_image_and_label(images_[:,:,j,i],
+                                                                                labels_[:,:,j,i],
+                                                                                sigma = sigma,
+                                                                                alpha = alpha)
+
+                augm_list.append(images[:, :, j, i])
+                lab_list.append(labels[:, :, j, i])
+            
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+            labels_[..., i] = torch.stack(lab_list, dim = -1)
+
+        # ========
+        # translation
+        # ========
+        if np.random.rand() < data_aug_ratio:
+            
+            random_shift_x = np.random.uniform(trans_min, trans_max)
+            random_shift_y = np.random.uniform(trans_min, trans_max)
+
+            augm_list = []
+            lab_list = []
+
+            for j in range(images.shape[2]): 
+                images_[:,:,j,i] = scipy.ndimage.interpolation.shift(images_[:,:,j,i],
+                                                                shift = (random_shift_x, random_shift_y),
+                                                                order = 1)
+
+                labels_[:,:,j,i] = scipy.ndimage.interpolation.shift(labels_[:,:,j,i],
+                                                               shift = (random_shift_x, random_shift_y),
+                                                               order = 0)                                               
+            
+                augm_list.append(images[:, :, j, i])
+                lab_list.append(labels[:, :, j, i])
+
+            
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+            labels_[..., i] = torch.stack(lab_list, dim = -1)
+
+            
+            
+        # ========
+        # rotation
+        # ========
+        if np.random.rand() < data_aug_ratio:
+            
+            random_angle = np.random.uniform(rot_min, rot_max)
+            augm_list = []
+            lab_list = []
+            
+            for j in range(images.shape[2]):
+                images_[:,:,j, i] = scipy.ndimage.interpolation.rotate(images_[:,:,j,i],
+                                                                    reshape = False,
+                                                                    angle = random_angle,
+                                                                    axes = (1, 0),
+                                                                    order = 1)
+
+                
+                labels_[:,:,j, i]= scipy.ndimage.interpolation.rotate(labels_[:,:,j, i],
+                                                                reshape = False,
+                                                                angle = random_angle,
+                                                                axes = (1, 0),
+                                                                order = 0)
+
+
+                augm_list.append(images[:, :, j, i])
+                lab_list.append(labels[:, :, j, i])
+
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+            labels_[..., i] = torch.stack(lab_list, dim = -1)
+            
+            
+            
+        # ========
+        # scaling
+        # ========
+        if np.random.rand() < data_aug_ratio:
+            
+            n_x, n_y = images_.shape[0], images_.shape[1]
+            augm_list = []
+            lab_list = []
+            images_i_tmp = []
+            images_i_tmp = torch.Tensor(images_i_tmp)
+            
+            scale_val = np.round(np.random.uniform(scale_min, scale_max), 2)
+
+            for j in range(images.shape[2]):
+                images_i_tmp = transform.rescale(images_[:,:,j,i], 
+                                                scale_val,
+                                                order = 1,
+                                                preserve_range = True,
+                                                mode = 'constant')
+                
+                images_[:,:,j, i] = crop_or_pad_slice_to_size(images_i_tmp, n_x, n_y)
+
+                labels_i_tmp = transform.rescale(labels_[:,:,j,i],
+                                             scale_val,
+                                             order = 0,
+                                             preserve_range = True,
+                                             anti_aliasing = False,
+                                             mode = 'constant')
+            
+
+            
+                labels_[:,:,j,i] = crop_or_pad_slice_to_size(labels_i_tmp, n_x, n_y)
+
+                augm_list.append(images[:, :, j, i])
+                lab_list.append(labels[:, :, j, i])
+
+                #augm_list.append(images_i_tmp)
+            
+            #augm_list = torch.Tensor(augm_list)
+            #images_i_tmp = torch.stack(augm_list, dim = -1)
+            
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+            labels_[..., i] = torch.stack(lab_list, dim = -1)
+
+            # should we set anti_aliasing = False here?
+            # otherwise, gaussian smoothing is applied before downscaling -> this makes the labels float instead of ints
+            # anti_aliasing was set to false by default in the earlier version of skimage that we were using in the TTA DAE code...
+            # now using a higher version of skimage (0.17.2), as reverting to 0.14.0 causes incompability with some other module on Euler...
+            # not doing anti_aliasing=False while downsampling in evaluation led to substantial errors...
+            
+
+        # ========
+        # rotate 90 / 180 / 270
+        # Doing this for cardiac images (the data has this type of variability)
+        # ========
+        if rot90 == True:
+            if np.random.rand() < data_aug_ratio:
+                num_rotations = np.random.randint(1,4) # 1/2/3
+                augm_list = []
+                lab_list = []
+                for j in range(images.shape[2]):
+                    images_[:,:,j,i] = np.rot90(images_[:,:,j,i], k=num_rotations)
+                    labels_[:,:,i] = np.rot90(labels_[:,:,i], k=num_rotations)
+                    augm_list.append(images[:, :, j, i])
+                    lab_list.append(labels[:, :, j, i])
+                    
+
+                images_[..., i] = torch.stack(augm_list, dim = -1)
+                labels_[..., i] = torch.stack(lab_list, dim = -1)
+
+                
+            
+        # ========
+        # contrast
+        # ========
+        if np.random.rand() < data_aug_ratio:
+            
+            # gamma contrast augmentation
+            c = np.round(np.random.uniform(gamma_min, gamma_max), 2)
+            augm_list = []
+            for j in range(images.shape[2]):
+                images_[:,:,j,i] = images_[:,:,j,i]**c
+                augm_list.append(images[:, :, j, i])
+
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+            # not normalizing after the augmentation transformation,
+            # as it leads to quite strong reduction of the intensity range when done after high values of gamma augmentation
+
+        # ========
+        # brightness
+        # ========
+        if np.random.rand() < data_aug_ratio:
+            
+            # brightness augmentation
+            c = np.round(np.random.uniform(brightness_min, brightness_max), 2)
+            augm_list = []
+            for j in range(images.shape[2]):
+                images_[:,:,j,i] = images_[:,:,j,i] + c
+                augm_list.append(images[:, :, j, i])
+
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+            
+        # ========
+        # noise
+        # ========
+        if np.random.rand() < data_aug_ratio:
+            
+            # noise augmentation
+
+            
+            n = np.random.normal(noise_min, noise_max, size = images_[:,:,0,i].shape)
+            augm_list = []
+            for j in range(images.shape[2]):
+            
+                images_[:,:,j,i] = images_[:,:,j,i] + n
+                augm_list.append(images[:, :, j, i])
+
+            images_[..., i] = torch.stack(augm_list, dim = -1)
+
+    
+    #import utils
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_augmented' + '_img_n4.nii.gz', data = images_, affine = np.eye(4))
+    #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/NCI/NIFTI_augmented' + '_lbl.nii.gz', data = labels_, affine = np.eye(4))
+
+    return images_, labels_
+
+
+
+def  test_single_volume_FETS(image, label, net, classes, dataset, optim, model_type, seed, patch_size=[256, 256], test_save_path=None, case=None, z_spacing=1):
+    image, label = image.cpu().detach().numpy(), label.cpu().detach().numpy()
+    #if len(image.shape) == 3:
+        #prediction = np.zeros_like(label)
+    prediction = np.zeros_like(label[:, :, :, 0])
+    
+
+    foreground_list = []
+    label_list = []
+
+    # ============================
+    # Perform the prediction slice by slice
+    # ============================ 
+
+    for ind in range(image.shape[0]):  
+        slice = image[ind, :, :]
+        x, y = slice.shape[0], slice.shape[1]
+        if x != patch_size[0] or y != patch_size[1]:
+            slice = zoom(slice, (patch_size[0] / x, patch_size[1] / y), order=3)  # previous using 0
+        
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_test.nii.gz', data = slice, affine = np.eye(4))
+        #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + '4_label.nii.gz', data = label[:, :, ind], affine = np.eye(4))
+
+        input = torch.from_numpy(slice).unsqueeze(0).float().cuda()
+        input = input.permute(0, 3, 1, 2)
+        net.eval()
+        with torch.no_grad():
+
+            outputs = net(input)
+            out_soft = torch.softmax(outputs, dim=1)
+            out_hard = (out_soft>0.5).float()
+            out_hard_argmax = torch.argmax(out_hard, dim=1).squeeze(0) 
+            out = torch.argmax(torch.softmax(outputs, dim=1), dim=1).squeeze(0)
+            #color_map = torch.tensor([[255, 0, 0], [0, 255, 0], [0, 0, 255]])
+            rgb = np.zeros((256, 256, 3))
+            #io.imshow(color.label2rgb(out, slice))
+            """ if (dataset == 'NCI' and case == 5 and ind == 10) or (dataset == 'UCL' and case == 3 and ind == 14) or (dataset == 'HK' and case == 2 and ind == 13) or (dataset == 'BIDMC' and case == 5 and ind == 26):
+                
+                for i in range(3):
+                    out_soft_squeezed = out_soft.squeeze(0)
+                    out_soft_squeezed = out_soft_squeezed[i, :, :]
+                    out_soft_squeezed = out_soft_squeezed.cpu().detach().numpy()
+                    plt.imshow(out_soft_squeezed, cmap = 'gray', vmin = 0, vmax = 1)
+                    plt.savefig('/scratch_net/biwidl217_second/arismu/Data_MT/2022/%s_%s_%s_hard_pred_case%s_slice%s_channel%s_seed%s.png' % (dataset, model_type, optim, case, ind, i, seed)) """
+
+            out_soft_sq = out_soft.squeeze(0)
+            out_soft_foreground = out_soft_sq[1, :, : ] + out_soft_sq[2, :, : ]
+            out_soft_foreground = out_soft_foreground.flatten()
+            out_soft_foreground = out_soft_foreground.cpu().detach().numpy()
+            foreground_list.append(out_soft_foreground)
+            
+
+            label_temp = label[ind]
+            label_temp = label_temp.flatten()
+            label_temp[np.where(label_temp > 0)] = 1
+            label_list.append(label_temp)
+                                                                                
+
+            out = out.cpu().detach().numpy()
+            if x != patch_size[0] or y != patch_size[1]:
+                pred = zoom(out, (x / patch_size[0], y / patch_size[1]), order=0)
+            else:
+                pred = out
+            prediction[ind] = pred
+    
+    label_list_arr = np.array(label_list)
+    label_list_arr = label_list_arr.flatten()
+
+    foreground_list_arr = np.array(foreground_list)
+    foreground_list_arr = foreground_list_arr.flatten()
+
+    
+
+
+    # ============================
+    # Calculate Dice & Hausdorff
+    # ============================         
+    metric_list_whole_tumor = []
+    metric_list_enhancing_tumor = []
+    metric_list_tumor_core = []
+    
+
+    #whole tumor 
+    print("WHOLE TUMOR (ALL LABELS)")
+    #for i in range(0, classes):
+    metric_list_whole_tumor.append(calculate_metric_percase(prediction > 0, label[:, :, :, 0] > 0))
+
+
+    print("TUMOR CORE (LABELS 1 and 4")
+    prediction = np.array(prediction)
+    label = np.array(label)
+    prediction[np.where(prediction == 2)] = 0
+    label[np.where(label == 2)] = 0
+
+    metric_list_tumor_core.append(calculate_metric_percase(prediction > 0, label[:, :, :, 0] > 0))
+
+    print("ENHANCING TUMOR (ONLY LABEL 4")
+    prediction = np.array(prediction)
+    label = np.array(label)
+    prediction[np.where(prediction < 3)] = 0
+    label[np.where(label < 3)] = 0
+
+    
+
+    metric_list_enhancing_tumor.append(calculate_metric_percase(prediction > 0, label[:, :, :, 0] > 0))
+
+
+    
+        
+        
+         
+
+    # ============================
+    # Save images, predictions and ground truths
+    # ============================
+    
+    if test_save_path is not None:
+        img_itk = sitk.GetImageFromArray(image.astype(np.float32))
+        prd_itk = sitk.GetImageFromArray(prediction.astype(np.float32))
+        lab_itk = sitk.GetImageFromArray(label.astype(np.float32))
+        img_itk.SetSpacing((1, 1, z_spacing))
+        prd_itk.SetSpacing((1, 1, z_spacing))
+        lab_itk.SetSpacing((1, 1, z_spacing))
+        sitk.WriteImage(prd_itk, test_save_path + '/'+"{}".format(case) + "_pred.nii.gz")
+        sitk.WriteImage(img_itk, test_save_path + '/'+"{}".format(case) + "_img.nii.gz")
+        sitk.WriteImage(lab_itk, test_save_path + '/'+"{}".format(case) + "_gt.nii.gz")
+    return metric_list_whole_tumor, metric_list_enhancing_tumor, metric_list_tumor_core, foreground_list_arr, label_list_arr

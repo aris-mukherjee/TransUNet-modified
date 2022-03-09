@@ -19,6 +19,11 @@ from networks.unet_class import UNET
 import utils
 from sklearn.calibration import CalibrationDisplay
 import matplotlib.pyplot as plt
+from calibration_functions import find_bin_values
+from calibration_functions import find_area
+from calibration_functions import plot_roc_curve
+from sklearn.metrics import roc_curve, auc
+from sklearn.metrics import roc_auc_score
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -83,6 +88,9 @@ def inference(args, model, test_save_path=None):
     metric_list = 0.0
     pred_list = []
     label_list = []
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict() 
 
     
     for sub_num in range(num_test_subjects):
@@ -118,7 +126,7 @@ def inference(args, model, test_save_path=None):
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
 
-        metric_i, pred_l, label_l = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'BIDMC', optim = 'ADAM', model_type = 'UNET', seed= '1234', patch_size=[args.img_size, args.img_size],
+        metric_i, pred_l, label_l = test_single_volume(image, label, model, classes=args.num_classes, dataset = 'BIDMC', optim = 'ADAM', model_type = 'UNWT', seed= '1234', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
 
         metric_list += np.array(metric_i)
@@ -131,9 +139,15 @@ def inference(args, model, test_save_path=None):
         # Log the mean performance achieved for each class
         # ============================ 
 
+    first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos = find_bin_values(pred_list, label_list)
+    find_area(first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos)
     disp = CalibrationDisplay.from_predictions(label_list, pred_list)
     plt.show()
-    plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/UNET_BIDMC.png')
+    plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/UNWT_BIDMC.png')
+
+    fpr, tpr, _ = roc_curve(label_list, pred_list)
+    roc_auc = auc(fpr, tpr)
+    plot_roc_curve(fpr, tpr, roc_auc, 'ROC_UNWT_BIDMC')
 
     for i in range(0, args.num_classes):
         logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list[i][0], metric_list[i][1]))
@@ -195,10 +209,10 @@ if __name__ == "__main__":
     config_vit.patches.size = (args.vit_patches_size, args.vit_patches_size)
     if args.vit_name.find('R50') !=-1:
         config_vit.patches.grid = (int(args.img_size/args.vit_patches_size), int(args.img_size/args.vit_patches_size))
-    #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
-    net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
+    net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
+    #net = UNET(in_channels = 3, out_channels = 3, features = [32, 64, 128, 256]).cuda()
 
-    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/UNET/', 'UNET_best_val_loss_seed1234.pth')
+    snapshot = os.path.join('/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2021/TU_3seeds/', 'REVISED_ADAM_best_val_loss_seed1234.pth')
     #f not os.path.exists(snapshot): snapshot = snapshot.replace('best_model',  'epoch_' + str(args.max_epochs-1))
 
     # ============================
@@ -224,8 +238,8 @@ if __name__ == "__main__":
     # ============================ 
 
     if args.is_savenii:
-        args.test_save_dir = '../predictions_2022/UNET/'
-        test_save_path = os.path.join(args.test_save_dir, 'BIDMC_UNET_test_seed1234')
+        args.test_save_dir = '../predictions_2022/'
+        test_save_path = os.path.join(args.test_save_dir, 'BIDMC_UNWT_test_seed1234')
         os.makedirs(test_save_path, exist_ok=True)
     else:
         test_save_path = None
