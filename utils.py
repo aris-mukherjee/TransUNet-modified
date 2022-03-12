@@ -1314,7 +1314,7 @@ def  test_single_volume_FETS(image, label, net, classes, dataset, optim, model_t
             foreground_list.append(out_soft_foreground)
             
 
-            label_temp = label[ind]
+            label_temp = label[ind, :, :, 0]
             label_temp = label_temp.flatten()
             label_temp[np.where(label_temp > 0)] = 1
             label_list.append(label_temp)

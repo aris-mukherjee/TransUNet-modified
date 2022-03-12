@@ -19,12 +19,12 @@ from networks.unet_class import UNET
 import utils
 from sklearn.calibration import CalibrationDisplay
 import matplotlib.pyplot as plt
-from calibration_functions import find_bin_values
+from calibration_functions import find_bin_values, find_bin_values_FETS
 from calibration_functions import find_area
 
 seed = 1234
 model_type = 'UNET'
-data_aug = 0.25
+data_aug = '0.5'
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--volume_path', type=str,
@@ -172,6 +172,13 @@ def inference(args, model, test_save_path=None):
         sub_subject_id_start_slice = 0
         subject_id_end_slice = 155
 
+
+        first_bin = []
+        second_bin = []
+        third_bin = []
+        fourth_bin = []
+        fifth_bin = []
+
     
     for sub_num in range(num_test_subjects):
 
@@ -196,12 +203,8 @@ def inference(args, model, test_save_path=None):
  """
         #utils.save_nii(img_path = '/scratch_net/biwidl217_second/arismu/Data_MT/' + 'FETS_TEST_SD_test.nii.gz', data = image, affine = np.eye(4))
 
-        #image = torch.from_numpy(image)
-        #label = torch.from_numpy(label)
         image, label = image.cuda(), label.cuda()      
-        #image = image.permute(2, 0, 1)
-        #label = label.permute(2, 0, 1)
-
+     
        
         # ==================================================================
         # setup logging
@@ -214,9 +217,11 @@ def inference(args, model, test_save_path=None):
         # ============================
         # Perform the prediction for each test patient individually & calculate dice score and Hausdorff distance
         # ============================ 
-
+        
         metric_whole, metric_enhancing, metric_core, pred_l, label_l = test_single_volume_FETS(image, label, model, classes=args.num_classes, dataset = 'FETS_SD', optim = 'ADAM', model_type = f'{model_type}', seed = '{seed}', patch_size=[args.img_size, args.img_size],
                                       test_save_path=test_save_path, case=sub_num, z_spacing=args.z_spacing)
+
+
 
         logging.info("WHOLE TUMOR:")
         metric_list_whole += np.array(metric_whole)
@@ -230,38 +235,59 @@ def inference(args, model, test_save_path=None):
         metric_list_core += np.array(metric_core)
         logging.info('case %s mean_dice %f mean_hd95 %f' % (sub_num, np.mean(metric_core, axis=0)[0], np.mean(metric_core, axis=0)[1]))
 
+        
+        if sub_num < 10:
+            first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos = find_bin_values_FETS(pred_l, label_l)
+            first_bin.append(first_bin_frac_pos)
+            second_bin.append(second_bin_frac_pos)
+            third_bin.append(third_bin_frac_pos)
+            fourth_bin.append(fourth_bin_frac_pos)
+            fifth_bin.append(fifth_bin_frac_pos)
+
+
     metric_list_whole = metric_list_whole / num_test_subjects   #get mean metrics for every class      
     metric_list_enhancing = metric_list_enhancing / num_test_subjects   #get mean metrics for every class
     metric_list_core = metric_list_core / num_test_subjects
+
+
+    avg_first_bin_frac_pos = float(sum(first_bin)/len(first_bin))
+    avg_second_bin_frac_pos = float(sum(second_bin)/len(second_bin))
+    avg_third_bin_frac_pos = float(sum(third_bin)/len(third_bin))
+    avg_fourth_bin_frac_pos = float(sum(fourth_bin)/len(fourth_bin))
+    avg_fifth_bin_frac_pos = float(sum(fifth_bin)/len(fifth_bin))
+
+    print("Fraction of positives:")
+    print(f"First bin: {avg_first_bin_frac_pos}")
+    print(f"Second bin: {avg_second_bin_frac_pos}")
+    print(f"Third bin: {avg_third_bin_frac_pos}")
+    print(f"Fourth bin: {avg_fourth_bin_frac_pos}")
+    print(f"Fifth bin: {avg_fifth_bin_frac_pos}")
+
+    find_area(avg_first_bin_frac_pos, avg_second_bin_frac_pos, avg_third_bin_frac_pos, avg_fourth_bin_frac_pos, avg_fifth_bin_frac_pos)
+
+
+    y = [avg_first_bin_frac_pos, avg_second_bin_frac_pos, avg_third_bin_frac_pos, avg_fourth_bin_frac_pos, avg_fifth_bin_frac_pos]
+    x = [0, 0.3, 0.5, 0.7, 1]
+        
+
+    fig, ax = plt.subplots()
+    ref_line_label = "Perfectly calibrated"
+    ax.plot([0, 1], [0, 1], "k:", label=ref_line_label)
+    
+    ax.set(xlabel="Mean predicted probability", ylabel="Fraction of positives")
+
+    ax.plot(x, y, "s-", label = 'Classifier')[0]
+    ax.legend(loc="lower right")
+    
+
+    fig.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/FETS_SD_calibration_{model_type}_da{data_aug}.png')
+        
 
 
         # ============================
         # Log the mean performance achieved for each class
         # ============================ 
 
-    #first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos = find_bin_values(pred_list, label_list)
-    #find_area(first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos)
-    #disp = CalibrationDisplay.from_predictions(label_list, pred_list)
-    #plt.show()
-    #plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/UNET_FETS_SD.png')
-
-    logging.info("WHOLE TUMOR:")
-    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_whole[i][0], metric_list_whole[i][1]))
-    performance = np.mean(metric_list_whole, axis=0)[0]
-    mean_hd95 = np.mean(metric_list_whole, axis=0)[1]
-    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
-
-    logging.info("ENHANCING TUMOR:")
-    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_enhancing[i][0], metric_list_enhancing[i][1]))
-    performance = np.mean(metric_list_enhancing, axis=0)[0]
-    mean_hd95 = np.mean(metric_list_enhancing, axis=0)[1]
-    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
-
-    logging.info("TUMOR CORE:")
-    logging.info('Mean class %d mean_dice %f mean_hd95 %f' % (i, metric_list_core[i][0], metric_list_core[i][1]))
-    performance = np.mean(metric_list_core, axis=0)[0]
-    mean_hd95 = np.mean(metric_list_core, axis=0)[1]
-    logging.info('Testing performance in best val model: mean_dice : %f mean_hd95 : %f' % (performance, mean_hd95))
 
     return "Testing Finished!"
 
@@ -324,7 +350,7 @@ if __name__ == "__main__":
     #net = ViT_seg(config_vit, img_size=args.img_size, num_classes=config_vit.n_classes).cuda()
     net = UNET(in_channels = 4, out_channels = 4, features = [32, 64, 128, 256]).cuda()
 
-    snapshot = os.path.join(f'/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/FETS/{model_type}/', f'FETS_UNET_best_val_loss_seed1234_da0.25_ATTEMPT2.pth')
+    snapshot = os.path.join(f'/scratch_net/biwidl217_second/arismu/Master_Thesis_Codes/project_TransUNet/model/2022/FETS/{model_type}/', f'FETS_UNET_best_val_loss_seed1234_da0.5.pth')
     #if not os.path.exists(snapshot): snapshot = snapshot.replace('best_model', 'no_data_aug_' + 'epoch_' + str(args.max_epochs-1))
 
     # ============================

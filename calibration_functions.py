@@ -97,3 +97,62 @@ def plot_roc_curve(fpr, tpr, roc_auc, dataset):
     plt.legend(loc="lower right")
     plt.show()
     plt.savefig(f'/scratch_net/biwidl217_second/arismu/Data_MT/plots/{dataset}.png')
+
+
+
+def find_bin_values_FETS(pred_list, label_list):
+
+    first_bin = []
+    second_bin = []
+    third_bin = []
+    fourth_bin = []
+    fifth_bin = []
+
+    
+
+    pred_list = list(pred_list)
+    label_list = list(label_list)
+
+    
+
+    num_ones_first_bin = 0
+    num_ones_second_bin = 0
+    num_ones_third_bin = 0
+    num_ones_fourth_bin = 0
+    num_ones_fifth_bin = 0
+
+    for elem, lab in list(zip(pred_list, label_list)):
+        if 0 < elem <= 0.2:
+            first_bin.append(lab)
+            if lab == 1:
+                num_ones_first_bin += 1
+        elif 0.2 < elem <= 0.4:
+            second_bin.append(lab)
+            if lab == 1:
+                num_ones_second_bin += 1
+        elif 0.4 < elem <= 0.6:
+            third_bin.append(lab)
+            if lab == 1:
+                num_ones_third_bin += 1  
+        elif 0.6 < elem <= 0.8:
+            fourth_bin.append(lab)
+            if lab == 1:
+                num_ones_fourth_bin += 1 
+        elif 0.8 < elem <= 1:
+            fifth_bin.append(lab)
+            if lab == 1:
+                num_ones_fifth_bin += 1 
+        
+
+    first_bin_frac_pos = float(num_ones_first_bin/len(first_bin))
+    second_bin_frac_pos = float(num_ones_second_bin/len(second_bin))
+    third_bin_frac_pos = float(num_ones_third_bin/len(third_bin))
+    fourth_bin_frac_pos = float(num_ones_fourth_bin/len(fourth_bin))
+    fifth_bin_frac_pos = float(num_ones_fifth_bin/len(fifth_bin))
+        
+    
+
+    return first_bin_frac_pos, second_bin_frac_pos, third_bin_frac_pos, fourth_bin_frac_pos, fifth_bin_frac_pos 
+
+
+    

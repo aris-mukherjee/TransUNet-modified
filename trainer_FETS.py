@@ -21,7 +21,7 @@ import utils
 
 seed = 1234
 model_type = 'UNET'
-data_aug = '0.25_ATTEMPT5'
+data_aug = '0.25_ATTEMPT6'
 
 def trainer_fets(args, model, snapshot_path):
 
